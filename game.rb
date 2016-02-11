@@ -1,13 +1,19 @@
 # Game
+require_relative "board"
+require_relative "player"
 
 class Game
 
-  attr_accessor :number_players, :difficulty
-  attr_reader :infection_rate_index
+  attr_accessor :number_players, :difficulty, :infection_deck, :infection_discard_pile
+  attr_reader :infection_rate_index, :players
 
   def initialize(number_players, difficulty)
     @number_players = number_players
     @infection_rate_index = 0
+    @board = Board.new()
+    @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
+    @infection_discard_pile = []
+    @players = []
 
     # case difficulty
     # when "introductory":
@@ -19,7 +25,17 @@ class Game
     # else
     #   raise "Acceptable inputs are only 'introductory', 'standard', or 'heroic'!"
     # end
+    create_players
   end
+
+
+  def create_players
+    @number_players.times do |player_number|
+      player_number = Player.new("Player number " + (player_number+1).to_s, "roles")
+      @players.push(player_number)
+    end
+  end
+
 
   def infection_rate
     INFECTION_RATE_BOARD[@infection_rate_index]
@@ -33,9 +49,30 @@ class Game
     end
   end
 
+  def setup_infection_deck
+    @board.infection_cards.shuffle!
+  end
+
+  def deal_card(from, number_of_cards = 1)
+    from.pop(number_of_cards)
+    perform_actions(from)
+  end
+
+  def perform_action(from)
+    if from == @infection_deck
+    # Actions
+    # Discard card
+    elsif from == @player_deck
+    # Actions
+    # Discard card
+    end
+  end
 
 
+  def perform_infect
 
+
+  end
 
 
 
