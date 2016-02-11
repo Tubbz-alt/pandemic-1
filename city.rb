@@ -47,7 +47,11 @@ class City
   end
 
   def pawn_move_to_city(pawn)
-    @pawns += pawn
+    @pawns.push(pawn)
+  end
+
+  def pawn_move_from_city(pawn)
+    @pawns.delete(pawn)
   end
 
   def color_count
