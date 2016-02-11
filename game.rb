@@ -3,10 +3,34 @@
 class Game
 
   attr_accessor :number_players, :difficulty
+  attr_reader :infection_rate_index
 
   def initialize(number_players, difficulty)
     @number_players = number_players
-    @difficulty = difficulty
+    @infection_rate_index = 0
+
+    # case difficulty
+    # when "introductory":
+    #   @difficulty = "4 Epidemic Cards"
+    # when "standard"
+    #   @difficulty = "5 Epidemic Cards"
+    # when "heroic"
+    #   @difficulty = "6 Epidemic Cards"
+    # else
+    #   raise "Acceptable inputs are only 'introductory', 'standard', or 'heroic'!"
+    # end
+  end
+
+  def infection_rate
+    INFECTION_RATE_BOARD[@infection_rate_index]
+  end
+
+  def increase_infection_rate
+    if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
+      @infection_rate_index += 1
+    else
+      raise "Infection Rate is already maxed"
+    end
   end
 
 
@@ -14,6 +38,11 @@ class Game
 
 
 
+
+
+
+
+  INFECTION_RATE_BOARD = [2,2,2,3,3,4,4]
 
   ROLES = {
     contingency_planner: [:ct, "The contingency planner may, as an action, take an Event card from anywhere in the Player Discard Pile and place it on his Role Card. Only 1 Event Card can be on his role card at a time. It does not count against his hand limit. When the Contingency Planner plays the Event card on his role card, remove this Event card from the game (instead of discarding it)."],

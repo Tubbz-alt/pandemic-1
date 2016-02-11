@@ -4,8 +4,8 @@ class City
 
   MAX_COLOR = 3
 
-  attr_reader :name, :population, :original_color, :neighbors, :research_st
-  attr_accessor :red, :yellow, :black, :blue, :pawns, :outbreak
+  attr_reader :name, :population, :original_color, :neighbors, :research_st, :red, :yellow, :black, :blue
+  attr_accessor :pawns, :outbreak
 
   def initialize(name, population, original_color)
     @name = name
