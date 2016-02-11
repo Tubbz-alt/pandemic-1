@@ -18,7 +18,7 @@ class Game
     @board = Board.new()
     @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
     @infection_discard_pile = []
-    @player_deck = setup_player_deck #Index 0 = Bottom of deck
+    # @player_deck = setup_player_deck #Index 0 = Bottom of deck
     @players = []
     @available_roles_to_pick = ROLES.keys.shuffle
 
@@ -105,10 +105,6 @@ class Game
     puts
   end
 
-  def prompt_player_take_cards(from)
-
-  end
-
 
   def players_info #API
     @players.each_with_index do |player, idx|
@@ -136,10 +132,19 @@ class Game
     @board.infection_cards.shuffle!
   end
 
-  def setup_player_deck
-    @board.player_cards.shuffle!
+  # def setup_player_deck
+  #   @board.player_cards.shuffle!
+  #
+  #
+  # end
+  #
+  # def divide_player_cards_by_epidemic_cards_number
+  #   case @epidemic_cards_number
+  #   when 4
+  #     first_pile_cards_number = @board.player_cards.size / 4
+  #
+  # end
 
-  end
 
   def deal_card(from, number_of_cards = 1)
     from.pop(number_of_cards)

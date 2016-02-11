@@ -2,6 +2,7 @@
 require_relative "city"
 require_relative "infectioncard"
 require_relative "playercard"
+require_relative "eventcard"
 
 class Board
 
@@ -9,8 +10,11 @@ class Board
 
   def initialize
     @cities = build_cities
-    @infection_cards = assign_cards(:infection)
-    @player_cards = assign_cards(:player)
+    @infection_cards = []
+    @player_cards = []
+    assign_cards(:infection)
+    assign_cards(:player)
+    assign_cards(:event)
   end
 
   # Initialize 48 instances of City Class
@@ -72,13 +76,29 @@ class Board
 
   #Assign the 48 Player Cards and Infection Cards
   def assign_cards(type)
-    @cities.collect do |city|
-      if type == :infection
-        city = InfectionCard.new(city.name)
-      elsif type == :player
-        city = PlayerCard.new(city.name, city.original_color)
+    if type == :infection || type == :player
+      @cities.each do |city|
+        if type == :infection
+          @infection_cards << InfectionCard.new(city.name)
+        else
+          @player_cards << PlayerCard.new(city.name, city.original_color)
+        end
+      end
+    end
+    if type == :event
+      EVENT_CARDS.keys.each do |event_type|
+        @player_cards << EventCard.new(event_type, EVENT_CARDS[event_type])
       end
     end
   end
+
+
+  EVENT_CARDS = {
+    Resilient_Population: "Play at anytime, Not an action. Remove any 1 card in the infection dicard pile from the Game. You may play this between the infect and intensify steps of an epidemic.",
+    Government_Grant: "Play at anytime, Not an action. Add 1 research station to any city (no city card needed).",
+    Airlift: "Play at anytime, Not an action. Nive any 1 pawn to any city. Get permission before moving another player's pawn.",
+    One_Quiet_Night: "Play at anytime, Not an action. Skip the next infect cities step (do not flip over any infection cards).",
+    Forecast: "Play at anytime, Not an action. Draw, look at, and rearrange the top 6 cards of the infection deck. Put them back on top."
+  }
 
 end
