@@ -1,22 +1,22 @@
-# City Card
+# Player Card
 
-class CityCard
+class PlayerCard
 
   attr_accessor :type, :cityname, :deck
 
   def initialize(cityname, color)
-    @type = :city
+    @type = :player
     @cityname = cityname
     @deck = :player_deck
   end
 
   def reveal
     if @deck == :player_deck
-      @deck = :player_discard_pile
+      # @deck = player's hand
       # Add to the Player_Discard_Pile
       return @cityname
     else
-      raise "City card is already in Player Discard Pile"
+      raise "City card is not in the Player Deck"
     end
   end
 

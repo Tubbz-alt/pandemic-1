@@ -1,4 +1,5 @@
 # City
+require_relative "board"
 
 class City
 

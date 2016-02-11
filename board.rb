@@ -1,12 +1,16 @@
 # Board
 require_relative "city"
+require_relative "infectioncard"
+require_relative "playercard"
 
 class Board
 
-  attr_reader :cities
+  attr_reader :cities, :infection_cards, :player_cards
 
   def initialize
     @cities = build_cities
+    @infection_cards = assign_cards(:infection)
+    @player_cards = assign_cards(:player)
   end
 
   # Initialize 48 instances of City Class
@@ -64,6 +68,17 @@ class Board
   #Connect Cities
   def connect_cities
 
+  end
+
+  #Assign the 48 Player Cards and Infection Cards
+  def assign_cards(type)
+    @cities.collect do |city|
+      if type == :infection
+        city = InfectionCard.new(city.name)
+      elsif type == :player
+        city = PlayerCard.new(city.name, city.original_color)
+      end
+    end
   end
 
 end
