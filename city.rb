@@ -4,10 +4,10 @@ class City
 
   MAX_COLOR = 3
 
-  attr_reader :name, :population, :original_color, :neighbors, :research_st, :outbreak
-  attr_accessor :red, :yellow, :black, :blue, :pawns
+  attr_reader :name, :population, :original_color, :neighbors, :research_st
+  attr_accessor :red, :yellow, :black, :blue, :pawns, :outbreak
 
-  def initialize(name, population, original_color, neighbor)
+  def initialize(name, population, original_color)
     @name = name
     @population = population
     @original_color = original_color
@@ -25,6 +25,18 @@ class City
       @research_st = false
     end
   end
+
+  def add_neighbors(neighbors)
+    neighbors.each do |neighbor|
+      if !@neighbors.include?(neighbor)
+        @neighbors.push(neighbor)
+      end
+      if !neighbor.neighbors.include?(self)
+        neighbor.neighbors.push(self)
+      end
+    end
+  end
+
 
   def build_research_st
     @research_st = true
