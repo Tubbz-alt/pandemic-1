@@ -24,8 +24,10 @@ Related to the game state
 - g.outbreak_index to show the current outbreak index.
 - g.black_disease to show the status of black disease. Other available colors are red, yellow and blue.
 - g.research_station_availability to show available research stations.
+- g.show_cities(1) to show cities which number of cubes is 1. Other integers allowed are 2 and 3.
 
 Related to Cities
 
 - g.board.algiers.show_info; to show the info of Algier.
 - g.board.algiers.show_neighbors; to show the info of Algier's neighbors.
+- g.show_cities(1) to show cities which number of cubes is 1. Other integers allowed are 2 and 3.

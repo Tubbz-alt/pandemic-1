@@ -348,5 +348,9 @@ class Game
     return @players[number-1]
   end
 
+  def show_cities(number_of_infection) #CommandLine
+    cities = @board.cities.select {|city| city.color_count == number_of_infection}
+    cities.collect {|city| city.name}
+  end
 
 end
