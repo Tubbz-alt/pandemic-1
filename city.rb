@@ -92,25 +92,27 @@ class City
   end
 
 
-  def show_neighbors #API
+  def show_neighbors #CommandLine
     @neighbors.each do |neighbor|
       if neighbor.research_st
         research_st_indication = neighbor.research_st.to_s.upcase
       else
         research_st_indication = neighbor.research_st.to_s
       end
-      puts neighbor.name.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s + ", "+ neighbor.yellow.to_s + ", "+ neighbor.black.to_s + ", "+ neighbor.blue.to_s + ". Research St : "+research_st_indication
+
+      puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s + ", "+ neighbor.yellow.to_s + ", "+ neighbor.black.to_s + ", "+ neighbor.blue.to_s + ". Research St : "+research_st_indication
     end
     puts
   end
 
-  def show_info #API
+  def show_info #CommandLine
     if @research_st
       research_st_indication = @research_st.to_s.upcase
     else
       research_st_indication = @research_st.to_s
     end
-    puts "Cubes : "+self.color_count.to_s+". Red, Yellow, Black, Blue : " + @red.to_s + ", "+ @yellow.to_s + ", "+ @black.to_s + ", "+ @blue.to_s + ". Research St : "+research_st_indication
+
+    puts "Players : "+@pawns.to_s+". Cubes : "+self.color_count.to_s+". Red, Yellow, Black, Blue : " + @red.to_s + ", "+ @yellow.to_s + ", "+ @black.to_s + ", "+ @blue.to_s + ". Research St : "+research_st_indication
     puts
   end
 

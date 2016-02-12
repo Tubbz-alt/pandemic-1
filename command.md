@@ -18,13 +18,13 @@ Commands
 
 Related to the game state
 
-- g.players_info to show the name and role of each player.
+- g.player(1) to show details of player 1.
+- g.players to show details of all players.
 - g.infection_rate to show the current infection rate.
 - g.outbreak_index to show the current outbreak index.
 - g.black_disease to show the status of black disease. Other available colors are red, yellow and blue.
 
 Related to Cities
 
-- g.board.algiers to show the information of the city Algiers.
 - g.board.algiers.show_info; to show the info of Algier.
 - g.board.algiers.show_neighbors; to show the info of Algier's neighbors.
