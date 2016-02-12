@@ -5,7 +5,7 @@ require_relative "player"
 class Game
 
   attr_accessor :number_players, :infection_deck, :infection_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board
 
   def initialize
     @number_players = 0
@@ -111,7 +111,6 @@ class Game
       puts "Player "+(idx+1).to_s+" = "+player.name.to_s+", role = "+player.role.to_s
     end
   end
-
 
 
 
