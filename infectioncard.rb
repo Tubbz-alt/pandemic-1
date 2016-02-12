@@ -10,5 +10,8 @@ class InfectionCard
     @deck = :infection_deck
   end
 
+  def reveal
+    @deck = :infection_discard_pile
+  end
 
 end

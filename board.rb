@@ -10,7 +10,11 @@ class Board
   attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaolo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington, :red_disease, :black_disease, :yellow_disease, :blue_disease
 
   def initialize
-    @cities = build_cities
+
+    build_cities
+
+    @cities = [@algiers, @atlanta, @baghdad, @bangkok, @beijing, @bogota, @buenosaires, @cairo, @chennai, @chicago, @delhi, @essen, @hochiminh, @istanbul, @jakarta, @johannesburg, @hongkong, @karachi, @khartoum, @kinshasa, @kolkata, @lagos, @lima, @london, @losangeles, @manila, @madrid, @mexicocity, @miami, @milan, @montreal, @moscow, @mumbai, @newyork, @osaka, @paris, @riyadh, @sanfrancisco, @santiago, @saopaolo, @seoul, @shanghai, @stpetersburg, @sydney, @taipei, @tehran, @tokyo, @washington]
+    
     @infection_cards = []
     @player_cards = []
     assign_cards(:infection)

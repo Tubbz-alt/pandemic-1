@@ -23,6 +23,7 @@ Related to the game state
 - g.infection_rate to show the current infection rate.
 - g.outbreak_index to show the current outbreak index.
 - g.black_disease to show the status of black disease. Other available colors are red, yellow and blue.
+- g.research_station_availability to show available research stations.
 
 Related to Cities
 

@@ -31,6 +31,9 @@ class Game
     prompt_player_info
     determine_deal_player_card_number
     move_all_pawns_to_Atlanta_in_setup
+
+    deal_9_initial_infection_cards
+
   end
 
   def prompt_number_of_players
@@ -267,23 +270,36 @@ class Game
   end
 
 
+  def deal_9_initial_infection_cards
+    # First 3 cards contain cities which will be infected with 3 cubes of their original colors. Second 3 cards contain cities with 2 cubes. Third 3 cards contain cities with 1 cube.
+    3.times do |number|
+      city_cards = deal_card(@infection_deck, 3)
+      city_cards.each do |card|
+        perform_action(card, (3 - number))
+      end
+    end
+  end
+
 
   def deal_card(from, number_of_cards = 1)
     from.pop(number_of_cards)
-    perform_actions(from)
   end
 
-  def perform_action(from)
-    if from == @infection_deck
-    # Actions
-    # Discard card
-    elsif from == @player_deck
+  def perform_action(card, number_of_infection = 1)
+    affected_city = @board.cities.select {|city| city.name == card.cityname}
+    if card.type == :infection
+      perform_infect(affected_city[0], affected_city[0].original_color, number_of_infection)
+      @board.cities.each do |city|
+        city.outbreak_reset
+      end
+      @infection_discard_pile << card
+    else
       @deal_player_card_number.times do |card_number|
         taken_card = @player_deck.pop
         if taken_card.type == :player || taken_card.type = :event
           #Player gets to keep that card
           #Check max number of card in hand = 7
-        elsif taken_card.type == :event
+        elsif taken_card.type == :epidemic
           puts "Epidemic Card"
         end
         puts "Player Card size = "+@player_deck.size.to_s
@@ -292,15 +308,27 @@ class Game
   end
 
 
-  def perform_infect
-
-
+  def perform_infect(city, color, number_of_cubes)
+    existing_cubes = city.color_count
+    if existing_cubes + number_of_cubes <= 3
+      city.infect(color, number_of_cubes)
+    else
+      if !lose?
+        city.outbreak_happens = true
+        neighbors_names = ""
+        city.neighbors.each do |neighbor|
+          if !neighbor.outbreak
+            neighbors_names + " " + neighbor.name
+            perform_infect(neighbor, color, 1)
+          end
+        end
+        puts "Outbreak on this city! Affected cities : "+neighbors_names
+        increase_outbreak_index
+      else
+        game_over?
+      end
+    end
   end
-
-
-
-
-
 
   INFECTION_RATE_BOARD = [2,2,2,3,3,4,4]
 

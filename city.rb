@@ -5,8 +5,8 @@ class City
 
   MAX_COLOR = 3
 
-  attr_reader :name, :population, :original_color, :neighbors, :research_st, :red, :yellow, :black, :blue
-  attr_accessor :pawns, :outbreak
+  attr_reader :name, :population, :original_color, :neighbors, :research_st, :red, :yellow, :black, :blue, :outbreak
+  attr_accessor :pawns
 
   def initialize(name, population, original_color)
     @name = name
@@ -25,6 +25,7 @@ class City
     else
       @research_st = false
     end
+    @research_station_availability = 5
   end
 
   def add_neighbors(neighbors)
@@ -60,19 +61,15 @@ class City
   end
 
   def infect(disease = @original_color, number = 1)
-    if self.color_count + number <= MAX_COLOR
-      case disease
-      when :red
-        @red += number
-      when :yellow
-        @yellow += number
-      when :black
-        @black += number
-      when :blue
-        @blue += number
-      end
-    else
-      @outbreak = true
+    case disease
+    when :red
+      @red += number
+    when :yellow
+      @yellow += number
+    when :black
+      @black += number
+    when :blue
+      @blue += number
     end
   end
 
@@ -88,9 +85,15 @@ class City
     when :blue
       @blue -= number
     end
-    self.color_count <= 3 ? @outbreak = false : @outbreak = true
   end
 
+  def outbreak_happens
+    @outbreak = true
+  end
+
+  def outbreak_reset
+    @outbreak = false
+  end
 
   def show_neighbors #CommandLine
     @neighbors.each do |neighbor|
