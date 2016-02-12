@@ -1,11 +1,12 @@
 # Game
 require_relative "board"
 require_relative "player"
+require_relative "epidemiccard"
 
 class Game
 
   attr_accessor :number_players, :infection_deck, :infection_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck
 
   def initialize
     @number_players = 0
@@ -22,7 +23,7 @@ class Game
     @black_disease  =@board.black_disease
     @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
     @infection_discard_pile = []
-    @player_deck = setup_player_deck #Index 0 = Bottom of deck
+    setup_player_deck #Returns @player_deck which index 0 = Bottom of deck
     @players = []
     @available_roles_to_pick = ROLES.keys.shuffle
     @outbreak_index = 0
@@ -49,17 +50,20 @@ class Game
       case difficulty
       when "i"
         @epidemic_cards_number = 4
+        difficulty_long = "introductory"
       when "s"
         @epidemic_cards_number = 5
+        difficulty_long = "standard"
       when "h"
         @epidemic_cards_number = 6
+        difficulty_long = "heroic"
       else
         puts "The only options are 'i', 's' or 'h'!"
       end
 
     end
 
-    puts "This game's difficulty level is "+difficulty.to_s
+    puts "This game's difficulty level is "+difficulty_long
     puts
   end
 
@@ -212,17 +216,59 @@ class Game
   end
 
   def setup_player_deck
-    @board.player_cards.shuffle!
-
-
+    insert_epidemic_cards
   end
-  #
-  # def divide_player_cards_by_epidemic_cards_number
-  #   case @epidemic_cards_number
-  #   when 4
-  #     first_pile_cards_number = @board.player_cards.size / 4
-  #
-  # end
+
+  def insert_epidemic_cards
+    @board.player_cards.shuffle!
+    case @epidemic_cards_number
+    when 4
+      first_pile_cards = @board.player_cards[0..12]
+      second_pile_cards = @board.player_cards[13..25]
+      third_pile_cards = @board.player_cards[26..38]
+      fourth_pile_cards = @board.player_cards[39..-1]
+
+      first_pile_cards << EpidemicCard.new
+      second_pile_cards << EpidemicCard.new
+      third_pile_cards << EpidemicCard.new
+      fourth_pile_cards << EpidemicCard.new
+
+      @player_deck =  first_pile_cards.shuffle! + second_pile_cards.shuffle! + third_pile_cards.shuffle! + fourth_pile_cards.shuffle!
+
+    when 5
+      first_pile_cards = @board.player_cards[0..10]
+      second_pile_cards = @board.player_cards[11..20]
+      third_pile_cards = @board.player_cards[21..31]
+      fourth_pile_cards = @board.player_cards[32..42]
+      fifth_pile_cards = @board.player_cards[43..-1]
+
+      first_pile_cards << EpidemicCard.new
+      second_pile_cards << EpidemicCard.new
+      third_pile_cards << EpidemicCard.new
+      fourth_pile_cards << EpidemicCard.new
+      fifth_pile_cards << EpidemicCard.new
+
+      @player_deck =  first_pile_cards.shuffle! + second_pile_cards.shuffle! + third_pile_cards.shuffle! + fourth_pile_cards.shuffle! + fifth_pile_cards.shuffle!
+
+    when 6
+      first_pile_cards = @board.player_cards[0..8]
+      second_pile_cards = @board.player_cards[9..17]
+      third_pile_cards = @board.player_cards[18..26]
+      fourth_pile_cards = @board.player_cards[27..36]
+      fifth_pile_cards = @board.player_cards[37..44]
+      sixth_pile_cards = @board.player_cards[45..-1]
+
+      first_pile_cards << EpidemicCard.new
+      second_pile_cards << EpidemicCard.new
+      third_pile_cards << EpidemicCard.new
+      fourth_pile_cards << EpidemicCard.new
+      fifth_pile_cards << EpidemicCard.new
+      sixth_pile_cards << EpidemicCard.new
+
+      @player_deck =  first_pile_cards.shuffle! + second_pile_cards.shuffle! + third_pile_cards.shuffle! + fourth_pile_cards.shuffle! + fifth_pile_cards.shuffle! + sixth_pile_cards.shuffle!
+    end
+  end
+
 
 
   def deal_card(from, number_of_cards = 1)
@@ -235,8 +281,16 @@ class Game
     # Actions
     # Discard card
     elsif from == @player_deck
-    # Actions
-    # Discard card
+      @deal_player_card_number.times do |card_number|
+        taken_card = @player_deck.pop
+        if taken_card.type == :player || taken_card.type = :event
+          #Player gets to keep that card
+          #Check max number of card in hand = 7
+        elsif taken_card.type == :event
+          puts "Epidemic Card"
+        end
+        puts "Player Card size = "+@player_deck.size.to_s
+      end
     end
   end
 
@@ -264,5 +318,8 @@ class Game
     researcher: [:r,"When doing the share knowledge action, the researcher may give any city from her hand to another player in the same city as her, without this card having to match her city. The transfer must be from her hand to the other player's hand, but it can occur on either player's turn."],
     scientist: [:s, "The scientist needs only 4 (not 5) city cards of the same disease color to discover a cure for that disease."]
   }
+
+
+
 
 end
