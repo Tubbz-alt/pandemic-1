@@ -206,8 +206,6 @@ class Game
   def increase_infection_rate
     if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
       @infection_rate_index += 1
-    else
-      raise "Infection Rate is already maxed"
     end
   end
 
@@ -312,6 +310,10 @@ class Game
     existing_cubes = city.color_count
     if existing_cubes + number_of_cubes <= 3
       city.infect(color, number_of_cubes)
+      reduce_color_cube_available(color, number_of_cubes)
+      if lose?
+        game_over?
+      end
     else
       if !lose?
         city.outbreak_happens = true
@@ -329,6 +331,21 @@ class Game
       end
     end
   end
+
+  def reduce_color_cube_available(color, number = 1)
+    case color
+    when :red
+      @red_disease.reduce_cubes_available(number)
+    when :yellow
+      @yellow_disease.reduce_cubes_available(number)
+    when :black
+      @black_disease.reduce_cubes_available(number)
+    when :blue
+      @blue_disease.reduce_cubes_available(number)
+    end
+  end
+
+
 
   INFECTION_RATE_BOARD = [2,2,2,3,3,4,4]
 

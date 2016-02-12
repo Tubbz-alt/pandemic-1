@@ -12,11 +12,11 @@ class Disease
   end
 
   def reduce_cubes_available(number = 1)
-    @cubes_available -= 1
+    @cubes_available -= number
   end
 
   def increase_cubes_available(number = 1)
-    @cubes_available += 1
+    @cubes_available += number
   end
 
   def eradicate
