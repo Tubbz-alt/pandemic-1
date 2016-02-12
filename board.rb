@@ -3,10 +3,11 @@ require_relative "city"
 require_relative "infectioncard"
 require_relative "playercard"
 require_relative "eventcard"
+require_relative "disease"
 
 class Board
 
-  attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaolo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington
+  attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaolo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington, :red_disease, :black_disease, :yellow_disease, :blue_disease
 
   def initialize
     @cities = build_cities
@@ -16,6 +17,7 @@ class Board
     assign_cards(:player)
     assign_cards(:event)
     connect_cities
+    assign_diseases
   end
 
   # Initialize 48 instances of City Class
@@ -122,7 +124,12 @@ class Board
     @washington.add_neighbors([@newyork, @montreal, @atlanta, @miami])
   end
 
-
+  def assign_diseases
+    @red_disease = Disease.new(:red)
+    @yellow_disease = Disease.new(:yellow)
+    @blue_disease = Disease.new(:blue)
+    @black_disease = Disease.new(:black)
+  end
 
 
   #Assign the 48 Player Cards and Infection Cards

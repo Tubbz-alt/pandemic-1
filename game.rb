@@ -5,7 +5,7 @@ require_relative "player"
 class Game
 
   attr_accessor :number_players, :infection_deck, :infection_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease
 
   def initialize
     @number_players = 0
@@ -16,12 +16,16 @@ class Game
 
     @infection_rate_index = 0
     @board = Board.new()
+    @blue_disease = @board.blue_disease
+    @red_disease = @board.red_disease
+    @yellow_disease = @board.yellow_disease
+    @black_disease  =@board.black_disease
     @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
     @infection_discard_pile = []
     # @player_deck = setup_player_deck #Index 0 = Bottom of deck
     @players = []
     @available_roles_to_pick = ROLES.keys.shuffle
-
+    @outbreak_index = 0
     create_players
     prompt_player_info
     determine_deal_player_card_number
@@ -112,8 +116,40 @@ class Game
     end
   end
 
+  def game_over?
+    if win?
+      true
+    elsif lose?
+      true
+    else
+      false
+    end
+  end
+
+  def win?
+    # return all diseases cured
+  end
 
 
+  def lose_on_max_outbreaks?
+    if @outbreak_index < MAX_OUTBREAKS
+      return false
+    else
+      return true
+    end
+  end
+
+  def lose?
+    if lose_on_max_outbreaks?
+      puts "Lose on Max Outbreaks! Game over!"
+      return true
+    end
+    false
+  end
+
+  def increase_outbreak_index
+    @outbreak_index += 1
+  end
 
   def infection_rate #API
     INFECTION_RATE_BOARD[@infection_rate_index]
@@ -172,6 +208,8 @@ class Game
 
 
   INFECTION_RATE_BOARD = [2,2,2,3,3,4,4]
+
+  MAX_OUTBREAKS = 8
 
   ROLES = {
     contingency_planner: [:ct, "The contingency planner may, as an action, take an Event card from anywhere in the Player Discard Pile and place it on his Role Card. Only 1 Event Card can be on his role card at a time. It does not count against his hand limit. When the Contingency Planner plays the Event card on his role card, remove this Event card from the game (instead of discarding it)."],
