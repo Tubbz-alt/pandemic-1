@@ -22,7 +22,7 @@ class Game
     @black_disease  =@board.black_disease
     @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
     @infection_discard_pile = []
-    # @player_deck = setup_player_deck #Index 0 = Bottom of deck
+    @player_deck = setup_player_deck #Index 0 = Bottom of deck
     @players = []
     @available_roles_to_pick = ROLES.keys.shuffle
     @outbreak_index = 0
@@ -104,15 +104,22 @@ class Game
     chosen_role_index = gets.chomp.to_i
     @available_roles_to_pick.shuffle!
     @players[idx].role = @available_roles_to_pick[chosen_role_index-1]
+    @players[idx].pawn = ROLES[@players[idx].role][0]
+    @players[idx].ability = ROLES[@players[idx].role][1]
     @available_roles_to_pick.delete(@players[idx].role)
     puts @players[idx].name.to_s+", your role is "+@players[idx].role.to_s
+    puts "Your pawn symbol is " + @players[idx].pawn.to_s
+    puts "Your special ability is " + @players[idx].ability
     puts
   end
 
 
   def players_info #API
     @players.each_with_index do |player, idx|
-      puts "Player "+(idx+1).to_s+" = "+player.name.to_s+", role = "+player.role.to_s
+      puts
+      puts "Player "+(idx+1).to_s+" = "+player.name.to_s+", role = "+player.role.to_s+". Pawn symbol = "+player.pawn.to_s
+      puts "Player "+(idx+1).to_s+" ability = "+player.ability
+      puts
     end
   end
 
@@ -127,7 +134,10 @@ class Game
   end
 
   def win?
-    # return all diseases cured
+    if @blue_disease.cured == true && @red_disease.cured == true && @yellow_disease.cured == true && @black_disease.cured == true
+      return true
+    end
+    false
   end
 
 
@@ -139,9 +149,43 @@ class Game
     end
   end
 
+  def lose_on_cubes_availability?
+    if @blue_disease.cubes_available == 0
+      puts "No more blue cubes! Game over!"
+      puts
+      return true
+    elsif @red_disease.cubes_available == 0
+      puts "No more red cubes! Game over!"
+      puts
+      return true
+    elsif @yellow_disease.cubes_available == 0
+      puts "No more yellow cubes! Game over!"
+      puts
+      return true
+    elsif @black_disease.cubes_available == 0
+      puts "No more black cubes! Game over!"
+      puts
+      return true
+    end
+    false
+  end
+
+
+  def lose_on_player_cards_availability?
+    @player_deck.size == 0
+  end
+
+
   def lose?
     if lose_on_max_outbreaks?
       puts "Lose on Max Outbreaks! Game over!"
+      puts
+      return true
+    elsif lose_on_cubes_availability?
+      return true
+    elsif lose_on_player_cards_availability?
+      puts "You run out of Player Cards! Game Over!"
+      puts
       return true
     end
     false
@@ -167,11 +211,11 @@ class Game
     @board.infection_cards.shuffle!
   end
 
-  # def setup_player_deck
-  #   @board.player_cards.shuffle!
-  #
-  #
-  # end
+  def setup_player_deck
+    @board.player_cards.shuffle!
+
+
+  end
   #
   # def divide_player_cards_by_epidemic_cards_number
   #   case @epidemic_cards_number

@@ -3,7 +3,7 @@ require_relative 'game'
 
 class Player
 
-  attr_accessor :name, :role, :location, :cards
+  attr_accessor :name, :role, :location, :cards, :pawn, :ability
 
   def initialize(name, role)
     @name = name

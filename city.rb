@@ -47,12 +47,12 @@ class City
     @research_at = false
   end
 
-  def pawn_move_to_city(pawn)
-    @pawns.push(pawn)
+  def pawn_move_to_city(player)
+    @pawns.push(player.pawn)
   end
 
-  def pawn_move_from_city(pawn)
-    @pawns.delete(pawn)
+  def pawn_move_from_city(player)
+    @pawns.delete(player.pawn)
   end
 
   def color_count
