@@ -14,7 +14,7 @@ This document provides documentation to be used to play the Ruby Pandemics. For 
 2. Make sure Ruby is installed by running `ruby -v`.
 3. Install `pry` (if not installed yet) by running `gem install pry`.
 4. Once `pry` is installed, open it by typing `pry`.
-5. Start the game by initiating an object of class Game. See "Starting the game" below
+5. Start the game by initiating an object of class Game. See "Starting the game" below.
 
 ### Starting the game
 
@@ -45,16 +45,17 @@ By Color (then alphabetical)
 
 #### Related to the game state
 
+- `g.players_order` to show the players order (who goes first, etc).
 - `g.player(1)` to show details of player 1.
 - `g.players` to show details of all players.
 - `g.infection_rate` to show the current infection rate.
 - `g.outbreak_index` to show the current outbreak index.
 - `g.black_disease` to show the status of black disease. Other available commands are `g.blue_disease`, `g.red_disease`, and `g.yellow_disease`.
 - `g.research_station_availability` to show available research stations.
-- `g.show_cities(1)` to show cities which number of cubes is 1. Other commands allowed  are `g.show_cities(2)` and `g.show_cities(3)`.
+- `g.show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
 
 #### Related to Cities
 
 - `g.board.algiers.show_info` to show the info of Algier.
 - `g.board.algiers.show_neighbors` to show the info of Algier's neighbors.
-- `g.show_cities(1)` to show cities which number of cubes is 1. Other commands allowed  are `g.show_cities(2)` and `g.show_cities(3)`.
+- `g.show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.

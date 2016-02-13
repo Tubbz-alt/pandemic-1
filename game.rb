@@ -33,7 +33,10 @@ class Game
     move_all_pawns_to_Atlanta_in_setup
 
     deal_9_initial_infection_cards
-
+    players_deal_initial_cards
+    insert_epidemic_cards
+    players_order_setup
+    players_order
   end
 
   def prompt_number_of_players
@@ -44,7 +47,6 @@ class Game
       puts "There are "+@number_players.to_s+" players in this game"
       puts
   end
-
 
   def determine_epidemic_cards_number
     while @epidemic_cards_number == 0 do
@@ -71,7 +73,6 @@ class Game
     puts
   end
 
-
   def determine_deal_player_card_number
     case @number_players
     when 2
@@ -82,7 +83,6 @@ class Game
       @deal_player_card_number = 2
     end
   end
-
 
   def create_players
     @number_players.times do |player_number|
@@ -121,7 +121,6 @@ class Game
     puts
   end
 
-
   def game_over?
     if win?
       true
@@ -138,7 +137,6 @@ class Game
     end
     false
   end
-
 
   def lose_on_max_outbreaks?
     if @outbreak_index < MAX_OUTBREAKS
@@ -179,7 +177,6 @@ class Game
     @player_deck.size == 0
   end
 
-
   def lose?
     if lose_on_max_outbreaks?
       puts "Lose on Max Outbreaks! Game over!"
@@ -214,17 +211,16 @@ class Game
   end
 
   def setup_player_deck
-    insert_epidemic_cards
+    @player_deck = @board.player_cards.shuffle!
   end
 
   def insert_epidemic_cards
-    @board.player_cards.shuffle!
     case @epidemic_cards_number
     when 4
-      first_pile_cards = @board.player_cards[0..12]
-      second_pile_cards = @board.player_cards[13..25]
-      third_pile_cards = @board.player_cards[26..38]
-      fourth_pile_cards = @board.player_cards[39..-1]
+      first_pile_cards = @player_deck[0..10]
+      second_pile_cards = @player_deck[11..21]
+      third_pile_cards = @player_deck[22..32]
+      fourth_pile_cards = @player_deck[33..-1]
 
       first_pile_cards << EpidemicCard.new
       second_pile_cards << EpidemicCard.new
@@ -234,11 +230,11 @@ class Game
       @player_deck =  first_pile_cards.shuffle! + second_pile_cards.shuffle! + third_pile_cards.shuffle! + fourth_pile_cards.shuffle!
 
     when 5
-      first_pile_cards = @board.player_cards[0..10]
-      second_pile_cards = @board.player_cards[11..20]
-      third_pile_cards = @board.player_cards[21..31]
-      fourth_pile_cards = @board.player_cards[32..42]
-      fifth_pile_cards = @board.player_cards[43..-1]
+      first_pile_cards = @player_deck[0..8]
+      second_pile_cards = @player_deck[9..18]
+      third_pile_cards = @player_deck[19..27]
+      fourth_pile_cards = @player_deck[28..37]
+      fifth_pile_cards = @player_deck[38..-1]
 
       first_pile_cards << EpidemicCard.new
       second_pile_cards << EpidemicCard.new
@@ -249,12 +245,12 @@ class Game
       @player_deck =  first_pile_cards.shuffle! + second_pile_cards.shuffle! + third_pile_cards.shuffle! + fourth_pile_cards.shuffle! + fifth_pile_cards.shuffle!
 
     when 6
-      first_pile_cards = @board.player_cards[0..8]
-      second_pile_cards = @board.player_cards[9..17]
-      third_pile_cards = @board.player_cards[18..26]
-      fourth_pile_cards = @board.player_cards[27..36]
-      fifth_pile_cards = @board.player_cards[37..44]
-      sixth_pile_cards = @board.player_cards[45..-1]
+      first_pile_cards = @player_deck[0..6]
+      second_pile_cards = @player_deck[7..13]
+      third_pile_cards = @player_deck[14..21]
+      fourth_pile_cards = @player_deck[22..29]
+      fifth_pile_cards = @player_deck[30..37]
+      sixth_pile_cards = @player_deck[38..-1]
 
       first_pile_cards << EpidemicCard.new
       second_pile_cards << EpidemicCard.new
@@ -267,7 +263,6 @@ class Game
     end
   end
 
-
   def deal_9_initial_infection_cards
     # First 3 cards contain cities which will be infected with 3 cubes of their original colors. Second 3 cards contain cities with 2 cubes. Third 3 cards contain cities with 1 cube.
     3.times do |number|
@@ -278,33 +273,108 @@ class Game
     end
   end
 
-
   def deal_card(from, number_of_cards = 1)
     from.pop(number_of_cards)
   end
 
-  def perform_action(card, number_of_infection = 1)
-    affected_city = @board.cities.select {|city| city.name == card.cityname}
+  def perform_action(card, number_of_infection = 1, player = @players[0])
     if card.type == :infection
+      affected_city = @board.cities.select {|city| city.name == card.cityname}
       perform_infect(affected_city[0], affected_city[0].original_color, number_of_infection)
       @board.cities.each do |city|
         city.outbreak_reset
       end
       @infection_discard_pile << card
-    else
-      @deal_player_card_number.times do |card_number|
-        taken_card = @player_deck.pop
-        if taken_card.type == :player || taken_card.type = :event
-          #Player gets to keep that card
-          #Check max number of card in hand = 7
-        elsif taken_card.type == :epidemic
-          puts "Epidemic Card"
-        end
-        puts "Player Card size = "+@player_deck.size.to_s
+    elsif card.type == :player
+      # build a research_center (action available -= 1), or move_pawns (action available -= 1), or transfer cards (action available -=1).
+    elsif card.type == :event
+      # use the effect of the card.
+    elsif card.type == :epidemic
+      # puts Epidemic action
+    end
+  end
+
+  def put_player_cards_into_hand(dealt_cards, player)
+    player.put_card_into_hand(dealt_cards)
+    dealt_cards.each do |card|
+      card.taken_by_a_player(player)
+    end
+    while player.toss_cards?
+      player_to_discard_in_hand_or_not(player)
+    end
+  end
+
+  def player_to_discard_in_hand_or_not(player)
+    answer_satisfied = false
+    while answer_satisfied!
+      puts player.name.to_s + ", you have 7 cards currently. These are your cards in hand : " + player.cards_in_hand_description.to_s
+      puts "Do you want to discard a card before keeping the one you just dealt? ('y' or 'n')"
+      discard_existing = gets.chomp
+      if discard_existing == 'n'
+        answer_satisfied = true
+        return false
+      elsif discard_existing == "y"
+        answer_satisfied = true
+        decide_which_in_hand_to_discard(player) #includes the action of discarding the card
+        return true
+      else
+        puts "Only input 'y' or 'n'!"
       end
     end
   end
 
+  def decide_which_in_hand_to_discard(player)
+    done = false
+    while !done
+      confirmation_satisfied = false
+      while !confirmation_satisfied
+        to_discard = prompt_discard
+        if player.cards_in_hand_description.flatten.include?(to_discard)
+          puts "Discard " + to_discard + "? ('y' or 'n')"
+          confirmation = gets.chomp
+          if confirmation == 'y'
+            confirmation_satisfied = true
+            card_to_be_discarded = determine_card_in_hand(player, to_discard)
+            player.discard_to_player_discard_pile(card_to_be_discarded)
+            discard_more_confirmation = false
+            while !discard_more_confirmation
+              puts "Do you wish to discard more cards in hand? 'y' or 'n'"
+              discard_more = gets.chomp
+              if discard_more == 'y'
+                discard_more_confirmation = true
+              elsif discard_more == 'n'
+                discard_more_confirmation = true
+                done = true
+              else
+                puts "Only input 'y' or 'n'!"
+              end
+            end
+          elsif confirmation == 'n'
+            confirmation_satisfied = true
+            puts "Card hasn't been discarded."
+          else
+            puts "Please only enter 'y' or 'n'!"
+          end
+        else
+          puts "That input doesn't match cards in your hand."
+        end
+      end
+    end
+  end
+
+  def prompt_discard
+    print "So you decided to discard existing card in hand. Indicate which one you'd like to discard by typing the city name or event name as they appeared (as string with correct capitalization)!"
+    to_discard = gets.chomp
+  end
+
+  def determine_card_in_hand(player, card_id_string)
+    if player.names_of_player_cards_in_hand.include?(card_id_string)
+      chosen_card = player.player_cards_in_hand.select {|card| card.cityname == card_id_string}
+    elsif player.desc_of_event_cards_in_hand.include?(card_id_string)
+      chosen_card = player.event_cards_in_hand.select {|card| card.event.to_s == card_id_string}
+    end
+    return chosen_card[0]
+  end
 
   def perform_infect(city, color, number_of_cubes)
     existing_cubes = city.color_count
@@ -345,6 +415,28 @@ class Game
     end
   end
 
+  def players_deal_initial_cards
+    @players.each do |player|
+      cards_dealt = deal_card(@player_deck, @deal_player_card_number)
+      put_player_cards_into_hand(cards_dealt, player)
+    end
+  end
+
+  def players_order_setup
+    population_ordered_by_player_no = []
+    @players.each do |player|
+      population_ordered_by_player_no << player.highest_population
+    end
+    sorted = population_ordered_by_player_no.sort {|a,b| b<=>a}
+    new_players_order_array = []
+    sorted.each do |population|
+      @players.each do |player|
+        new_players_order_array << player if player.highest_population == population
+      end
+    end
+    @players = new_players_order_array
+  end
+
 
 
   INFECTION_RATE_BOARD = [2,2,2,3,3,4,4]
@@ -361,13 +453,37 @@ class Game
     scientist: ["⚗", "The scientist needs only 4 (not 5) city cards of the same disease color to discover a cure for that disease."]
   }
 
+  def players_order #CommandLine
+    names = @players.collect {|player| player.name}
+    puts "The player order based on highest population on each hand (first means first turn or player 1): " + names.to_s
+  end
+
   def player(number) #CommandLine
     return @players[number-1]
   end
 
-  def show_cities(number_of_infection) #CommandLine
-    cities = @board.cities.select {|city| city.color_count == number_of_infection}
-    cities.collect {|city| city.name}
+  def show_cities(number_of_infection = 0)#CommandLine
+    if number_of_infection == 0
+      number_array = (1..3).to_a
+      cities = []
+      result = []
+      number_array.each do |number|
+        cities += @board.cities.select {|city| city.color_count == number}
+      end
+      cities.each do |city|
+        result << [city.name.to_s + " : " + city.color_count.to_s]
+      end
+      return result
+    else
+      if number_of_infection < 0 || number_of_infection > 3
+        puts "Only input 1, 2 or 3, or no numbers at all"
+      else
+        cities = @board.cities.select {|city| city.color_count == number_of_infection}
+        cities.collect {|city| city.name}
+      end
+    end
   end
+
+
 
 end

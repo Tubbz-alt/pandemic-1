@@ -14,7 +14,7 @@ class Board
     build_cities
 
     @cities = [@algiers, @atlanta, @baghdad, @bangkok, @beijing, @bogota, @buenosaires, @cairo, @chennai, @chicago, @delhi, @essen, @hochiminh, @istanbul, @jakarta, @johannesburg, @hongkong, @karachi, @khartoum, @kinshasa, @kolkata, @lagos, @lima, @london, @losangeles, @manila, @madrid, @mexicocity, @miami, @milan, @montreal, @moscow, @mumbai, @newyork, @osaka, @paris, @riyadh, @sanfrancisco, @santiago, @saopaolo, @seoul, @shanghai, @stpetersburg, @sydney, @taipei, @tehran, @tokyo, @washington]
-    
+
     @infection_cards = []
     @player_cards = []
     assign_cards(:infection)
@@ -143,7 +143,7 @@ class Board
         if type == :infection
           @infection_cards << InfectionCard.new(city.name)
         else
-          @player_cards << PlayerCard.new(city.name, city.original_color)
+          @player_cards << PlayerCard.new(city.name, city.original_color, city.population)
         end
       end
     end
