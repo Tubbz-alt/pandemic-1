@@ -25,7 +25,6 @@ class City
     else
       @research_st = false
     end
-    @research_station_availability = 5
   end
 
   def add_neighbors(neighbors)
@@ -45,7 +44,7 @@ class City
   end
 
   def remove_research_st
-    @research_at = false
+    @research_st = false
   end
 
   def pawn_move_to_city(player)

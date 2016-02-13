@@ -22,6 +22,8 @@ class Board
     assign_cards(:event)
     connect_cities
     assign_diseases
+    @research_station_build = self.count_research_station
+    @research_station_available = MAX_RESEARCH_STATION - @research_station_build
   end
 
   # Initialize 48 instances of City Class
@@ -135,6 +137,21 @@ class Board
     @black_disease = Disease.new(:black)
   end
 
+  def research_st_cities #CommandLine
+    city_names = []
+    self.research_station_cities.each {|city| city_names << city.name}
+    city_names 
+  end
+
+  def research_station_cities
+    r_s_c = []
+    @cities.each do |city|
+      if city.research_st
+        r_s_c << city
+      end
+    end
+    r_s_c
+  end
 
   #Assign the 48 Player Cards and Infection Cards
   def assign_cards(type)
@@ -154,6 +171,9 @@ class Board
     end
   end
 
+  def count_research_station
+    self.research_station_cities.length
+  end
 
   EVENT_CARDS = {
     Resilient_Population: "Play at anytime, Not an action. Remove any 1 card in the infection dicard pile from the Game. You may play this between the infect and intensify steps of an epidemic.",
@@ -162,5 +182,7 @@ class Board
     One_Quiet_Night: "Play at anytime, Not an action. Skip the next infect cities step (do not flip over any infection cards).",
     Forecast: "Play at anytime, Not an action. Draw, look at, and rearrange the top 6 cards of the infection deck. Put them back on top."
   }
+
+  MAX_RESEARCH_STATION = 6
 
 end
