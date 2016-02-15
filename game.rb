@@ -288,14 +288,115 @@ class Game
     elsif card.type == :player
       # build a research_center (action available -= 1), or move_pawns (action available -= 1), or transfer cards (action available -=1).
     elsif card.type == :event
-      # use the effect of the card.
+      perform_event_cards(card, player)
+      player.discard_to_player_discard_pile(card)
     elsif card.type == :epidemic
       # puts Epidemic action
     end
   end
 
+  def perform_event_cards(card, player)
+    case card.event
+    when :Resilient_Population
+      discarded_city = prompt_for_which_resilient_city
+      discarded_city.remove_from_game
+      @infection_discard_pile.delete(discarded_city)
+      puts discarded_city.cityname + " infection card is removed from the infection discard pile (and the game)."
+    when :Government_Grant
+      research_st_city = prompt_for_which_research_station_city
+      if @board.research_station_available > 0
+        research_st_city.build_research_st
+        puts "A research station has been built in "+research_st_city.name
+        puts "Updated cities with research station : " + @board.research_st_cities.to_s
+        puts
+      else
+        puts "You have built 6 research stations (max). There are currently a research station in each of the following cities : " + @board.research_st_cities.to_s
+        research_st_city = prompt_for_confirmation_to_build_research_station
+        research_st_city.build_research_st
+        puts "A research station has been built in "+research_st_city.name
+        puts "Updated cities with research station : " + @board.research_st_cities.to_s
+        puts
+      end
+    when :Airlift
+      perform_airlift(player, airlifted_player, city)
+    when :One_Quiet_Night
+      perform_one_quiet_night(player)
+    when :Forecast
+      perform_forecast(player)
+    end
+  end
+
+  def prompt_for_confirmation_to_build_research_station
+    confirmation = false
+    while !confirmation
+      puts "Are you sure you want to build a new research station? 'y' or 'n'"
+      answer = gets.chomp
+      if answer == 'n'
+        confirmation = true
+        puts 'You have cancelled building a research station, event card usage is cancelled. Player keeps this card in your hand.'
+      elsif answer == 'y'
+        confirmation = true
+        removed_city = prompt_for_which_research_station_city_removed
+        removed_city.remove_research_st
+        selected_city = prompt_for_which_research_station_city
+      else
+        puts "Only input 'y' or 'n'!"
+      end
+    end
+  end
+
+
+
+  def prompt_for_which_research_station_city_removed
+    satisfied = false
+    while !satisified
+      puts "Please decide a city from which a research station is removed"
+      answer_city = gets.chomp
+      removed_city = @board.cities.select {|city| city.name == answer_city}
+      if removed_city.size != 0 && removed_city[0].research_st
+        satisfied = true
+      elsif !removed_city.research_st
+        puts "That city doesn't have a research station to remove from, choose another city that has a research station to remove from!"
+      else
+        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+      end
+    end
+  end
+
+
+
+  def prompt_for_which_research_station_city
+    satisfied = false
+    while !satisfied
+      puts "Which city to build research city in?"
+      answer = gets.chomp
+      selected_city = @board.cities.select {|city| city.name == answer}
+      if selected_city.size != 0 && !selected_city.research_st
+        satisfied = true
+      elsif selected_city.research_st
+        puts "That city already has a research station, choose another city that doesn't have a research station yet!"
+      else
+        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+      end
+    end
+    return selected_city[0]
+  end
+
+
+  def prompt_for_which_resilient_city
+    satisfied = false
+    while !satisfied
+      puts "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile."
+      answer = gets.chomp
+      selected_city = @infection_discard_pile.select {|card| card.cityname == answer}
+      satisfied = true if selected_city.size != 0
+    end
+    return selected_city[0]
+  end
+
+
   def put_player_cards_into_hand(dealt_cards, player)
-    player.put_card_into_hand(dealt_cards)
+    player.put_cards_into_hand(dealt_cards)
     dealt_cards.each do |card|
       card.taken_by_a_player(player)
     end
@@ -484,6 +585,8 @@ class Game
     end
   end
 
-
+  def research_st_cities #CommandLine
+    @board.research_st_cities
+  end
 
 end

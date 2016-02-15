@@ -22,8 +22,8 @@ class Board
     assign_cards(:event)
     connect_cities
     assign_diseases
-    @research_station_build = self.count_research_station
-    @research_station_available = MAX_RESEARCH_STATION - @research_station_build
+    @research_station_built = self.count_research_station
+    @research_station_available = MAX_RESEARCH_STATION - @research_station_built
   end
 
   # Initialize 48 instances of City Class
@@ -140,7 +140,7 @@ class Board
   def research_st_cities #CommandLine
     city_names = []
     self.research_station_cities.each {|city| city_names << city.name}
-    city_names 
+    city_names
   end
 
   def research_station_cities

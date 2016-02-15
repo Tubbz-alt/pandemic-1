@@ -14,4 +14,8 @@ class InfectionCard
     @deck = :infection_discard_pile
   end
 
+  def remove_from_game
+    @deck = :not_in_game
+  end
+
 end

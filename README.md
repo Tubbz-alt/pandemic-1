@@ -70,7 +70,7 @@ By Color (then alphabetical)
 - `g.black_disease` to show the status of black disease. Other available commands are `g.blue_disease`, `g.red_disease`, and `g.yellow_disease`.
 - `g.research_station_availability` to show available research stations.
 - `g.show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
-- `g.board.research_st_cities` to show cities with research stations.
+- `g.research_st_cities` to show cities with research stations.
 
 #### Related to Cities
 

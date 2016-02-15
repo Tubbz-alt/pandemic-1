@@ -12,6 +12,10 @@ class Player
     @location = "Atlanta"
   end
 
+  def city_with_name(cityname_in_string)
+
+  end
+
   def move_pawn(player = self, destination)
     @location = destination.name
   end
@@ -29,7 +33,7 @@ class Player
     #unless it's event card that's taken by the contingency_planner
   end
 
-  def put_card_into_hand(cards)
+  def put_cards_into_hand(cards)
     @cards += cards
   end
 
