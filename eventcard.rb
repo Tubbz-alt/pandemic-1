@@ -25,11 +25,7 @@ class EventCard
     @value = 0
   end
 
-  def perform_airlift(performer_player, airlifted_player, city)
-    performer_player.move_pawn(airlifted_player, city)
-
-  end
-
+  
   def perform_one_quiet_night(player)
 
   end
