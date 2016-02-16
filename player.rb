@@ -66,7 +66,6 @@ class Player
   end
 
   def discard_to_player_discard_pile(card)
-    card.discard_to_player_discard_pile
     @cards.delete(card)
   end
 

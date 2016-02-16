@@ -10,11 +10,7 @@ class Game
   attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck
 
   def initialize
-    @number_players = 0
-    prompt_number_of_players
-
-    @epidemic_cards_number = 0
-    determine_epidemic_cards_number
+    player_creation
 
     @infection_rate_index = 0
     @board = Board.new()
@@ -25,24 +21,41 @@ class Game
     @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
     @infection_discard_pile = []
     setup_player_deck #Returns @player_deck which index 0 = Bottom of deck
-    @players = []
-    @available_roles_to_pick = ROLES.keys.shuffle
-    @outbreak_index = 0
-    create_players
-    prompt_player_info
-    determine_deal_player_card_number
 
-    @game_player = Player.new("game", :moderator)
+    @outbreak_index = 0
+
+    @moderator = Player.new("game", :moderator)
     @mech = Mechanism.new(self)
 
-    move_all_pawns_to_Atlanta_in_setup
+    game_setup
 
+  end
+
+  def player_creation
+    @players = []
+    @available_roles_to_pick = ROLES.keys.shuffle
+    @number_players = 0
+
+    prompt_number_of_players
+
+    @epidemic_cards_number = 0
+    determine_epidemic_cards_number
+
+    determine_deal_player_card_number
+    create_players
+    prompt_player_info
+
+  end
+
+  def game_setup
+    move_all_pawns_to_Atlanta_in_setup
     deal_9_initial_infection_cards
     players_deal_initial_cards
     insert_epidemic_cards
     players_order_setup
     players_order
   end
+
 
   def prompt_number_of_players
     while @number_players < 2 or @number_players > 5 do
@@ -174,7 +187,7 @@ class Game
 
   def move_all_pawns_to_Atlanta_in_setup
     @players.each do |player|
-      @mech.move_player(@game_player, "Atlanta", player)
+      @mech.move_player(@moderator, "Atlanta", player)
     end
   end
 
@@ -294,7 +307,7 @@ class Game
       # build a research_center (action available -= 1), or move_pawns (action available -= 1), or transfer cards (action available -=1).
     elsif card.type == :event
       perform_event_cards(card, player)
-      player.discard_to_player_discard_pile(card)
+      @mech.discard_to_player_discard_pile(player, card)
     elsif card.type == :epidemic
       # puts Epidemic action
     end
@@ -516,7 +529,7 @@ class Game
     puts player.name.to_s + ", you have more than 7 cards currently. These are your cards in hand : " + player.cards_in_hand_description.to_s
     puts "Let's discard cards one by one."
     card_discarded = prompt_card_to_discard(player)
-    player.discard_to_player_discard_pile(card_discarded)
+    @mech.discard_to_player_discard_pile(player, card_discarded)
     puts card_discarded.cityname + " has been discarded to Player Discard Pile." if card_discarded.type == :player
     puts card_discarded.event + " has been discarded to Player Discard Pile." if card_discarded.type == :event
   end

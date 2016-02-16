@@ -175,6 +175,14 @@ class Board
     self.research_station_cities.length
   end
 
+  def player_cards_city_names
+    names = @player_cards.select {|card| card.type == :player}
+  end
+
+  def player_card_event_names
+    events = @player_cards.select {|card| card.type == :event}
+  end
+
   EVENT_CARDS = {
     Resilient_Population: "Play at anytime, Not an action. Remove any 1 card in the infection dicard pile from the Game. You may play this between the infect and intensify steps of an epidemic.",
     Government_Grant: "Play at anytime, Not an action. Add 1 research station to any city (no city card needed).",

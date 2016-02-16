@@ -7,8 +7,29 @@ class Mechanism
   attr_reader
 
   def initialize(game)
-    @board = game.board
+    @game = game
+    @board = @game.board
   end
+
+  def string_to_player(string)
+    player = @game.players.select {|player| player.name == string}
+    return player[0]
+  end
+
+  def string_to_player_card(string)
+    if @board.player_card_event_names.include?(string)
+      card = @board.player_cards.select {|card| card.event == string.to_sym}
+    else
+      card = @board.player_cards.select {|card| card.name == string}
+    end
+    return card[0]
+  end
+
+  def string_to_infection_card(string)
+    card = @board.infection_cards.select {|card| card.cityname == string}
+    return card[0]
+  end
+
 
   def string_to_city(string)
     city = @board.cities.select {|city| city.name == string}
@@ -23,6 +44,13 @@ class Mechanism
     to.pawn_move_to_city(moved)
   end
 
+  def deal_cards(from, number = 1, player)
+    from.pop(number)
+  end
 
+  def discard_card_from_player_hand(player, card)
+    player.discard_to_player_discard_pile(card)
+    card.discard_to_player_discard_pile
+  end
 
 end
