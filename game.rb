@@ -421,7 +421,7 @@ class Game
       airlifted_player = @players.select {|player| player.name == answer}
       if airlifted_player.size != 0
         confirmation = true
-        puts airlifted_player.name + " is chosen."
+        puts airlifted_player[0].name + " is chosen."
       else
         puts "Please input the correct player's name. Use g.players to get a list of players info"
       end
@@ -445,6 +445,8 @@ class Game
         removed_city = prompt_for_which_research_station_city_removed
         removed_city.remove_research_st
         selected_city = prompt_for_which_research_station_city
+        selected_city.build_research_st
+        puts "Research station has been removed from " + removed_city.name + " and a research station has been built in " + selected_city.name
       else
         puts "Only input 'y' or 'n'!"
       end
@@ -455,18 +457,19 @@ class Game
 
   def prompt_for_which_research_station_city_removed
     satisfied = false
-    while !satisified
+    while !satisfied
       puts "Please decide a city from which a research station is removed"
       answer_city = gets.chomp
       removed_city = @board.cities.select {|city| city.name == answer_city}
-      if removed_city.size != 0 && removed_city[0].research_st
-        satisfied = true
-      elsif !removed_city.research_st
+      if removed_city.size == 0
+        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+      elsif removed_city.size == 1 && !removed_city[0].research_st
         puts "That city doesn't have a research station to remove from, choose another city that has a research station to remove from!"
       else
-        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+        satisfied = true
       end
     end
+    removed_city[0]
   end
 
 
@@ -477,9 +480,9 @@ class Game
       puts "Which city to build research city in?"
       answer = gets.chomp
       selected_city = @board.cities.select {|city| city.name == answer}
-      if selected_city.size != 0 && !selected_city.research_st
+      if selected_city.size != 0 && !selected_city[0].research_st
         satisfied = true
-      elsif selected_city.research_st
+      elsif selected_city[0].research_st
         puts "That city already has a research station, choose another city that doesn't have a research station yet!"
       else
         puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
