@@ -318,13 +318,61 @@ class Game
         puts
       end
     when :Airlift
-      perform_airlift(player, airlifted_player, city)
+      airlifted_player = prompt_whom_to_be_airlifted
+      destination = prompt_where_to_airlift(airlifted_player)
+      current_city = determine_current_city(airlifted_player)
+      current_city.pawn_move_from_city(airlifted_player)
+      destination.pawn_move_to_city(airlifted_player)
+      player.move_pawn(airlifted_player, destination) 
+
     when :One_Quiet_Night
       perform_one_quiet_night(player)
     when :Forecast
       perform_forecast(player)
     end
   end
+
+
+  def determine_current_city(player)
+    city_string = player.location
+    current_city = @board.cities.select {|city| city.name == city_string}
+    current_city[0]
+  end
+
+  def prompt_where_to_airlift(airlifted_player)
+    confirmation = false
+    while !confirmation
+      puts "Where do you want to airlift " + airlifted_player.name + " to? Input city name!"
+      answer = gets.chomp
+      destination = @board.cities.select {|city| city.name == answer}
+      if destination.size != 0
+        confirmation = true
+        airlifted_player.name + " is airlifted from " airlifted_player.location + " to " + destination[0].name
+      else
+        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+      end
+    end
+    destination[0]
+  end
+
+  def prompt_whom_to_be_airlifted
+    confirmation = false
+    while !confirmation
+      puts "You chose airlift event, which player's name do you wish to be airlifted?"
+      answer = gets.chomp
+      airlifted_player = @players.select {|player| player.name == answer}
+      if airlifted_player.size != 0
+        confirmation = true
+        puts airlifted_player.name + " is chosen."
+      else
+        puts "Please input the correct player's name. Use g.players to get a list of players info"
+      end
+    end
+    airlifted_player[0]
+  end
+
+
+
 
   def prompt_for_confirmation_to_build_research_station
     confirmation = false

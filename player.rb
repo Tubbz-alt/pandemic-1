@@ -17,7 +17,7 @@ class Player
   end
 
   def move_pawn(player = self, destination)
-    @location = destination.name
+    player.location = destination.name
   end
 
   def cards_count

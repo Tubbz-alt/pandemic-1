@@ -25,30 +25,6 @@ class EventCard
     @value = 0
   end
 
-  def perform(event, player, city_research_center = 0, airlifted_player = 0)
-    case event
-    when :Resilient_Population
-      perform_resilient_population(player, city)
-    when :Government_Grant
-      perform_government_grant(player, city_research_center)
-    when :Airlift
-      perform_airlift(player, airlifted_player, city)
-    when :One_Quiet_Night
-      perform_one_quiet_night(player)
-    when :Forecast
-      perform_forecast(player)
-    end
-  end
-
-
-  def perform_resilient_population(player, city)
-
-  end
-
-  def perform_government_grant(player, city)
-
-  end
-
   def perform_airlift(performer_player, airlifted_player, city)
     performer_player.move_pawn(airlifted_player, city)
 
