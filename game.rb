@@ -2,6 +2,7 @@
 require_relative "board"
 require_relative "player"
 require_relative "epidemiccard"
+require_relative "mechanism"
 
 class Game
 
@@ -30,6 +31,10 @@ class Game
     create_players
     prompt_player_info
     determine_deal_player_card_number
+
+    @game_player = Player.new("game", :moderator)
+    @mech = Mechanism.new(self)
+
     move_all_pawns_to_Atlanta_in_setup
 
     deal_9_initial_infection_cards
@@ -169,7 +174,7 @@ class Game
 
   def move_all_pawns_to_Atlanta_in_setup
     @players.each do |player|
-      @board.atlanta.pawn_move_to_city(player)
+      @mech.move_player(@game_player, "Atlanta", player)
     end
   end
 
@@ -323,7 +328,7 @@ class Game
       current_city = determine_current_city(airlifted_player)
       current_city.pawn_move_from_city(airlifted_player)
       destination.pawn_move_to_city(airlifted_player)
-      player.move_pawn(airlifted_player, destination)
+      player.move_pawn(destination, airlifted_player)
     when :One_Quiet_Night
       perform_one_quiet_night(player)
     when :Forecast
@@ -343,7 +348,6 @@ class Game
       end
     end
   end
-
 
   def perform_forecast
     top_6_infection_cards = deal_card(@infection_deck, 6)
@@ -384,7 +388,6 @@ class Game
     puts "These 6 cards have been returned to the top of the infection deck. Their order, from the bottom of the deck, is :"
     new_6.each {|card| puts card.cityname}
   end
-
 
   def city_forecast(card)
     city = @board.cities.select {|city| city.name == card.cityname}
@@ -429,9 +432,6 @@ class Game
     airlifted_player[0]
   end
 
-
-
-
   def prompt_for_confirmation_to_build_research_station
     confirmation = false
     while !confirmation
@@ -453,8 +453,6 @@ class Game
     end
   end
 
-
-
   def prompt_for_which_research_station_city_removed
     satisfied = false
     while !satisfied
@@ -471,8 +469,6 @@ class Game
     end
     removed_city[0]
   end
-
-
 
   def prompt_for_which_research_station_city
     satisfied = false
@@ -491,7 +487,6 @@ class Game
     return selected_city[0]
   end
 
-
   def prompt_for_which_resilient_city
     satisfied = false
     while !satisfied
@@ -499,89 +494,48 @@ class Game
       answer = gets.chomp
       selected_city = @infection_discard_pile.select {|card| card.cityname == answer}
       satisfied = true if selected_city.size != 0
+      puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St" if selected_city.size == 0
     end
     return selected_city[0]
   end
 
-
   def put_player_cards_into_hand(dealt_cards, player)
     player.put_cards_into_hand(dealt_cards)
+    if player.has_epidemic_card?
+      puts "You got an epidemic card!"
+    end
     dealt_cards.each do |card|
       card.taken_by_a_player(player)
     end
     while player.toss_cards?
-      player_to_discard_in_hand_or_not(player)
+      player_to_discard_in_hand(player)
     end
   end
 
-  def player_to_discard_in_hand_or_not(player)
-    answer_satisfied = false
-    while answer_satisfied!
-      puts player.name.to_s + ", you have 7 cards currently. These are your cards in hand : " + player.cards_in_hand_description.to_s
-      puts "Do you want to discard a card before keeping the one you just dealt? ('y' or 'n')"
-      discard_existing = gets.chomp
-      if discard_existing == 'n'
-        answer_satisfied = true
-        return false
-      elsif discard_existing == "y"
-        answer_satisfied = true
-        decide_which_in_hand_to_discard(player) #includes the action of discarding the card
-        return true
-      else
-        puts "Only input 'y' or 'n'!"
+  def player_to_discard_in_hand(player)
+    puts player.name.to_s + ", you have more than 7 cards currently. These are your cards in hand : " + player.cards_in_hand_description.to_s
+    puts "Let's discard cards one by one."
+    card_discarded = prompt_card_to_discard(player)
+    player.discard_to_player_discard_pile(card_discarded)
+    puts card_discarded.cityname + " has been discarded to Player Discard Pile." if card_discarded.type == :player
+    puts card_discarded.event + " has been discarded to Player Discard Pile." if card_discarded.type == :event
+  end
+
+  def prompt_card_to_discard(player)
+    satisfied = false
+    while !satisfied
+      puts "Pick a card event or city name to discard!"
+      card_id_string = gets.chomp
+      if player.names_of_player_cards_in_hand.include?(card_id_string)
+        chosen_card = player.player_cards_in_hand.select {|card| card.cityname == card_id_string}
+      elsif player.desc_of_event_cards_in_hand.include?(card_id_string)
+        chosen_card = player.event_cards_in_hand.select {|card| card.event.to_s == card_id_string}
       end
-    end
-  end
-
-  def decide_which_in_hand_to_discard(player)
-    done = false
-    while !done
-      confirmation_satisfied = false
-      while !confirmation_satisfied
-        to_discard = prompt_discard
-        if player.cards_in_hand_description.flatten.include?(to_discard)
-          puts "Discard " + to_discard + "? ('y' or 'n')"
-          confirmation = gets.chomp
-          if confirmation == 'y'
-            confirmation_satisfied = true
-            card_to_be_discarded = determine_card_in_hand(player, to_discard)
-            player.discard_to_player_discard_pile(card_to_be_discarded)
-            discard_more_confirmation = false
-            while !discard_more_confirmation
-              puts "Do you wish to discard more cards in hand? 'y' or 'n'"
-              discard_more = gets.chomp
-              if discard_more == 'y'
-                discard_more_confirmation = true
-              elsif discard_more == 'n'
-                discard_more_confirmation = true
-                done = true
-              else
-                puts "Only input 'y' or 'n'!"
-              end
-            end
-          elsif confirmation == 'n'
-            confirmation_satisfied = true
-            puts "Card hasn't been discarded."
-          else
-            puts "Please only enter 'y' or 'n'!"
-          end
-        else
-          puts "That input doesn't match cards in your hand."
-        end
+      if chosen_card.size == 0
+        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+      else chosen_card.size == 1
+        satisfied = true
       end
-    end
-  end
-
-  def prompt_discard
-    print "So you decided to discard existing card in hand. Indicate which one you'd like to discard by typing the city name or event name as they appeared (as string with correct capitalization)!"
-    to_discard = gets.chomp
-  end
-
-  def determine_card_in_hand(player, card_id_string)
-    if player.names_of_player_cards_in_hand.include?(card_id_string)
-      chosen_card = player.player_cards_in_hand.select {|card| card.cityname == card_id_string}
-    elsif player.desc_of_event_cards_in_hand.include?(card_id_string)
-      chosen_card = player.event_cards_in_hand.select {|card| card.event.to_s == card_id_string}
     end
     return chosen_card[0]
   end

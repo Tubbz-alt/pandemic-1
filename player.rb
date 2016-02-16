@@ -12,8 +12,8 @@ class Player
     @location = "Atlanta"
   end
 
-  def move_pawn(player = self, destination)
-    player.location = destination.name
+  def move_pawn(destination, moved = self)
+    moved.location = destination.name
   end
 
   def cards_count
@@ -22,6 +22,12 @@ class Player
       count += card.value
     end
     return count
+  end
+
+  def has_epidemic_card?
+    epi = @cards.select {|card| card.type == :epidemic}
+    return true if epi.size >= 1
+    false
   end
 
   def toss_cards?
@@ -42,17 +48,21 @@ class Player
   end
 
   def names_of_player_cards_in_hand
+    player_cards_ih = player_cards_in_hand
     card_names = []
-    self.player_cards_in_hand.each do |card|
+    player_cards_ih.each do |card|
       card_names << card.cityname
     end
+    card_names
   end
 
   def desc_of_event_cards_in_hand
+    card_event_ih = event_cards_in_hand
     card_events = []
-    self.event_cards_in_hand.each do |card|
+    event_cards_ih.each do |card|
       card_events << card.event.to_s
     end
+    card_events
   end
 
   def discard_to_player_discard_pile(card)
