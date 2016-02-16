@@ -12,10 +12,6 @@ class Player
     @location = "Atlanta"
   end
 
-  def city_with_name(cityname_in_string)
-
-  end
-
   def move_pawn(player = self, destination)
     player.location = destination.name
   end

@@ -334,7 +334,7 @@ class Game
         if answer == 'y'
           confirmation = true
           perform_forecast
-        elsif answer ='n'
+        elsif answer =='n'
           puts "Forecast cancelled"
           confirmation = true
         else
@@ -347,14 +347,17 @@ class Game
 
   def perform_forecast
     top_6_infection_cards = deal_card(@infection_deck, 6)
-    puts "The 6 cards at the top of the infection deck is : " + top_6_infection_cards.each_with_index do |card, idx|
-      puts card.cityname + ", index = " (idx+1).to_s
+    puts "The 6 cards at the top of the infection deck is : "
+    top_6_infection_cards.each_with_index do |card, idx|
+      puts card.cityname + ", index = " + (idx+1).to_s
     end
-    puts "The state of these cities are :"
-    @top_6_infection_cards.each do |card|
+    puts "The state of these cities are : "
+    top_6_infection_cards.each do |card|
       city = city_forecast(card)
-      puts city.name + " : " + city.color_count.to_s +". Neighbors : "
-      city.show_neighbors
+      print city.name + " : " + city.color_count.to_s + ". Neighbors : "
+      neighbors_states = ""
+      city.neighbors.each {|neighbor| neighbors_states += (neighbor.name + " : " + neighbor.color_count.to_s + ". ")}
+      puts neighbors_states
       puts
     end
     new_6 = []
@@ -379,7 +382,7 @@ class Game
     new_6 << top_6_infection_cards[new5-1]
     @infection_deck += new_6
     puts "These 6 cards have been returned to the top of the infection deck. Their order, from the bottom of the deck, is :"
-    new_6.each do {|card| puts card.cityname}
+    new_6.each {|card| puts card.cityname}
   end
 
 
@@ -402,7 +405,7 @@ class Game
       destination = @board.cities.select {|city| city.name == answer}
       if destination.size != 0
         confirmation = true
-        airlifted_player.name + " is airlifted from " airlifted_player.location + " to " + destination[0].name
+        airlifted_player.name + " is airlifted from " + airlifted_player.location + " to " + destination[0].name
       else
         puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
       end
