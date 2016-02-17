@@ -57,7 +57,8 @@ class Action
       build_a_research_st(@player)
       @action_reduction = 1
     when 6
-
+      treat_disease(@player)
+      @action_reduction = 1
     when 7
 
     when 8
@@ -75,20 +76,36 @@ class Action
 
     when 14
 
+    when 15
+
+    when 16
+
+    when 17
+
     end
   end
 
+  def medic_automatic_treat_cured(player, city)
+    if player.role == :medic
+      treat_disease(moved, :black)
+      treat_disease(moved, :blue)
+      treat_disease(moved, :yellow)
+      treat_disease(moved, :red)
+    end
+    puts "All cubes of cured diseases have been treated in this city by the medic without additional action."
+    puts
+  end
 
   def drive(player) #neighboring city movement
     satisfied = false
     while !satisfied
       puts "Where to drive / ferry?"
       destination_string = gets.chomp
-
+      destination = @mech.string_to_city(destination_string)
       moved = dispatcher_posibility(player)
 
       neighbors = @player_location.neighbors
-      if neighbors.include?(@mech.string_to_city(destination_string))
+      if neighbors.include?(destination)
         satisfied = true
         @mech.move_player(player, @mech.string_to_city(answer), moved)
         puts "Drove / Ferried to " + destination_string
@@ -96,6 +113,9 @@ class Action
         puts "Neighbor city unrecognized."
       end
     end
+
+    medic_automatic_treat_cured(moved, destination) if moved.role == :medic
+
   end
 
   def direct_flight(player) #discard a city card to move to city named on the card
@@ -117,6 +137,7 @@ class Action
         puts "You don't have that player card with that city name. Try again."
       end
     end
+    medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
   end
 
   def dispatcher_posibility(player)
@@ -142,7 +163,6 @@ class Action
     if !player.cards.include?(charter_flight_card)
       return "You can't do charter flight as you don't have the card with the moved player's current city name"
     else
-
       satisfied = false
       while !satisfied
         puts "Where to charter flight?"
@@ -159,6 +179,8 @@ class Action
         end
       end
     end
+
+    medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
   end
 
   def shuttle_flight(player) #move from a research station to another research station
@@ -180,6 +202,7 @@ class Action
         puts "That's not a valid destination. Try again."
       end
     end
+    medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
   end
 
   def build_a_research_st(player, use_card = true)
@@ -214,8 +237,41 @@ class Action
     end
   end
 
-  def treat_disease
+  def treat_disease(player, color = :no_color, number = 0)
 
+    city = @mech.string_to_city(player.location)
+
+    if color == :no_color
+      color_satisified = false
+      while !color_satisified
+        puts city.name + " has the the following cubes (red, black, blue, yellow) : " + city.red.to_s + ", " + city.black.to_s + ", " + city.blue.to_s + ", " + city.yellow.to_s
+        puts "Which color do you want to treat?"
+        answer = gets.chomp.to_sym
+        if answer == :blue || answer == :red || answer == :yellow || answer == :black
+          color = answer
+          color_satisified = true
+        else
+          puts "Color unrecognized. All lowercase."
+        end
+      end
+    end
+
+    case color
+    when :black
+      var_in_game_class = @game.black_disease
+    when :blue
+      var_in_game_class = @game.blue_disease
+    when :yellow
+      var_in_game_class = @game.yellow_disease
+    when :red
+      var_in_game_class = @game.red_disease
+    end
+
+    if var_in_game_class.cured
+      @mech.treat(player, city, color, var_in_game_class, true)
+    else
+      @mech.treat(player, city, color, var_in_game_class, false, number)
+    end
   end
 
   def share_knowledge

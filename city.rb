@@ -98,7 +98,7 @@ class City
       initial = @black
       @black = 0
     when :blue
-      initial @blue
+      initial = @blue
       @blue = 0
     end
     return initial

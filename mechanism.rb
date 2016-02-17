@@ -51,23 +51,17 @@ class Mechanism
     card.discard_to_player_discard_pile
   end
 
-  def treat(player, city, color, number = 1)
-    case color
-    when :black
-      var_in_game_class = @game.black_disease
-    when :blue
-      var_in_game_class = @game.blue_disease
-    when :yellow
-      var_in_game_class = @game.yellow_disease
-    when :red
-      var_in_game_class = @game.red_disease
-    end
+  def treat(player, city, color, var_in_game_class, reset, number = 0)
+    #reset means all cubes of that color is removed in a treat.
+    reset = true if player.role == :medic
 
-    if player.role == :medic
+    if reset
       reduced = city.disease_reset(color)
+      puts "All cubes of color " +color.to_s+ " have been removed in "+city.name
     else
       city.treat(color, number)
       reduced = number
+      puts number.to_s + " cubes of color " + color.to_s + " have been removed in "+city.name
     end
 
     var_in_game_class.increase_cubes_available(reduced)
