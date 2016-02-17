@@ -21,16 +21,19 @@ class Action
     puts "2. Direct Flight to a city by discarding the city card (1)"
     puts "3. Charter Flight by discarding the city card you're currently in (1)"
     puts "4. Shuttle flight from a research station to another (1)"
-    puts "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1)"
+    puts "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1). For building a research station through Government Grant event card, see number 12 below"
     puts "6. Treat disease by removing 1 cube (or all cubes if player is medic) from city you're in. If disease is cured, remove all cubes of that color (1)"
     puts "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researched can give a shared card that doesn't have to match the city both players are in (1)"
     puts "8. Ask the researcher for a city card in Share Knowledge (1)"
     puts "9. Discover a cure by discarding 5 cards of the same color to cure disease of that color, or 4 cards only if the player is a scientist (1)"
     puts "10. Take an event card from the Player Discard Pile if player is contingency player (1)"
-    puts "11. Use an event by discarding an event card (0)"
-    puts "12. Move another's pawn to another city with that pawn if player is dispatcher (1)"
-    puts "13. Move another's pawn as if it were the player's own if player is dispatcher(1)"
-    puts "14. Move to any city by discarding any city card if operations expert (1)"
+    puts "11. Use Resilient Population event by discarding the event card (0)"
+    puts "12. Use Government Grant event by discarding the event card (0)"
+    puts "13. Use Airlift event by discarding the event card (0)"
+    puts "14. Use One Quiet Night event by discarding the event card (0)"
+    puts "15. Use Forecast by discarding the event card (0)"
+    puts "16. As a contingency planner, take an event card from the Player Discard Pile (1)"
+    puts "17. Move to any city by discarding any city card if operations expert (1)"
     puts
   end
 
@@ -51,7 +54,8 @@ class Action
       shuttle_flight(@player)
       @action_reduction = 1
     when 5
-
+      build_a_research_st(@player)
+      @action_reduction = 1
     when 6
 
     when 7
@@ -65,7 +69,8 @@ class Action
     when 11
 
     when 12
-
+      build_a_research_st(@player, false)
+      @action_reduction = 0
     when 13
 
     when 14
@@ -137,20 +142,21 @@ class Action
     if !player.cards.include?(charter_flight_card)
       return "You can't do charter flight as you don't have the card with the moved player's current city name"
     else
+
       satisfied = false
       while !satisfied
+        puts "Where to charter flight?"
+        destination_string = gets.chomp
+        destination_city = @mech.string_to_city(destination_string)
 
-      puts "Where to charter flight?"
-      destination_string = gets.chomp
-      destination_city = @mech.string_to_city(destination_string)
-
-      if destination_city != nil
-        @mech.move_player(player, destination_string, moved)
-        puts moved.name + " has been moved to " + destination_string
-        @mech.discard_card_from_player_hand(player, charter_flight_card)
-        satisfied = true
-      else
-        puts "That's not a valid city destination. Try again."
+        if destination_city != nil
+          @mech.move_player(player, destination_string, moved)
+          puts moved.name + " has been moved to " + destination_string
+          @mech.discard_card_from_player_hand(player, charter_flight_card)
+          satisfied = true
+        else
+          puts "That's not a valid city destination. Try again."
+        end
       end
     end
   end
@@ -176,10 +182,37 @@ class Action
     end
   end
 
-  def build_a_research_st
+  def build_a_research_st(player, use_card = true)
 
+    location_obtained = false
+    while !location_obtained
+      print "Where to put research center in?"
+      location_string = gets.chomp
+      location = @mech.string_to_city(location_string)
+      location_obtained = true if location != nil
+      puts "City unrecognized. Try again!" if location == nil
+    end
+
+    use_card = false if player.role == :operations_expert
+
+    if use_card
+      find_card_to_discard = false
+      while !find_card_to_discard
+        if !player.cards.include?(location)
+          puts "Player doesn't have that city player card! Try again!"
+        else
+          puts "The player card is used to build a research station and discarded to the Player Discard Pile"
+          @mech.build_research_st(player, location)
+          player_card_to_discard = @mech.string_to_player_card(location.string)
+          @mech.discard_card_from_player_hand(player, player_card_to_discard)
+          find_card_to_discard = true
+        end
+      end
+    else
+      @mech.build_research_st(player, location)
+      puts "A research station has been added to that city."
+    end
   end
-
 
   def treat_disease
 

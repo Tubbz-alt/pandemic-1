@@ -1,7 +1,5 @@
 # Mechanism
 
-require_relative 'game'
-
 class Mechanism
 
   attr_reader
@@ -55,15 +53,14 @@ class Mechanism
 
   def treat(player, city, color, number = 1)
     case color
-      when :black
-        var_in_game_class = @game.black_disease
-      when :blue
-        var_in_game_class = @game.blue_disease
-      when :yellow
-        var_in_game_class = @game.yellow_disease
-      when :red
-        var_in_game_class = @game.red_disease
-      end
+    when :black
+      var_in_game_class = @game.black_disease
+    when :blue
+      var_in_game_class = @game.blue_disease
+    when :yellow
+      var_in_game_class = @game.yellow_disease
+    when :red
+      var_in_game_class = @game.red_disease
     end
 
     if player.role == :medic
@@ -75,6 +72,40 @@ class Mechanism
 
     var_in_game_class.increase_cubes_available(reduced)
 
+  end
+
+  def build_research_st(player, location)
+
+    if @board.research_station_available > 0
+      location.build_research_st
+      puts "A research station has been built in "+location.name
+      puts "Updated cities with research station : " + @board.research_st_cities.to_s
+      puts
+    else
+      puts "You have built 6 research stations (max). There are currently a research station in each of the following cities : " + @board.research_st_cities.to_s
+      print "You need to remove one research station. Proceed? 'y' or 'n'"
+      answer = gets.chomp
+      if answer == 'n'
+        return "Build Research Station has been cancelled"
+      elsif answer == 'y'
+        satisfied = false
+        while !satisfied
+          print "Choose a city to remove its research station!"
+          removed_city_string = gets.chomp
+          removed_city = string_to_city(removed_city_string)
+          if removed_city == nil || !removed_city.research_st
+            puts "City unrecognized or doesn't have a research center. Try again!"
+          else
+            satisfied = true
+            removed_city.remove_research_st
+            location.build_research_st
+            puts "Research station has been removed from " + removed_city.name + " and a research station has been built in " + location.name
+          end
+        end
+      else
+        puts "Only input 'y' or 'n'!"
+      end
+    end
   end
 
 end

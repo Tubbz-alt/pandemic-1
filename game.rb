@@ -62,8 +62,8 @@ class Game
       print "Enter number of players (2 to 4)! "
       @number_players = gets.chomp.to_i
     end
-      puts "There are "+@number_players.to_s+" players in this game"
-      puts
+    puts "There are "+@number_players.to_s+" players in this game"
+    puts
   end
 
   def determine_epidemic_cards_number
@@ -321,20 +321,7 @@ class Game
       @infection_discard_pile.delete(discarded_city)
       puts discarded_city.cityname + " infection card is removed from the infection discard pile (and the game)."
     when :Government_Grant
-      research_st_city = prompt_for_which_research_station_city
-      if @board.research_station_available > 0
-        research_st_city.build_research_st
-        puts "A research station has been built in "+research_st_city.name
-        puts "Updated cities with research station : " + @board.research_st_cities.to_s
-        puts
-      else
-        puts "You have built 6 research stations (max). There are currently a research station in each of the following cities : " + @board.research_st_cities.to_s
-        research_st_city = prompt_for_confirmation_to_build_research_station
-        research_st_city.build_research_st
-        puts "A research station has been built in "+research_st_city.name
-        puts "Updated cities with research station : " + @board.research_st_cities.to_s
-        puts
-      end
+      #Is addressed as Action option #12.
     when :Airlift
       airlifted_player = prompt_whom_to_be_airlifted
       destination = prompt_where_to_airlift(airlifted_player)
@@ -353,7 +340,7 @@ class Game
           confirmation = true
           perform_forecast
         elsif answer =='n'
-          puts "Forecast cancelled"
+          return "Forecast cancelled"
           confirmation = true
         else
           puts "Only answer 'y' or 'n'"
@@ -445,60 +432,6 @@ class Game
     airlifted_player[0]
   end
 
-  def prompt_for_confirmation_to_build_research_station
-    confirmation = false
-    while !confirmation
-      puts "Are you sure you want to build a new research station? 'y' or 'n'"
-      answer = gets.chomp
-      if answer == 'n'
-        confirmation = true
-        puts 'You have cancelled building a research station, event card usage is cancelled. Player keeps this card in your hand.'
-      elsif answer == 'y'
-        confirmation = true
-        removed_city = prompt_for_which_research_station_city_removed
-        removed_city.remove_research_st
-        selected_city = prompt_for_which_research_station_city
-        selected_city.build_research_st
-        puts "Research station has been removed from " + removed_city.name + " and a research station has been built in " + selected_city.name
-      else
-        puts "Only input 'y' or 'n'!"
-      end
-    end
-  end
-
-  def prompt_for_which_research_station_city_removed
-    satisfied = false
-    while !satisfied
-      puts "Please decide a city from which a research station is removed"
-      answer_city = gets.chomp
-      removed_city = @board.cities.select {|city| city.name == answer_city}
-      if removed_city.size == 0
-        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
-      elsif removed_city.size == 1 && !removed_city[0].research_st
-        puts "That city doesn't have a research station to remove from, choose another city that has a research station to remove from!"
-      else
-        satisfied = true
-      end
-    end
-    removed_city[0]
-  end
-
-  def prompt_for_which_research_station_city
-    satisfied = false
-    while !satisfied
-      puts "Which city to build research city in?"
-      answer = gets.chomp
-      selected_city = @board.cities.select {|city| city.name == answer}
-      if selected_city.size != 0 && !selected_city[0].research_st
-        satisfied = true
-      elsif selected_city[0].research_st
-        puts "That city already has a research station, choose another city that doesn't have a research station yet!"
-      else
-        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
-      end
-    end
-    return selected_city[0]
-  end
 
   def prompt_for_which_resilient_city
     satisfied = false
