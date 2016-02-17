@@ -34,7 +34,7 @@ class Action
     puts
   end
 
-  def get_player_action
+  def execute_player_action
     print "Enter action number : "
     action_number = gets.chomp.to_i
     case action_number
@@ -48,7 +48,8 @@ class Action
       charter_flight(@player)
       @action_reduction = 1
     when 4
-
+      shuttle_flight(@player)
+      @action_reduction = 1
     when 5
 
     when 6
@@ -154,8 +155,25 @@ class Action
     end
   end
 
-  def shuttle_flight(destination, from) #move from a research station to another research station
+  def shuttle_flight(player) #move from a research station to another research station
+    moved = dispatcher_posibility(player)
 
+    return "Moved player is not in a city with a research station!" if !@player_location.research_st
+
+    satisfied = false
+    while !satisfied
+      puts "Where to shuttle flight?"
+      destination_string = gets.chomp
+      destination_city = @mech.string_to_city(destination_string)
+
+      if destination_city.research_st
+        @mech.move_player(player, destination_string, moved)
+        puts moved.name + " has been moved to " + destination_string
+        satisfied = true
+      else
+        puts "That's not a valid destination. Try again."
+      end
+    end
   end
 
   def build_a_research_st

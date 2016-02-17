@@ -53,4 +53,28 @@ class Mechanism
     card.discard_to_player_discard_pile
   end
 
+  def treat(player, city, color, number = 1)
+    case color
+      when :black
+        var_in_game_class = @game.black_disease
+      when :blue
+        var_in_game_class = @game.blue_disease
+      when :yellow
+        var_in_game_class = @game.yellow_disease
+      when :red
+        var_in_game_class = @game.red_disease
+      end
+    end
+
+    if player.role == :medic
+      reduced = city.disease_reset(color)
+    else
+      city.treat(color, number)
+      reduced = number
+    end
+
+    var_in_game_class.increase_cubes_available(reduced)
+
+  end
+
 end

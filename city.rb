@@ -86,6 +86,24 @@ class City
     end
   end
 
+  def disease_reset(disease)
+    case disease
+    when :red
+      initial = @red
+      @red = 0
+    when :yellow
+      initial = @yellow
+      @yellow = 0
+    when :black
+      initial = @black
+      @black = 0
+    when :blue
+      initial @blue
+      @blue = 0
+    end
+    return initial
+  end
+
   def outbreak_happens
     @outbreak = true
   end
