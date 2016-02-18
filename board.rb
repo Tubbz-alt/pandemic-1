@@ -7,7 +7,7 @@ require_relative "disease"
 
 class Board
 
-  attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaolo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington, :red_disease, :black_disease, :yellow_disease, :blue_disease
+  attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaolo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington, :red_disease, :black_disease, :yellow_disease, :blue_disease, :research_station_available, :research_station_built
 
   def initialize
 
@@ -22,7 +22,7 @@ class Board
     assign_cards(:event)
     connect_cities
     assign_diseases
-    @research_station_built = self.count_research_station
+    @research_station_built = count_research_station
     @research_station_available = MAX_RESEARCH_STATION - @research_station_built
   end
 
@@ -172,7 +172,9 @@ class Board
   end
 
   def count_research_station
-    self.research_station_cities.length
+    cities = research_station_cities
+    @research_station_built = cities.size
+    @research_station_available = MAX_RESEARCH_STATION - @research_station_built
   end
 
   def player_cards_city_names

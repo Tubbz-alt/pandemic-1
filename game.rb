@@ -28,7 +28,6 @@ class Game
     @mech = Mechanism.new(self)
 
     game_setup
-
   end
 
   def player_creation
@@ -49,6 +48,7 @@ class Game
 
   def game_setup
     move_all_pawns_to_Atlanta_in_setup
+    build_research_st_in_Atlanta
     deal_9_initial_infection_cards
     players_deal_initial_cards
     insert_epidemic_cards
@@ -56,6 +56,7 @@ class Game
     players_order
   end
 
+# The following section includes setting up board.
 
   def prompt_number_of_players
     while @number_players < 2 or @number_players > 5 do
@@ -139,89 +140,14 @@ class Game
     puts
   end
 
-  def game_over?
-    if win?
-      true
-    elsif lose?
-      true
-    else
-      false
-    end
-  end
-
-  def win?
-    if @blue_disease.cured == true && @red_disease.cured == true && @yellow_disease.cured == true && @black_disease.cured == true
-      return true
-    end
-    false
-  end
-
-  def lose_on_max_outbreaks?
-    if @outbreak_index < MAX_OUTBREAKS
-      return false
-    else
-      return true
-    end
-  end
-
-  def lose_on_cubes_availability?
-    if @blue_disease.cubes_available == 0
-      puts "No more blue cubes! Game over!"
-      puts
-      return true
-    elsif @red_disease.cubes_available == 0
-      puts "No more red cubes! Game over!"
-      puts
-      return true
-    elsif @yellow_disease.cubes_available == 0
-      puts "No more yellow cubes! Game over!"
-      puts
-      return true
-    elsif @black_disease.cubes_available == 0
-      puts "No more black cubes! Game over!"
-      puts
-      return true
-    end
-    false
-  end
-
   def move_all_pawns_to_Atlanta_in_setup
     @players.each do |player|
       @mech.move_player(@moderator, "Atlanta", player)
     end
   end
 
-  def lose_on_player_cards_availability?
-    @player_deck.size == 0
-  end
-
-  def lose?
-    if lose_on_max_outbreaks?
-      puts "Lose on Max Outbreaks! Game over!"
-      puts
-      return true
-    elsif lose_on_cubes_availability?
-      return true
-    elsif lose_on_player_cards_availability?
-      puts "You run out of Player Cards! Game Over!"
-      puts
-      return true
-    end
-    false
-  end
-
-  def increase_outbreak_index
-    @outbreak_index += 1
-  end
-
-  def infection_rate #CommandLine
-    INFECTION_RATE_BOARD[@infection_rate_index]
-  end
-
-  def increase_infection_rate
-    if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
-      @infection_rate_index += 1
-    end
+  def build_research_st_in_Atlanta
+    @mech.build_research_st(@moderator, @board.atlanta)
   end
 
   def setup_infection_deck
@@ -284,21 +210,95 @@ class Game
   def deal_9_initial_infection_cards
     # First 3 cards contain cities which will be infected with 3 cubes of their original colors. Second 3 cards contain cities with 2 cubes. Third 3 cards contain cities with 1 cube.
     3.times do |number|
-      city_cards = deal_card(@infection_deck, 3)
+      city_cards = @mech.deal_cards(@infection_deck, 3)
       city_cards.each do |card|
         perform_action(card, (3 - number))
       end
     end
   end
 
-  def deal_card(from, number_of_cards = 1)
-    from.pop(number_of_cards)
+#The following are the game checker
+
+  def game_over?
+    if win?
+      true
+    elsif lose?
+      true
+    else
+      false
+    end
   end
 
-  def discard_card(to_pile, card)
-    to_pile += card
+  def win?
+    if @blue_disease.cured == true && @red_disease.cured == true && @yellow_disease.cured == true && @black_disease.cured == true
+      return true
+    end
+    false
   end
 
+  def lose_on_max_outbreaks?
+    if @outbreak_index < MAX_OUTBREAKS
+      return false
+    else
+      return true
+    end
+  end
+
+  def lose_on_cubes_availability?
+    if @blue_disease.cubes_available == 0
+      puts "No more blue cubes! Game over!"
+      puts
+      return true
+    elsif @red_disease.cubes_available == 0
+      puts "No more red cubes! Game over!"
+      puts
+      return true
+    elsif @yellow_disease.cubes_available == 0
+      puts "No more yellow cubes! Game over!"
+      puts
+      return true
+    elsif @black_disease.cubes_available == 0
+      puts "No more black cubes! Game over!"
+      puts
+      return true
+    end
+    false
+  end
+
+  def lose_on_player_cards_availability?
+    @player_deck.size == 0
+  end
+
+  def lose?
+    if lose_on_max_outbreaks?
+      puts "Lose on Max Outbreaks! Game over!"
+      puts
+      return true
+    elsif lose_on_cubes_availability?
+      return true
+    elsif lose_on_player_cards_availability?
+      puts "You run out of Player Cards! Game Over!"
+      puts
+      return true
+    end
+    false
+  end
+
+#The following are game simple mechanism
+
+  def increase_outbreak_index
+    @outbreak_index += 1
+  end
+
+  def infection_rate #CommandLine
+    INFECTION_RATE_BOARD[@infection_rate_index]
+  end
+
+  def increase_infection_rate
+    if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
+      @infection_rate_index += 1
+    end
+  end
 
   def perform_action(card, number_of_infection = 1, player = @players[0])
     if card.type == :infection
@@ -321,19 +321,11 @@ class Game
   def perform_event_cards(card, player)
     case card.event
     when :Resilient_Population
-      discarded_city = prompt_for_which_resilient_city
-      discarded_city.remove_from_game
-      @infection_discard_pile.delete(discarded_city)
-      puts discarded_city.cityname + " infection card is removed from the infection discard pile (and the game)."
+      #Is addressed as Action option #11.
     when :Government_Grant
       #Is addressed as Action option #12.
     when :Airlift
-      airlifted_player = prompt_whom_to_be_airlifted
-      destination = prompt_where_to_airlift(airlifted_player)
-      current_city = determine_current_city(airlifted_player)
-      current_city.pawn_move_from_city(airlifted_player)
-      destination.pawn_move_to_city(airlifted_player)
-      player.move_pawn(destination, airlifted_player)
+      #Is addressed as Action option #13.
     when :One_Quiet_Night
       perform_one_quiet_night(player)
     when :Forecast
@@ -355,7 +347,7 @@ class Game
   end
 
   def perform_forecast
-    top_6_infection_cards = deal_card(@infection_deck, 6)
+    top_6_infection_cards = @mech.deal_cards(@infection_deck, 6)
     puts "The 6 cards at the top of the infection deck is : "
     top_6_infection_cards.each_with_index do |card, idx|
       puts card.cityname + ", index = " + (idx+1).to_s
@@ -405,51 +397,6 @@ class Game
     current_city[0]
   end
 
-  def prompt_where_to_airlift(airlifted_player)
-    confirmation = false
-    while !confirmation
-      puts "Where do you want to airlift " + airlifted_player.name + " to? Input city name!"
-      answer = gets.chomp
-      destination = @board.cities.select {|city| city.name == answer}
-      if destination.size != 0
-        confirmation = true
-        airlifted_player.name + " is airlifted from " + airlifted_player.location + " to " + destination[0].name
-      else
-        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
-      end
-    end
-    destination[0]
-  end
-
-  def prompt_whom_to_be_airlifted
-    confirmation = false
-    while !confirmation
-      puts "You chose airlift event, which player's name do you wish to be airlifted?"
-      answer = gets.chomp
-      airlifted_player = @players.select {|player| player.name == answer}
-      if airlifted_player.size != 0
-        confirmation = true
-        puts airlifted_player[0].name + " is chosen."
-      else
-        puts "Please input the correct player's name. Use g.players to get a list of players info"
-      end
-    end
-    airlifted_player[0]
-  end
-
-
-  def prompt_for_which_resilient_city
-    satisfied = false
-    while !satisfied
-      puts "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile."
-      answer = gets.chomp
-      selected_city = @infection_discard_pile.select {|card| card.cityname == answer}
-      satisfied = true if selected_city.size != 0
-      puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St" if selected_city.size == 0
-    end
-    return selected_city[0]
-  end
-
   def put_player_cards_into_hand(dealt_cards, player)
     @mech.put_player_cards_into_hand(dealt_cards, player)
   end
@@ -495,7 +442,7 @@ class Game
 
   def players_deal_initial_cards
     @players.each do |player|
-      cards_dealt = deal_card(@player_deck, @deal_player_card_number)
+      cards_dealt = @mech.deal_cards(@player_deck, @deal_player_card_number)
       put_player_cards_into_hand(cards_dealt, player)
     end
   end

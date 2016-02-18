@@ -6,12 +6,9 @@ class Turn
 
   attr_reader :action_left
 
-  def initialize(player, game)
+  def initialize(player, round)
     @player = player
-    @cards = player.cards
-    @role = player.role
-    @game = game
-    @board = @game.board
+    @game = round.game
     @mech = @game.mech
     @location = @mech.string_to_city(player.location)
     @action_left = 4
@@ -26,7 +23,7 @@ class Turn
 
   def actions
     while @action_left > 0
-      act = Action.new(@player, @game, @location)
+      act = Action.new(self)
       puts "You have " + @action_left.to_s + " actions left."
       act.allowed_actions
       act.execute_player_action

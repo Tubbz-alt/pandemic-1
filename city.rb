@@ -19,12 +19,7 @@ class City
     @blue = 0
     @pawns = []
     @outbreak = false
-
-    if @name == "Atlanta"
-      @research_st = true
-    else
-      @research_st = false
-    end
+    @research_st = false
   end
 
   def add_neighbors(neighbors)

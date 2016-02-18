@@ -4,14 +4,14 @@ require_relative 'mechanism.rb'
 
 class Action
 
-  attr_reader :action_reduction
+  attr_reader :action_reduction, :player_location
 
-  def initialize(player, game, player_location)
-    @player = player
-    @game = game
-    @board = @board.board
-    @player_location = player_location
+  def initialize(turn)
+    @turn = turn
+    @player = @turn.player
+    @game = @turn.game
     @mech = @game.mech
+    @player_location = @mech.string_to_city(@player.location)
     @action_reduction = 0
   end
 
@@ -32,8 +32,7 @@ class Action
     puts "13. Use Airlift event by discarding the event card (0)"
     puts "14. Use One Quiet Night event by discarding the event card (0)"
     puts "15. Use Forecast by discarding the event card (0)"
-    puts "16. As a contingency planner, take an event card from the Player Discard Pile (1)"
-    puts "17. Move to any city by discarding any city card if operations expert (1)"
+    puts "16. Move to any city by discarding any city card once per turn if operations expert (1)"
     puts
   end
 
@@ -83,21 +82,22 @@ class Action
         puts
         @action_reduction = 0
       end
-
     when 11
-
+      resilient_city(@player)
+      @action_reduction = 0
     when 12
       execution = build_a_research_st(@player, false)
       @action_reduction = 0
     when 13
-
+      airlift(@player)
+      @action_reduction = 0
     when 14
 
+      @action_reduction = 0
     when 15
 
+      @action_reduction = 0
     when 16
-
-    when 17
 
     end
   end
@@ -541,5 +541,82 @@ class Action
     return executed
   end
 
+  def resilient_city(player)
+    resilient_card = @mech.symbol_to_player_card(:Resilient_Population)
+    if !player.cards.include?(resilient_card)
+      executed = false
+      puts "Player doesn't have Resilient City Event Card. Event cancelled."
+      return executed
+    else
+      satisfied = false
+      while !satisfied
+        puts "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile. Type 'cancel' to cancel."
+        answer = gets.chomp
+        if answer == "cancel"
+          puts "Use of Resilient City cancelled."
+          satisfied = true
+        else
+          city_card = @mech.string_to_infection_card(answer)
+          if city_card != nil
+            satisfied = true
+            @mech.deal_known_card(@game.infection_discard_pile, city_card)
+            city_card.discard_from_game
+            @mech.discard_card_from_player_hand(player, resilient_card)
+            puts city_card.cityname + " infection card has been removed from the Infection Discard Pile. Event card Resilient City has been discarded."
+            puts
+          else
+            puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St, try again!"
+          end
+        end
+      end
+    end
+  end
+
+  def airlift(player)
+    #Find the person who's moved.
+    moved_confirmation = false
+    while !moved_confirmation
+      puts "You chose airlift event, which player's name do you wish to be airlifted? Type 'cancel' to cancel this event."
+      moved_string = gets.chomp
+      if moved_string == "cancel"
+        executed = false
+        puts "Airlift event cancelled."
+        puts
+        return executed
+      else
+        moved = @mech.string_to_player(moved_string)
+        if moved != nil
+          moved_confirmation = true
+          puts moved.name + " is chosen."
+        else
+          puts "Please input the correct player's name. Try again!"
+        end
+      end
+    end
+
+    #Find where to move the moved person.
+    destination_confirmation = false
+    while !destination_confirmation
+      puts "Where do you want to airlift " + moved.name + " to? Input city name! Type 'cancel' to cancel this event."
+      destination_string = gets.chomp
+      if destination_string == "cancel"
+        executed = false
+        puts "Airlift event cancelled."
+        puts
+        return executed
+      else
+        destination = @mech.string_to_city(destination_string)
+        if destination != nil
+          destination_confirmation = true
+          @mech.move_player(player, destination.name, moved)
+          moved.name + " is airlifted from " + moved.location + " to " + destination.name
+          executed = true
+        else
+          puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+        end
+      end
+    end
+    return executed
+  end
 
 end

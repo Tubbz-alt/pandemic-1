@@ -2,7 +2,7 @@
 
 class Mechanism
 
-  attr_reader
+  attr_reader :board
 
   def initialize(game)
     @game = game
@@ -17,6 +17,12 @@ class Mechanism
   def symbol_to_player(symbol)
     player = @game.players.select {|player| player.role == symbol}
     return player[0]
+  end
+
+  def symbol_to_player_card(symbol)
+    cards = @game.player_cards.select {|card| card.type == :event}
+    card = cards.select {|card| card.event == symbol}
+    return card[0]
   end
 
   def string_to_player_card(string)
@@ -54,6 +60,10 @@ class Mechanism
     from.delete(card)
   end
 
+  def discard_card(to_pile, card)
+    to_pile += card
+  end
+
   def discard_card_from_player_hand(player, card)
     if card.type == :event && card.value == 0
       player.discard_from_game(card)
@@ -61,7 +71,7 @@ class Mechanism
     else
       player.discard_to_player_discard_pile(card)
       card.discard_to_player_discard_pile
-      @game.discard_card(@game.player_discard_pile, card)
+      discard_card(@game.player_discard_pile, card)
     end
   end
 
@@ -83,7 +93,7 @@ class Mechanism
   end
 
   def build_research_st(player, location)
-
+    @board.count_research_station
     if @board.research_station_available > 0
       location.build_research_st
       puts "A research station has been built in "+location.name
@@ -114,6 +124,7 @@ class Mechanism
         puts "Only input 'y' or 'n'!"
       end
     end
+    @board.count_research_station
   end
 
   def give_card_to_another_player(giver, receiver, card)
