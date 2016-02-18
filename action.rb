@@ -86,7 +86,7 @@ class Action
       resilient_city(@player)
       @action_reduction = 0
     when 12
-      execution = build_a_research_st(@player, false)
+      build_a_research_st(@player, false)
       @action_reduction = 0
     when 13
       airlift(@player)
@@ -95,7 +95,7 @@ class Action
 
       @action_reduction = 0
     when 15
-
+      forecast(@player)
       @action_reduction = 0
     when 16
 
@@ -573,6 +573,15 @@ class Action
   end
 
   def airlift(player)
+    airlift_card = @mech.symbol_to_player_card(:Airlift)
+
+    if !player.cards.include?(airlift_card)
+      executed = false
+      puts "Player doesn't have the Airlift Event Card. Event cancelled."
+      puts
+      return executed
+    end
+
     #Find the person who's moved.
     moved_confirmation = false
     while !moved_confirmation
@@ -616,7 +625,62 @@ class Action
         end
       end
     end
+    medic_automatic_treat_cured(moved, destination) if moved.role == :medic
+    @mech.discard_card_from_player_hand(player, airlift_card)
     return executed
+  end
+
+  def forecast(player)
+
+    forecast_card = @mech.symbol_to_player_card(:Forecast)
+
+    if !player.cards.include?(forecast_card)
+      executed = false
+      puts "Player doesn't have the Forecast Event Card. Event cancelled."
+      puts
+      return executed
+    end
+
+    top_6_infection_cards = @mech.deal_cards(@game.infection_deck, 6)
+    puts "The 6 cards at the top of the infection deck is : "
+    top_6_infection_cards.each_with_index do |card, idx|
+      puts card.cityname + ", index = " + (idx+1).to_s
+    end
+    puts "The state of these cities are : "
+    top_6_infection_cards.each do |card|
+      city = @mech.string_to_city(card.cityname)
+      print city.name + " : " + city.color_count.to_s + ". Neighbors : "
+      neighbors_states = ""
+      city.neighbors.each {|neighbor| neighbors_states += (neighbor.name + " : " + neighbor.color_count.to_s + ". ")}
+      puts neighbors_states
+      puts
+    end
+    new_6 = []
+    inputed = []
+    counter = 0
+    puts "Rearrange these 6 cards by answering the following : "
+    while counter <= 5
+      idx_satisfied = false
+      while !idx_satisfied
+        print "Old index of new index + " + (counter+1).to_s + ", (1 refers to bottom of the 6) = "
+        anwer = gets.chomp.to_i
+        if answer == 0
+          puts "Not a valid integer (1-6)."
+        elsif inputed.include?(answer)
+          put "You have used that old index before. Choose another number!"
+        else
+          new_6 << top_6_infection_cards[answer-1]
+          inputed << answer
+          idx_satisfied = true
+        end
+      end
+      counter += 1
+    end
+    @game.infection_deck += new_6
+    @mech.discard_card_from_player_hand(player, forecast_card)
+    puts "These 6 cards have been returned to the top of the infection deck. Their order, from the bottom of the deck, is :"
+    new_6.each {|card| puts card.cityname}
+    puts
   end
 
 end

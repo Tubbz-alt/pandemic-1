@@ -327,78 +327,16 @@ class Game
     when :Airlift
       #Is addressed as Action option #13.
     when :One_Quiet_Night
-      perform_one_quiet_night(player)
+      #Is addressed as Action option #14.
     when :Forecast
-      confirmation = false
-      while !confirmation
-        puts "Would you like to use forecast? 'y' or 'n'"
-        answer = gets.chomp
-        if answer == 'y'
-          confirmation = true
-          perform_forecast
-        elsif answer =='n'
-          return "Forecast cancelled"
-          confirmation = true
-        else
-          puts "Only answer 'y' or 'n'"
-        end
-      end
+      #Is addressed as Action option #15.
     end
   end
 
-  def perform_forecast
-    top_6_infection_cards = @mech.deal_cards(@infection_deck, 6)
-    puts "The 6 cards at the top of the infection deck is : "
-    top_6_infection_cards.each_with_index do |card, idx|
-      puts card.cityname + ", index = " + (idx+1).to_s
-    end
-    puts "The state of these cities are : "
-    top_6_infection_cards.each do |card|
-      city = city_forecast(card)
-      print city.name + " : " + city.color_count.to_s + ". Neighbors : "
-      neighbors_states = ""
-      city.neighbors.each {|neighbor| neighbors_states += (neighbor.name + " : " + neighbor.color_count.to_s + ". ")}
-      puts neighbors_states
-      puts
-    end
-    new_6 = []
-    puts "Rearrange these 6 cards by answering the following :"
-    print "Old index of new index 1 (bottom of 6), insert previous 1 through 6 = "
-    new0 = gets.chomp.to_i
-    new_6 << top_6_infection_cards[new0-1]
-    print "Old index of new index 2, insert prev 1 through 6 = "
-    new1 = gets.chomp.to_i
-    new_6 << top_6_infection_cards[new1-1]
-    print "Old index of new index 3, insert prev 1 through 6 = "
-    new2 = gets.chomp.to_i
-    new_6 << top_6_infection_cards[new2-1]
-    print "Old index of new index 4, insert prev 1 through 6 = "
-    new3 = gets.chomp.to_i
-    new_6 << top_6_infection_cards[new3-1]
-    print "Old index of new index 5, insert prev 1 through 6 = "
-    new4 = gets.chomp.to_i
-    new_6 << top_6_infection_cards[new4-1]
-    print "Old index of new index 6 (top of 6), insert prev 1 through 6 = "
-    new5 = gets.chomp.to_i
-    new_6 << top_6_infection_cards[new5-1]
-    @infection_deck += new_6
-    puts "These 6 cards have been returned to the top of the infection deck. Their order, from the bottom of the deck, is :"
-    new_6.each {|card| puts card.cityname}
-  end
 
   def city_forecast(card)
     city = @board.cities.select {|city| city.name == card.cityname}
     city[0]
-  end
-
-  def determine_current_city(player)
-    city_string = player.location
-    current_city = @board.cities.select {|city| city.name == city_string}
-    current_city[0]
-  end
-
-  def put_player_cards_into_hand(dealt_cards, player)
-    @mech.put_player_cards_into_hand(dealt_cards, player)
   end
 
   def perform_infect(city, color, number_of_cubes)
@@ -443,7 +381,7 @@ class Game
   def players_deal_initial_cards
     @players.each do |player|
       cards_dealt = @mech.deal_cards(@player_deck, @deal_player_card_number)
-      put_player_cards_into_hand(cards_dealt, player)
+      @mech.put_player_cards_into_hand(cards_dealt, player)
     end
   end
 
