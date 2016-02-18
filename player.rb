@@ -69,10 +69,15 @@ class Player
     @cards.delete(card)
   end
 
+  def discard_from_game(card)
+    @cards.delete(card)
+  end
+
   def discard_epidemic_card_to_discard_pile
     card = @cards.select {|card| card.type == :epidemic}
     card[0].discard_to_player_discard_pile
     discard_to_player_discard_pile(card[0])
+    return card[0]
   end
 
   def cards_in_hand_description
@@ -93,6 +98,15 @@ class Player
       max < card.population ? max = card.population : max
     end
     return max
+  end
+
+  def event_card_on_role_card
+    if @role == :contingency_planner
+      event_cards_in = event_cards_in_hand
+      event_card_on_role = event_cards_ih.select {|card| card.value == 0}
+      return event_card_on_role
+    end
+    puts "Only contingency planner has event card on his role card."
   end
 
 end

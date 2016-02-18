@@ -13,6 +13,12 @@ class EventCard
   end
 
   def taken_by_a_player(player)
+    initial_deck = @deck
+
+    if player.role == :contingency_planner && initial_deck == :player_discard_pile
+      @value = 0
+    end
+
     @deck = player.name.to_sym
   end
 
@@ -20,9 +26,8 @@ class EventCard
     @deck = :player_discard_pile
   end
 
-  def taken_by_cont_planner_from_player_disc_pile(player_name_in_string)
-    @deck = player_name_in_string.to_sym
-    @value = 0
+  def discard_from_game
+    @deck = :not_in_game
   end
 
 end

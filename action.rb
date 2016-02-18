@@ -24,7 +24,7 @@ class Action
     puts "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1). For building a research station through Government Grant event card, see number 12 below"
     puts "6. Treat disease by removing 1 cube (or all cubes if player is medic) from city you're in. If disease is cured, remove all cubes of that color (1)"
     puts "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researcher can give a shared card that doesn't have to match the city both players are in (1)"
-    puts "8. Ask the researcher for a city card in Share Knowledge (1)"
+    puts "8. Ask the researcher for any city card in Share Knowledge, as long as the player and the researched are in the same city (1)"
     puts "9. Discover a cure by discarding 5 cards of the same color to cure disease of that color, or 4 cards only if the player is a scientist (1)"
     puts "10. Take an event card from the Player Discard Pile if player is contingency player (1)"
     puts "11. Use Resilient Population event by discarding the event card (0)"
@@ -63,15 +63,31 @@ class Action
       execution = share_knowledge(@player)
       execution? @action_reduction = 1 | @action_reduction = 0
     when 8
-
+      if @player.role == :researcher
+        puts "Researcher can't ask herself to give herself a card."
+        puts
+        return @action_reduction = 0
+      else
+        execution = ask_card_to_researcher(@player)
+        execution? @action_reduction = 1 | @action_reduction = 0
+      end
     when 9
-
+      execution = discover_cure(@player)
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 10
+      if @player.role == :contingency_planner && @player.event_card_on_role.size == 0
+        execution = take_an_event_card_from_player_discard_pile(@player)
+        execution? @action_reduction = 1 | @action_reduction = 0
+      else
+        puts "Action can't be completed. Either player's role is not Contingency Planner or it has more than 1 event card on his role card."
+        puts
+        @action_reduction = 0
+      end
 
     when 11
 
     when 12
-      build_a_research_st(@player, false)
+      execution = build_a_research_st(@player, false)
       @action_reduction = 0
     when 13
 
@@ -328,13 +344,20 @@ class Action
 
     satisfied = false
     while !satisfied
-      print "Whom to share knowledge with?"
+      print "Whom to share knowledge with? Type 'cancel' to cancel this action."
       answer = gets.chomp
-      shared = @mech.string_to_player(answer)
-      if shared != nil && city.pawns.include?(shared.pawn)
-        satisfied = true
+      if answer == "cancel"
+        executed = false
+        puts "Action cancelled. No action was used."
+        puts
+        return executed
       else
-        puts "Unrecognized player name or player not in the same city."
+        shared = @mech.string_to_player(answer)
+        if shared != nil && city.pawns.include?(shared.pawn)
+          satisfied = true
+        else
+          puts "Unrecognized player name or player not in the same city. Try again!"
+        end
       end
     end
 
@@ -344,7 +367,7 @@ class Action
         puts "Which player city card to share?"
         card_string = gets.chomp
         city_card = @mech.string_to_player_card(card_string)
-        if card != nil && player.cards.include?(card)
+        if city_card != nil && player.cards.include?(city_card)
           card_satisfied = true
           puts city_card.cityname + " is given to " + shared.name + " by " + player.name
           @mech.give_card_to_another_player(player, shared, city_card)
@@ -360,15 +383,163 @@ class Action
         @mech.give_card_to_another_player(player, shared, city_card)
         executed = true
       else
-        puts "Player is not a medic and doesn't have the city player card both the player and the receiver are in. Action cancelled."
+        puts "Player is not a researcher and doesn't have the city player card both the player and the receiver are in. Action cancelled."
         executed = false
       end
     end
     return executed
   end
 
-  def discover_a_cure
+  def ask_card_to_researcher(player)
+    city = @mech.string_to_city(player.location)
+    sharer = @mech.symbol_to_player(:researcher)
 
+    if !city.pawns.include?(sharer.pawn)
+      executed = false
+      puts "Researcher and player are not in the same city. Action cancelled. No action was used."
+      puts
+      return executed
+    end
+
+    card_satisfied = false
+    while !card_satisfied
+      puts "Which player city card to ask? Type 'cancel' to cancel this action"
+      card_string = gets.chomp
+      if card_string == "cancel"
+        executed = false
+        puts "Action cancelled. No action was used."
+        puts
+        return executed
+      else
+        city_card = @mech.string_to_player_card(card_string)
+        if city_card != nil && sharer.cards.include?(city_card)
+          card_satisfied = true
+          puts city_card.cityname + " is given to " + player.name + " by " + sharer.name
+          @mech.give_card_to_another_player(sharer, player, city_card)
+          puts
+          executed = true
+        else
+          puts "Researcher doesn't have that card or Card name typed wrong. Try again!"
+        end
+      end
+    end
+    return executed
   end
+
+  def discover_cure(player)
+    if player.role == :scientist
+      req_no = 4
+    else
+      req_no = 5
+    end
+
+    player_city = @mech.string_to_city(player.location)
+
+    if !player_city.research_st
+      executed = false
+      puts "Player is not in a research station. Action cancelled. No action was used."
+      puts
+      return executed
+    end
+
+    color_satisfied = false
+    while !color_satisfied
+      print "Which color to cure? Options are yellow, blue, black, red. Type 'cancel' to cancel action."
+      color_string = gets.chomp
+
+      if color_string == "cancel"
+        executed = false
+        puts "Action cancelled. No action was used."
+        puts
+        return executed
+      else
+        color = color_string.to_sym
+        if color == :blue || color == :red || color == :black || color == :yellow
+          color_satisfied = true
+        else
+          puts "Color unrecognized. Try again!"
+        end
+      end
+    end
+
+    cards_with_color = player.player_cards_in_hand.select {|card| card.color == color}
+
+    if cards_with_color.size == req_no
+      cards_with_color.each {|card| @mech.discard_card_from_player_hand(player, card)}
+      puts "All cards with that color are discarded to the Player Discard Pile. Color cured."
+      puts
+      executed = true
+    elsif cards_with_color.size < req_no
+      executed = false
+      puts "Color can't be cured because player has less than required city player cards with that color. Action cancelled."
+      puts
+      return executed
+    else
+      counter = 1
+      while counter <= req_no
+        player_card_confirmation = false
+        while !player_card_confirmation
+          puts "Choose from " + cards_with_color.to_s
+          print "Type city name to discard one by one :"
+          discard_city_string = gets.chomp
+          discard_city_card = @mech.string_to_player_card(discard_city_string)
+          if discard_city_card != nil && discard_city_card.color == color
+            player_card_confirmation = true
+            @mech.discard_card_from_player_hand(player, discard_city_card)
+            puts discard_city_card.cityname + "is discarded to Player Discard Pile."
+            cards_with_color.delete(discard_city_card)
+          else
+            puts "City unrecognized or its color is not the chosen to be cured. Try again!"
+          end
+        end
+        counter += 1
+      end
+      executed = true
+      puts color.to_s + " is cured."
+
+      case color
+      when :blue
+        @game.blue_disease.cure
+      when :red
+        @game.red_disease.cure
+      when :yellow
+        @game.yellow_disease.cure
+      when :black
+        @game.black_disease.cure
+      end
+    end
+    return executed
+  end
+
+  def take_an_event_card_from_player_discard_pile(player)
+    satisfied = false
+    while !satisfied
+      puts "Event card available in the Player Discard Pile : "
+      available_events = @game.player_discard_pile.select {|card| card.type == :event && card.deck == :player_discard_pile}
+      puts available_events.to_s
+      print "Choose an event to take from the Player Discard Pile. Type 'cancel' to cancel this action."
+      chosen_string = gets.chomp
+      if chosen_string == "cancel"
+        executed = false
+        puts "Action is cancelled. No action was used."
+        puts
+        return executed
+      else
+        chosen_card = @mech.string_to_player_card(chosen_string)
+        if chosen_card != nil
+          @mech.deal_known_card(@game.player_discard_pile, chosen_card)
+          @mech.put_player_cards_into_hand([chosen_card], player)
+          satisfied = true
+          puts "That event card is taken from the Player Discard Pile onto your Role Card."
+          puts
+          executed = true
+        else
+          puts "That event is unrecognized. Please try again!"
+        end
+      end
+    end
+    return executed
+  end
+
 
 end

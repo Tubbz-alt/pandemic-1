@@ -14,6 +14,11 @@ class Mechanism
     return player[0]
   end
 
+  def symbol_to_player(symbol)
+    player = @game.players.select {|player| player.role == symbol}
+    return player[0]
+  end
+
   def string_to_player_card(string)
     if @board.player_card_event_names.include?(string)
       card = @board.player_cards.select {|card| card.event == string.to_sym}
@@ -28,7 +33,6 @@ class Mechanism
     return card[0]
   end
 
-
   def string_to_city(string)
     city = @board.cities.select {|city| city.name == string}
     return city[0]
@@ -42,13 +46,23 @@ class Mechanism
     to.pawn_move_to_city(moved)
   end
 
-  def deal_cards(from, number = 1, player)
+  def deal_cards(from, number)
     from.pop(number)
   end
 
+  def deal_known_card(from, card)
+    from.delete(card)
+  end
+
   def discard_card_from_player_hand(player, card)
-    player.discard_to_player_discard_pile(card)
-    card.discard_to_player_discard_pile
+    if card.type == :event && card.value == 0
+      player.discard_from_game(card)
+      card.discard_from_game
+    else
+      player.discard_to_player_discard_pile(card)
+      card.discard_to_player_discard_pile
+      @game.discard_card(@game.player_discard_pile, card)
+    end
   end
 
   def treat(player, city, color, var_in_game_class, reset, number = 1)
@@ -107,26 +121,29 @@ class Mechanism
     put_player_cards_into_hand([card], receiver)
   end
 
-
-
   def put_player_cards_into_hand(dealt_cards, player)
     player.put_cards_into_hand(dealt_cards)
     if player.has_epidemic_card?
       puts "You got an epidemic card!"
-      player.discard_epidemic_card_to_discard_pile
+      epidemic_card = player.discard_epidemic_card_to_discard_pile
+      @game.discard_card(@game.player_discard_pile, epidemic_card)
       #perform epidemic card actions
     end
     dealt_cards.each do |card|
       card.taken_by_a_player(player)
     end
     while player.toss_cards?
-      player_to_discard_in_hand(player)
+      player_to_discard_in_hand_more_than_7(player)
     end
   end
 
+  def player_to_discard_in_hand_more_than_7(player)
+    puts player.name.to_s + ", you have more than 7 cards currently. Let's discard one by one."
+    player_to_discard_in_hand(player)
+  end
+
   def player_to_discard_in_hand(player)
-    puts player.name.to_s + ", you have more than 7 cards currently. These are your cards in hand : " + player.cards_in_hand_description.to_s
-    puts "Let's discard cards one by one."
+    puts "These are your cards in hand : " + player.cards_in_hand_description.to_s
     card_discarded = prompt_card_to_discard(player)
     discard_card_from_player_hand(player, card_discarded)
     puts card_discarded.cityname + " has been discarded to Player Discard Pile." if card_discarded.type == :player

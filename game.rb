@@ -295,6 +295,11 @@ class Game
     from.pop(number_of_cards)
   end
 
+  def discard_card(to_pile, card)
+    to_pile += card
+  end
+
+
   def perform_action(card, number_of_infection = 1, player = @players[0])
     if card.type == :infection
       affected_city = @board.cities.select {|city| city.name == card.cityname}
