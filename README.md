@@ -6,7 +6,7 @@ Based on the board game Pandemic.
 
 ### tl;dr
 
-This document provides documentation to be used to play the Ruby Pandemics. For Pandemic rules, [click here on  wikipedia](http://tinyurl.com/hvr9nfr).
+This document provides documentation to be used to play the Ruby Pandemics. For Pandemic rules, [click here on  wikipedia](http://tinyurl.com/hvr9nfr). Number of players = 2 to 4.
 
 ### Environment
 

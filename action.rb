@@ -42,26 +42,26 @@ class Action
     action_number = gets.chomp.to_i
     case action_number
     when 1
-      drive(@player)
-      @action_reduction = 1
+      execution = drive(@player)
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 2
       direct_flight(@player)
-      @action_reduction = 1
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 3
       charter_flight(@player)
-      @action_reduction = 1
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 4
       shuttle_flight(@player)
-      @action_reduction = 1
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 5
-      build_a_research_st(@player)
-      @action_reduction = 1
+      execution = build_a_research_st(@player)
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 6
       treat_disease(@player)
       @action_reduction = 1
     when 7
-      share_knowledge(@player)
-      @action_reduction = 1
+      execution = share_knowledge(@player)
+      execution? @action_reduction = 1 | @action_reduction = 0
     when 8
 
     when 9
@@ -100,45 +100,63 @@ class Action
   def drive(player) #neighboring city movement
     satisfied = false
     while !satisfied
-      puts "Where to drive / ferry?"
+      print "Where to drive / ferry? Type 'cancel' to cancel this action."
       destination_string = gets.chomp
-      destination = @mech.string_to_city(destination_string)
-      moved = dispatcher_posibility(player)
-
-      neighbors = @player_location.neighbors
-      if neighbors.include?(destination)
-        satisfied = true
-        @mech.move_player(player, @mech.string_to_city(answer), moved)
-        puts "Drove / Ferried to " + destination_string
+      if destination_string == "cancel"
+        executed = false
+        puts "Action cancelled, no actions were used."
+        puts
+        return executed
       else
-        puts "Neighbor city unrecognized."
+        destination = @mech.string_to_city(destination_string)
+        moved = dispatcher_posibility(player)
+
+        neighbors = @player_location.neighbors
+        if neighbors.include?(destination)
+          satisfied = true
+          @mech.move_player(player, @mech.string_to_city(answer), moved)
+          puts "Drove / Ferried to " + destination_string
+          executed = true
+        else
+          puts "Neighbor city unrecognized."
+        end
       end
     end
 
     medic_automatic_treat_cured(moved, destination) if moved.role == :medic
-
+    return executed
   end
 
   def direct_flight(player) #discard a city card to move to city named on the card
     satisfied = false
     while !satisfied
-      puts "Where to direct flight?"
+      puts "Where to direct flight? Type 'cancel' to cancel this action."
       destination_string = gets.chomp
-      destination_city = @mech.string_to_city(destination_string)
-      destination_card = @mech.string_to_player_card(destination_string)
 
-      moved = dispatcher_posibility(player)
-
-      if player.cards.include?(destination_card)
-        @mech.move_player(player, destination_string, moved)
-        puts moved.name + " has been moved to " + destination_string
-        @mech.discard_card_from_player_hand(player, destination_card)
-        satisfied = true
+      if destination_string == 'cancel'
+        executed = false
+          puts "Direct flight has been cancelled. No actions were used."
+          puts
+        return executed
       else
-        puts "You don't have that player card with that city name. Try again."
+        destination_city = @mech.string_to_city(destination_string)
+        destination_card = @mech.string_to_player_card(destination_string)
+
+        moved = dispatcher_posibility(player)
+
+        if player.cards.include?(destination_card)
+          @mech.move_player(player, destination_string, moved)
+          puts moved.name + " has been moved to " + destination_string
+          @mech.discard_card_from_player_hand(player, destination_card)
+          satisfied = true
+          executed = true
+        else
+          puts "You don't have that player card with that city name. Try again."
+        end
       end
     end
     medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
+    return executed
   end
 
   def dispatcher_posibility(player)
@@ -162,48 +180,77 @@ class Action
     charter_flight_card = @mech.string_to_player_card(moved.location)
 
     if !player.cards.include?(charter_flight_card)
-      return "You can't do charter flight as you don't have the card with the moved player's current city name"
+      executed = false
+      puts "You can't do charter flight as you don't have the card with the moved player's current city name. Charter flight is cancelled. No action were used."
+      puts
+      return executed
     else
       satisfied = false
       while !satisfied
-        puts "Where to charter flight?"
+        puts "Where to charter flight? Type 'cancel' to cancel this action."
         destination_string = gets.chomp
-        destination_city = @mech.string_to_city(destination_string)
 
-        if destination_city != nil
-          @mech.move_player(player, destination_string, moved)
-          puts moved.name + " has been moved to " + destination_string
-          @mech.discard_card_from_player_hand(player, charter_flight_card)
-          satisfied = true
+        if destination_string == 'cancel'
+          executed = false
+          puts "Charter flight is cancelled. No action were used."
+          puts
+          return executed
         else
-          puts "That's not a valid city destination. Try again."
+          destination_city = @mech.string_to_city(destination_string)
+
+          if destination_city != nil
+            @mech.move_player(player, destination_string, moved)
+            puts moved.name + " has been moved to " + destination_string
+            @mech.discard_card_from_player_hand(player, charter_flight_card)
+            satisfied = true
+            executed = true
+          else
+            puts "That's not a valid city destination. Try again."
+          end
         end
       end
+      return executed
     end
 
     medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
+    return executed
   end
 
   def shuttle_flight(player) #move from a research station to another research station
     moved = dispatcher_posibility(player)
 
-    return "Moved player is not in a city with a research station!" if !@player_location.research_st
+    if !@player_location.research_st
+      executed = false
+      puts "Moved player is not in a city with a research station! Action is cancelled. No action was used".
+      puts
+      return executed
+    end
 
     satisfied = false
     while !satisfied
-      puts "Where to shuttle flight?"
+      puts "Where to shuttle flight? Type 'cancel' to cancel this action."
       destination_string = gets.chomp
-      destination_city = @mech.string_to_city(destination_string)
 
-      if destination_city.research_st
-        @mech.move_player(player, destination_string, moved)
-        puts moved.name + " has been moved to " + destination_string
-        satisfied = true
+      if destination_string == "cancel"
+        executed = false
+        puts "Action is cancelled. No action was used".
+        puts
+        return executed
       else
-        puts "That's not a valid destination. Try again."
+        destination_city = @mech.string_to_city(destination_string)
+
+        if destination_city.research_st
+          @mech.move_player(player, destination_string, moved)
+          puts moved.name + " has been moved to " + destination_string
+          satisfied = true
+          executed = true
+        else
+          puts "That's not a valid destination. Try again."
+        end
       end
     end
     medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
+    return executed
   end
 
   def build_a_research_st(player, use_card = true)
@@ -220,25 +267,25 @@ class Action
     use_card = false if player.role == :operations_expert
 
     if use_card
-      find_card_to_discard = false
-      while !find_card_to_discard
-        if !player.cards.include?(location)
-          puts "Player doesn't have that city player card! Try again!"
-        else
-          puts "The player card is used to build a research station and discarded to the Player Discard Pile"
-          @mech.build_research_st(player, location)
-          player_card_to_discard = @mech.string_to_player_card(location.string)
-          @mech.discard_card_from_player_hand(player, player_card_to_discard)
-          find_card_to_discard = true
-        end
+      if !player.cards.include?(location)
+        puts "Player doesn't have that city player card! Builing research station cancelled."
+        executed = false
+      else
+        puts "The city player card is used to build a research station and discarded to the Player Discard Pile"
+        @mech.build_research_st(player, location)
+        player_card_to_discard = @mech.string_to_player_card(location.string)
+        @mech.discard_card_from_player_hand(player, player_card_to_discard)
+        executed = true
       end
     else
       @mech.build_research_st(player, location)
       puts "A research station has been added to that city."
+      executed = true
     end
+    return executed
   end
 
-  def treat_disease(player, color = :no_color, number = 0)
+  def treat_disease(player, color = :no_color, number = 1)
 
     city = @mech.string_to_city(player.location)
 
@@ -277,6 +324,8 @@ class Action
 
   def share_knowledge(player)
     city = @mech.string_to_city(player.location)
+    city_card = @mech.string_to_player_card(player.location)
+
     satisfied = false
     while !satisfied
       print "Whom to share knowledge with?"
@@ -285,12 +334,37 @@ class Action
       if shared != nil && city.pawns.include?(shared.pawn)
         satisfied = true
       else
-        puts "Unrecognized player name or player not in the same city"
+        puts "Unrecognized player name or player not in the same city."
       end
     end
 
-    
-
+    card_satisfied = false
+    while !card_satisfied
+      if player.role == :researcher
+        puts "Which player city card to share?"
+        card_string = gets.chomp
+        city_card = @mech.string_to_player_card(card_string)
+        if card != nil && player.cards.include?(card)
+          card_satisfied = true
+          puts city_card.cityname + " is given to " + shared.name + " by " + player.name
+          @mech.give_card_to_another_player(player, shared, city_card)
+          puts
+          executed = true
+        else
+          puts "Player doesn't have that card or Card name typed wrong. Try again!"
+        end
+      elsif player.cards.include?(city_card)
+        puts city_card.cityname + " is given to " + shared.name + " by " + player.name
+        puts
+        satisfied = true
+        @mech.give_card_to_another_player(player, shared, city_card)
+        executed = true
+      else
+        puts "Player is not a medic and doesn't have the city player card both the player and the receiver are in. Action cancelled."
+        executed = false
+      end
+    end
+    return executed
   end
 
   def discover_a_cure

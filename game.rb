@@ -449,7 +449,6 @@ class Game
     @mech.put_player_cards_into_hand(dealt_cards, player)
   end
 
-  
   def perform_infect(city, color, number_of_cubes)
     existing_cubes = city.color_count
     if existing_cubes + number_of_cubes <= 3

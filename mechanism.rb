@@ -51,7 +51,7 @@ class Mechanism
     card.discard_to_player_discard_pile
   end
 
-  def treat(player, city, color, var_in_game_class, reset, number = 0)
+  def treat(player, city, color, var_in_game_class, reset, number = 1)
     #reset means all cubes of that color is removed in a treat.
     reset = true if player.role == :medic
 
