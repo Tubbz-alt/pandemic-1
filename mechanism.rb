@@ -102,4 +102,57 @@ class Mechanism
     end
   end
 
+  def give_card_to_another_player(giver, receiver, card)
+    giver.cards.delete(card)
+    put_player_cards_into_hand([card], receiver)
+  end
+
+
+
+  def put_player_cards_into_hand(dealt_cards, player)
+    player.put_cards_into_hand(dealt_cards)
+    if player.has_epidemic_card?
+      puts "You got an epidemic card!"
+      player.discard_epidemic_card_to_discard_pile
+      #perform epidemic card actions
+    end
+    dealt_cards.each do |card|
+      card.taken_by_a_player(player)
+    end
+    while player.toss_cards?
+      player_to_discard_in_hand(player)
+    end
+  end
+
+  def player_to_discard_in_hand(player)
+    puts player.name.to_s + ", you have more than 7 cards currently. These are your cards in hand : " + player.cards_in_hand_description.to_s
+    puts "Let's discard cards one by one."
+    card_discarded = prompt_card_to_discard(player)
+    discard_card_from_player_hand(player, card_discarded)
+    puts card_discarded.cityname + " has been discarded to Player Discard Pile." if card_discarded.type == :player
+    puts card_discarded.event.to_s + " has been discarded to Player Discard Pile." if card_discarded.type == :event
+  end
+
+  def prompt_card_to_discard(player)
+    satisfied = false
+    while !satisfied
+      puts "Pick a card event or city name to discard!"
+      card_id_string = gets.chomp
+      if player.names_of_player_cards_in_hand.include?(card_id_string)
+        chosen_card = player.player_cards_in_hand.select {|card| card.cityname == card_id_string}
+      elsif player.desc_of_event_cards_in_hand.include?(card_id_string)
+        chosen_card = player.event_cards_in_hand.select {|card| card.event.to_s == card_id_string}
+      end
+      if chosen_card.size == 0
+        puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+      else chosen_card.size == 1
+        satisfied = true
+      end
+    end
+    return chosen_card[0]
+  end
+
+
+
+
 end

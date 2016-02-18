@@ -25,15 +25,4 @@ class EventCard
     @value = 0
   end
 
-  
-  def perform_one_quiet_night(player)
-
-  end
-
-  def perform_forecast(player)
-
-
-  end
-
-
 end

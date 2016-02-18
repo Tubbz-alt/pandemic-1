@@ -57,7 +57,7 @@ class Player
   end
 
   def desc_of_event_cards_in_hand
-    card_event_ih = event_cards_in_hand
+    event_cards_ih = event_cards_in_hand
     card_events = []
     event_cards_ih.each do |card|
       card_events << card.event.to_s
@@ -67,6 +67,12 @@ class Player
 
   def discard_to_player_discard_pile(card)
     @cards.delete(card)
+  end
+
+  def discard_epidemic_card_to_discard_pile
+    card = @cards.select {|card| card.type == :epidemic}
+    card[0].discard_to_player_discard_pile
+    discard_to_player_discard_pile(card[0])
   end
 
   def cards_in_hand_description

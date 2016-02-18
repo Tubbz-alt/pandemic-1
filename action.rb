@@ -23,7 +23,7 @@ class Action
     puts "4. Shuttle flight from a research station to another (1)"
     puts "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1). For building a research station through Government Grant event card, see number 12 below"
     puts "6. Treat disease by removing 1 cube (or all cubes if player is medic) from city you're in. If disease is cured, remove all cubes of that color (1)"
-    puts "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researched can give a shared card that doesn't have to match the city both players are in (1)"
+    puts "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researcher can give a shared card that doesn't have to match the city both players are in (1)"
     puts "8. Ask the researcher for a city card in Share Knowledge (1)"
     puts "9. Discover a cure by discarding 5 cards of the same color to cure disease of that color, or 4 cards only if the player is a scientist (1)"
     puts "10. Take an event card from the Player Discard Pile if player is contingency player (1)"
@@ -60,7 +60,8 @@ class Action
       treat_disease(@player)
       @action_reduction = 1
     when 7
-
+      share_knowledge(@player)
+      @action_reduction = 1
     when 8
 
     when 9
@@ -274,7 +275,21 @@ class Action
     end
   end
 
-  def share_knowledge
+  def share_knowledge(player)
+    city = @mech.string_to_city(player.location)
+    satisfied = false
+    while !satisfied
+      print "Whom to share knowledge with?"
+      answer = gets.chomp
+      shared = @mech.string_to_player(answer)
+      if shared != nil && city.pawns.include?(shared.pawn)
+        satisfied = true
+      else
+        puts "Unrecognized player name or player not in the same city"
+      end
+    end
+
+    
 
   end
 
