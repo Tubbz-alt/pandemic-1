@@ -7,13 +7,14 @@ require_relative "round"
 
 class Game
 
-  attr_accessor :number_players, :infection_deck, :infection_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck
+  attr_accessor :number_players, :infection_deck, :infection_discard_pile, :player_discard_pile
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate
 
   def initialize
     player_creation
 
     @infection_rate_index = 0
+    @infection_rate = INFECTION_RATE_BOARD[@infection_rate_index]
     @board = Board.new()
     @blue_disease = @board.blue_disease
     @red_disease = @board.red_disease
@@ -21,6 +22,7 @@ class Game
     @black_disease  =@board.black_disease
     @infection_deck = setup_infection_deck #Index 0 = Bottom of deck
     @infection_discard_pile = []
+    @player_discard_pile = []
     setup_player_deck #Returns @player_deck which index 0 = Bottom of deck
 
     @outbreak_index = 0
@@ -292,14 +294,11 @@ class Game
     @outbreak_index += 1
   end
 
-  def infection_rate #CommandLine
-    INFECTION_RATE_BOARD[@infection_rate_index]
-  end
-
   def increase_infection_rate
     if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
       @infection_rate_index += 1
     end
+    @infection_rate = INFECTION_RATE_BOARD[@infection_rate_index]
   end
 
   def perform_action(card, number_of_infection = 1, player = @players[0])

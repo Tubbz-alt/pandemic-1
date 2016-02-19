@@ -40,7 +40,16 @@ class Turn
   end
 
   def infect
-    #infect cities
+    number_of_infection_cards_taken = @game.infection_rate
+    dealt_cards = @mech.deal_cards(@game.infection_deck, number_of_infection_cards_taken)
+
+    dealt_cards.each do |card|
+      infected_city = @mech.string_to_city(card.cityname)
+      infected_city_original_color = infected_city.original_color
+
+      @mech.perform_infect(infected_city, infected_city_original_color, 1)
+      @mech.discard_card(@game.infection_discard_pile, card)
+    end
   end
 
 

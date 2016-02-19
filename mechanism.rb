@@ -209,8 +209,6 @@ class Mechanism
     if existing_cubes + number_of_cubes <= 3
       city.infect(color, number_of_cubes)
       reduce_color_cube_available(color, number_of_cubes)
-      puts "Outbreak doesn't happen."
-      puts
       if @game.lose?
         @game.game_over?
       end
