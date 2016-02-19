@@ -3,6 +3,7 @@ require_relative "board"
 require_relative "player"
 require_relative "epidemiccard"
 require_relative "mechanism"
+require_relative "round"
 
 class Game
 
@@ -213,6 +214,7 @@ class Game
       city_cards = @mech.deal_cards(@infection_deck, 3)
       city_cards.each do |card|
         perform_action(card, (3 - number))
+        @mech.discard_card(@infection_discard_pile, card)
       end
     end
   end
@@ -302,12 +304,9 @@ class Game
 
   def perform_action(card, number_of_infection = 1, player = @players[0])
     if card.type == :infection
-      affected_city = @board.cities.select {|city| city.name == card.cityname}
-      perform_infect(affected_city[0], affected_city[0].original_color, number_of_infection)
-      @board.cities.each do |city|
-        city.outbreak_reset
-      end
-      @infection_discard_pile << card
+      infected_city = @mech.string_to_city(card.cityname)
+      infected_city_original_color = infected_city.original_color
+      @mech.perform_infect(infected_city, infected_city_original_color, number_of_infection)
     elsif card.type == :player
       # build a research_center (action available -= 1), or move_pawns (action available -= 1), or transfer cards (action available -=1).
     elsif card.type == :event
@@ -339,44 +338,7 @@ class Game
     city[0]
   end
 
-  def perform_infect(city, color, number_of_cubes)
-    existing_cubes = city.color_count
-    if existing_cubes + number_of_cubes <= 3
-      city.infect(color, number_of_cubes)
-      reduce_color_cube_available(color, number_of_cubes)
-      if lose?
-        game_over?
-      end
-    else
-      if !lose?
-        city.outbreak_happens = true
-        neighbors_names = ""
-        city.neighbors.each do |neighbor|
-          if !neighbor.outbreak
-            neighbors_names + " " + neighbor.name
-            perform_infect(neighbor, color, 1)
-          end
-        end
-        puts "Outbreak on this city! Affected cities : "+neighbors_names
-        increase_outbreak_index
-      else
-        game_over?
-      end
-    end
-  end
 
-  def reduce_color_cube_available(color, number = 1)
-    case color
-    when :red
-      @red_disease.reduce_cubes_available(number)
-    when :yellow
-      @yellow_disease.reduce_cubes_available(number)
-    when :black
-      @black_disease.reduce_cubes_available(number)
-    when :blue
-      @blue_disease.reduce_cubes_available(number)
-    end
-  end
 
   def players_deal_initial_cards
     @players.each do |player|

@@ -61,7 +61,7 @@ class Mechanism
   end
 
   def discard_card(to_pile, card)
-    to_pile += card
+    to_pile << card
   end
 
   def discard_card_from_player_hand(player, card)
@@ -135,7 +135,11 @@ class Mechanism
   def put_player_cards_into_hand(dealt_cards, player)
     player.put_cards_into_hand(dealt_cards)
     if player.has_epidemic_card?
-      puts "You got an epidemic card!"
+      puts "You got an epidemic card! The epidemic card is discarded out of the game."
+      puts "The following happens in an epidemic : "
+      puts "1. Infection Rate is elevated."
+      puts "2. Infect the City in the Infection Card at the bottom of the Infection Deck with 3 cubes of its original color. Then discard the card to the Infection Discard Pile."
+      puts "3. Shuffle all the cards in the Infection Discard Pile and put all of them back on top of the Infection Deck."
       epidemic_card = player.discard_epidemic_card_to_discard_pile
       @game.discard_card(@game.player_discard_pile, epidemic_card)
       #perform epidemic card actions
@@ -178,6 +182,70 @@ class Mechanism
       end
     end
     return chosen_card[0]
+  end
+
+  def epidemic_action
+    #Update Infection Rate Index.
+    @game.increase_infection_rate
+
+    #Infect the bottom city in the Infection Deck with 3 cubes.
+    infection_card = @game.infection_deck.shift(1)
+    discard_card(@game.infection_discard_pile, infection_card)
+    infection_card.reveal
+
+    infected_city = string_to_city(infection_card.cityname)
+    infected_city_original_color = infected_city.original_color
+    puts "The revealed infection card is " + infection_card.cityname + " and its original color is " + infected_city_original_color.to_s
+    perform_infect(@game.board.infected_city, infected_city_original_color, 3)
+
+    # Shuffle cards in the infection discard pile and put them on top of the Infection Deck.
+    @game.infection_discard_pile.shuffle!
+    @game.infection_deck += @game.infection_discard_pile
+    @game.infection_discard_pile = []
+  end
+
+  def perform_infect(city, color, number_of_cubes)
+    existing_cubes = city.color_count
+    if existing_cubes + number_of_cubes <= 3
+      city.infect(color, number_of_cubes)
+      reduce_color_cube_available(color, number_of_cubes)
+      puts "Outbreak doesn't happen."
+      puts
+      if @game.lose?
+        @game.game_over?
+      end
+    else
+      if !@game.lose?
+        city.outbreak_happens
+        neighbors_names = ""
+        city.neighbors.each do |neighbor|
+          if !neighbor.outbreak
+            neighbors_names + " " + neighbor.name
+            perform_infect(neighbor, color, 1)
+          end
+        end
+        puts "Outbreak on this city! Affected cities : "+neighbors_names
+        @game.increase_outbreak_index
+      else
+        @game.game_over?
+      end
+    end
+    @game.board.cities.each do |city|
+      city.outbreak_reset
+    end
+  end
+
+  def reduce_color_cube_available(color, number = 1)
+    case color
+    when :red
+      @game.red_disease.reduce_cubes_available(number)
+    when :yellow
+      @game.yellow_disease.reduce_cubes_available(number)
+    when :black
+      @game.black_disease.reduce_cubes_available(number)
+    when :blue
+      @game.blue_disease.reduce_cubes_available(number)
+    end
   end
 
 

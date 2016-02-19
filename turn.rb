@@ -8,7 +8,8 @@ class Turn
 
   def initialize(player, round)
     @player = player
-    @game = round.game
+    @round = round
+    @game = @round.game
     @mech = @game.mech
     @location = @mech.string_to_city(player.location)
     @action_left = 4
@@ -34,7 +35,8 @@ class Turn
   end
 
   def take_card_from_player_deck
-    #draw 2 player cards
+    dealt_cards = @mech.deal_cards(@player, 2)
+    @mech.put_player_cards_into_hand(dealt_cards, @player)
   end
 
   def infect
