@@ -44,7 +44,7 @@ class Mechanism
     return city[0]
   end
 
-  def move_player(mover, to_string, moved = self)
+  def move_player(mover, to_string, moved = player)
     to = string_to_city(to_string)
     moved_current_city = string_to_city(moved.location)
     mover.move_pawn(to, moved)

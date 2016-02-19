@@ -4,7 +4,7 @@ require_relative 'action'
 
 class Turn
 
-  attr_reader :action_left
+  attr_reader :action_left, :acts
 
   def initialize(player, round)
     @player = player
@@ -12,6 +12,7 @@ class Turn
     @mech = @game.mech
     @location = @mech.string_to_city(player.location)
     @action_left = 4
+    @acts = []
     actions
     # take_card_from_player_deck
     # infect
@@ -26,7 +27,8 @@ class Turn
       act = Action.new(self)
       puts "You have " + @action_left.to_s + " actions left."
       act.allowed_actions
-      act.execute_player_action
+      action_number = act.execute_player_action
+      @acts << action_number if act.action_reduction == 1
       @action_left -= act.action_reduction
     end
   end

@@ -32,7 +32,7 @@ class Action
     puts "13. Use Airlift event by discarding the event card (0)"
     puts "14. Use One Quiet Night event by discarding the event card (0)"
     puts "15. Use Forecast by discarding the event card (0)"
-    puts "16. Move to any city by discarding any city card once per turn if operations expert (1)"
+    puts "16. Move from a research center to any city by discarding any city card once per turn if operations expert (1)"
     puts
   end
 
@@ -98,8 +98,28 @@ class Action
       forecast(@player)
       @action_reduction = 0
     when 16
-
+      if !@player.role == :operations_expert
+        puts "Player's role is not operations expert. Action cancelled."
+        puts
+        @action_reduction = 0
+      elsif @turn.acts.include?(action_number)
+        puts "This special action by operations expert can only be done once per turn. Action cancelled."
+        puts
+        @action_reduction = 0
+      elsif !@player_location.research_st
+        puts "Player is not in a city with research station. Action cancelled."
+        puts
+        @action_reduction = 0
+      elsif @player.cards.size < 1
+        puts "Player doesn't have a card to discard. Action cancelled."
+        puts
+        @action_reduction = 0
+      else
+        execution = operations_expert_move_to_any_city(@player)
+        execution? @action_reduction = 1 | @action_reduction = 0
+      end
     end
+    return action_number
   end
 
   def medic_automatic_treat_cured(player, city)
@@ -681,6 +701,55 @@ class Action
     puts "These 6 cards have been returned to the top of the infection deck. Their order, from the bottom of the deck, is :"
     new_6.each {|card| puts card.cityname}
     puts
+  end
+
+  def operations_expert_move_to_any_city(player)
+    destination_confirmation = false
+    while !destination_confirmation
+      print "Which city you wish to go? Type 'cancel' to cancel this action."
+      destination_string = gets.chomp
+
+      if destination_string == 'cancel'
+        executed = false
+        puts "Action cancelled. No action was used."
+        puts
+        return executed
+      else
+        destination = @mech.string_to_city(destination_string)
+        if destination != nil
+          destination_confirmation = true
+        else
+          puts "City unrecognized. Try again!"
+        end
+      end
+    end
+
+    discarded_card_confirmation = false
+    while !discarded_card_confirmation
+      print "Which city player card do you wish to discard? Type 'cancel' to cancel this action."
+      card_string = gets.chomp
+
+      if card_string == 'cancel'
+        executed = false
+        puts "Action cancelled. No action was used."
+        puts
+        return executed
+      else
+        card = @mech.string_to_card(card_string)
+        if card != nil && player.cards.include?(card)
+          discarded_card_confirmation = true
+          executed = true
+          moved = player
+          @mech.move_player(player, destination.name, moved)
+          @mech.discard_card_from_player_hand(player, card)
+          puts player.name + " is moved to " + destination.name + " by discarding " + card.cityname + "Player Card."
+          puts
+        else
+          puts "City Player Card unrecognized or player doesn't have that City Player Card. Try again!"
+        end
+      end
+    end
+    return executed
   end
 
 end
