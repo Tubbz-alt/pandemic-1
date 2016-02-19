@@ -12,7 +12,7 @@ class Player
     @location = "Atlanta"
   end
 
-  def move_pawn(destination, moved = self)
+  def move_pawn(destination, moved)
     moved.location = destination.name
   end
 

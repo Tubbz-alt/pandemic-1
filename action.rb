@@ -42,25 +42,25 @@ class Action
     case action_number
     when 1
       execution = drive(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 2
       direct_flight(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 3
       charter_flight(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 4
       shuttle_flight(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 5
       execution = build_a_research_st(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 6
       treat_disease(@player)
       @action_reduction = 1
     when 7
       execution = share_knowledge(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 8
       if @player.role == :researcher
         puts "Researcher can't ask herself to give herself a card."
@@ -68,15 +68,15 @@ class Action
         return @action_reduction = 0
       else
         execution = ask_card_to_researcher(@player)
-        execution? @action_reduction = 1 | @action_reduction = 0
+        execution ? @action_reduction = 1 : @action_reduction = 0
       end
     when 9
       execution = discover_cure(@player)
-      execution? @action_reduction = 1 | @action_reduction = 0
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 10
       if @player.role == :contingency_planner && @player.event_card_on_role.size == 0
         execution = take_an_event_card_from_player_discard_pile(@player)
-        execution? @action_reduction = 1 | @action_reduction = 0
+        execution ? @action_reduction = 1 : @action_reduction = 0
       else
         puts "Action can't be completed. Either player's role is not Contingency Planner or it has more than 1 event card on his role card."
         puts
@@ -116,13 +116,13 @@ class Action
         @action_reduction = 0
       else
         execution = operations_expert_move_to_any_city(@player)
-        execution? @action_reduction = 1 | @action_reduction = 0
+        execution ? @action_reduction = 1 : @action_reduction = 0
       end
     end
     return action_number
   end
 
-  def medic_automatic_treat_cured(player, city)
+  def medic_automatic_treat_cured(moved, city)
     if player.role == :medic
       treat_disease(moved, :black)
       treat_disease(moved, :blue)
@@ -136,7 +136,7 @@ class Action
   def drive(player) #neighboring city movement
     satisfied = false
     while !satisfied
-      print "Where to drive / ferry? Type 'cancel' to cancel this action."
+      print "Where to drive / ferry? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
       if destination_string == "cancel"
         executed = false
@@ -150,7 +150,7 @@ class Action
         neighbors = @player_location.neighbors
         if neighbors.include?(destination)
           satisfied = true
-          @mech.move_player(player, @mech.string_to_city(answer), moved)
+          @mech.move_player(player, destination_string, moved)
           puts "Drove / Ferried to " + destination_string
           executed = true
         else

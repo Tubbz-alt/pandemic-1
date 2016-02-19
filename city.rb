@@ -33,7 +33,6 @@ class City
     end
   end
 
-
   def build_research_st
     @research_st = true
   end
@@ -66,7 +65,6 @@ class City
       @blue += number
     end
   end
-
 
   def treat(disease, number = 1)
     case disease

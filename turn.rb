@@ -4,7 +4,7 @@ require_relative 'action'
 
 class Turn
 
-  attr_reader :action_left, :acts
+  attr_reader :action_left, :acts, :player, :game
 
   def initialize(player, round)
     @player = player
@@ -15,8 +15,8 @@ class Turn
     @action_left = 4
     @acts = []
     actions
-    # take_card_from_player_deck
-    # infect
+    take_card_from_player_deck
+    infect
   end
 
   def reduce_action_left
@@ -26,16 +26,21 @@ class Turn
   def actions
     while @action_left > 0
       act = Action.new(self)
-      puts "You have " + @action_left.to_s + " actions left."
+      puts @player.name + "'s turn. You have " + @action_left.to_s + " actions left."
       act.allowed_actions
       action_number = act.execute_player_action
       @acts << action_number if act.action_reduction == 1
+      if @game.game_over?
+        @game.end_game
+        break
+      end
       @action_left -= act.action_reduction
+      puts
     end
   end
 
   def take_card_from_player_deck
-    dealt_cards = @mech.deal_cards(@player, 2)
+    dealt_cards = @mech.deal_cards(@game.player_deck, 2)
     @mech.put_player_cards_into_hand(dealt_cards, @player)
   end
 

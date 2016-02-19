@@ -8,7 +8,7 @@ require_relative "round"
 class Game
 
   attr_accessor :number_players, :infection_deck, :infection_discard_pile, :player_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :rounds, :mech
 
   def initialize
     player_creation
@@ -29,9 +29,117 @@ class Game
 
     @moderator = Player.new("game", :moderator)
     @mech = Mechanism.new(self)
-
+    @game_run = true
     game_setup
+
+    welcome_players
+    game_start
+    @rounds = []
   end
+
+# Game Starter
+
+  def welcome_players
+    puts
+    puts
+    puts "Board is set. Let's start the game!!"
+    puts
+    puts
+  end
+
+  def game_start
+    while @game_run
+      @rounds << Round.new(self)
+    end
+  end
+
+
+# The following are the game checker / ender
+
+  def end_game
+    @game_run = false
+  end
+
+  def game_over?
+    if win?
+      true
+    elsif lose?
+      true
+    else
+      false
+    end
+  end
+
+  def win?
+    if @blue_disease.cured == true && @red_disease.cured == true && @yellow_disease.cured == true && @black_disease.cured == true
+      puts "You won!!"
+      return true
+    end
+    false
+  end
+
+  def lose_on_max_outbreaks?
+    if @outbreak_index < MAX_OUTBREAKS
+      return false
+    else
+      return true
+    end
+  end
+
+  def lose_on_cubes_availability?
+    if @blue_disease.cubes_available == 0
+      puts "No more blue cubes! Game over!"
+      puts
+      return true
+    elsif @red_disease.cubes_available == 0
+      puts "No more red cubes! Game over!"
+      puts
+      return true
+    elsif @yellow_disease.cubes_available == 0
+      puts "No more yellow cubes! Game over!"
+      puts
+      return true
+    elsif @black_disease.cubes_available == 0
+      puts "No more black cubes! Game over!"
+      puts
+      return true
+    end
+    false
+  end
+
+  def lose_on_player_cards_availability?
+    @player_deck.size == 0
+  end
+
+  def lose?
+    if lose_on_max_outbreaks?
+      puts "Lose on Max Outbreaks! Game over!"
+      puts
+      return true
+    elsif lose_on_cubes_availability?
+      return true
+    elsif lose_on_player_cards_availability?
+      puts "You run out of Player Cards! Game Over!"
+      puts
+      return true
+    end
+    false
+  end
+
+# The following are game simple mechanism
+
+  def increase_outbreak_index
+    @outbreak_index += 1
+  end
+
+  def increase_infection_rate
+    if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
+      @infection_rate_index += 1
+    end
+    @infection_rate = INFECTION_RATE_BOARD[@infection_rate_index]
+  end
+
+# The following section includes setting up board.
 
   def player_creation
     @players = []
@@ -58,8 +166,6 @@ class Game
     players_order_setup
     players_order
   end
-
-# The following section includes setting up board.
 
   def prompt_number_of_players
     while @number_players < 2 or @number_players > 5 do
@@ -215,129 +321,21 @@ class Game
     3.times do |number|
       city_cards = @mech.deal_cards(@infection_deck, 3)
       city_cards.each do |card|
-        perform_action(card, (3 - number))
+        perform_initial_infection(card, (3 - number))
         @mech.discard_card(@infection_discard_pile, card)
       end
     end
   end
 
-#The following are the game checker
-
-  def game_over?
-    if win?
-      true
-    elsif lose?
-      true
-    else
-      false
-    end
-  end
-
-  def win?
-    if @blue_disease.cured == true && @red_disease.cured == true && @yellow_disease.cured == true && @black_disease.cured == true
-      return true
-    end
-    false
-  end
-
-  def lose_on_max_outbreaks?
-    if @outbreak_index < MAX_OUTBREAKS
-      return false
-    else
-      return true
-    end
-  end
-
-  def lose_on_cubes_availability?
-    if @blue_disease.cubes_available == 0
-      puts "No more blue cubes! Game over!"
-      puts
-      return true
-    elsif @red_disease.cubes_available == 0
-      puts "No more red cubes! Game over!"
-      puts
-      return true
-    elsif @yellow_disease.cubes_available == 0
-      puts "No more yellow cubes! Game over!"
-      puts
-      return true
-    elsif @black_disease.cubes_available == 0
-      puts "No more black cubes! Game over!"
-      puts
-      return true
-    end
-    false
-  end
-
-  def lose_on_player_cards_availability?
-    @player_deck.size == 0
-  end
-
-  def lose?
-    if lose_on_max_outbreaks?
-      puts "Lose on Max Outbreaks! Game over!"
-      puts
-      return true
-    elsif lose_on_cubes_availability?
-      return true
-    elsif lose_on_player_cards_availability?
-      puts "You run out of Player Cards! Game Over!"
-      puts
-      return true
-    end
-    false
-  end
-
-#The following are game simple mechanism
-
-  def increase_outbreak_index
-    @outbreak_index += 1
-  end
-
-  def increase_infection_rate
-    if @infection_rate_index != INFECTION_RATE_BOARD.size - 1
-      @infection_rate_index += 1
-    end
-    @infection_rate = INFECTION_RATE_BOARD[@infection_rate_index]
-  end
-
-  def perform_action(card, number_of_infection = 1, player = @players[0])
+  def perform_initial_infection(card, number)
     if card.type == :infection
       infected_city = @mech.string_to_city(card.cityname)
       infected_city_original_color = infected_city.original_color
-      @mech.perform_infect(infected_city, infected_city_original_color, number_of_infection)
-    elsif card.type == :player
-      # build a research_center (action available -= 1), or move_pawns (action available -= 1), or transfer cards (action available -=1).
-    elsif card.type == :event
-      perform_event_cards(card, player)
-      @mech.discard_to_player_discard_pile(player, card)
-    elsif card.type == :epidemic
-      # puts Epidemic action
+      @mech.perform_infect(infected_city, infected_city_original_color, number)
+    else
+      puts "Error, this should be handled in different parts of the game. You've found a bug!"
     end
   end
-
-  def perform_event_cards(card, player)
-    case card.event
-    when :Resilient_Population
-      #Is addressed as Action option #11.
-    when :Government_Grant
-      #Is addressed as Action option #12.
-    when :Airlift
-      #Is addressed as Action option #13.
-    when :One_Quiet_Night
-      #Is addressed as Action option #14.
-    when :Forecast
-      #Is addressed as Action option #15.
-    end
-  end
-
-
-  def city_forecast(card)
-    city = @board.cities.select {|city| city.name == card.cityname}
-    city[0]
-  end
-
-
 
   def players_deal_initial_cards
     @players.each do |player|
@@ -361,8 +359,6 @@ class Game
     @players = new_players_order_array
   end
 
-
-
   INFECTION_RATE_BOARD = [2,2,2,3,3,4,4]
 
   MAX_OUTBREAKS = 8
@@ -376,6 +372,8 @@ class Game
     researcher: ["⚭","When doing the share knowledge action, the researcher may give any city from her hand to another player in the same city as her, without this card having to match her city. The transfer must be from her hand to the other player's hand, but it can occur on either player's turn."],
     scientist: ["⚗", "The scientist needs only 4 (not 5) city cards of the same disease color to discover a cure for that disease."]
   }
+
+# The following are made as communication means from the command line during game.
 
   def players_order #CommandLine
     names = @players.collect {|player| player.name}
