@@ -142,7 +142,7 @@ class Mechanism
       puts "3. Shuffle all the cards in the Infection Discard Pile and put all of them back on top of the Infection Deck."
       epidemic_card = player.discard_epidemic_card_to_discard_pile
       @game.discard_card(@game.player_discard_pile, epidemic_card)
-      #perform epidemic card actions
+      epidemic_action
     end
     dealt_cards.each do |card|
       card.taken_by_a_player(player)
