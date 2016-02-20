@@ -1,5 +1,8 @@
 # Mechanism
 
+require_relative 'game'
+require_relative 'player'
+
 class Mechanism
 
   attr_reader :board
@@ -20,16 +23,16 @@ class Mechanism
   end
 
   def symbol_to_player_card(symbol)
-    cards = @game.player_cards.select {|card| card.type == :event}
+    cards = @board.player_cards.select {|card| card.type == :event}
     card = cards.select {|card| card.event == symbol}
     return card[0]
   end
 
   def string_to_player_card(string)
-    if @board.player_card_event_names.include?(string)
-      card = @board.player_cards.select {|card| card.event == string.to_sym}
+    if @board.player_cards_event_names.include?(string)
+      card = @board.player_cards_events.select {|card| card.event == string.to_sym}
     else
-      card = @board.player_cards.select {|card| card.name == string}
+      card = @board.player_cards_cities.select {|card| card.cityname == string}
     end
     return card[0]
   end
@@ -141,7 +144,7 @@ class Mechanism
       puts "2. Infect the City in the Infection Card at the bottom of the Infection Deck with 3 cubes of its original color. Then discard the card to the Infection Discard Pile."
       puts "3. Shuffle all the cards in the Infection Discard Pile and put all of them back on top of the Infection Deck."
       epidemic_card = player.discard_epidemic_card_to_discard_pile
-      @game.discard_card(@game.player_discard_pile, epidemic_card)
+      discard_card(@game.player_discard_pile, epidemic_card)
       epidemic_action
     end
     dealt_cards.each do |card|
@@ -196,6 +199,7 @@ class Mechanism
     infected_city = string_to_city(infection_card.cityname)
     infected_city_original_color = infected_city.original_color
     puts "The revealed infection card is " + infection_card.cityname + " and its original color is " + infected_city_original_color.to_s
+
     perform_infect(@game.board.infected_city, infected_city_original_color, 3)
 
     # Shuffle cards in the infection discard pile and put them on top of the Infection Deck.
@@ -204,32 +208,40 @@ class Mechanism
     @game.infection_discard_pile = []
   end
 
-  def perform_infect(city, color, number_of_cubes)
-    existing_cubes = city.color_count
-    if existing_cubes + number_of_cubes <= 3
-      city.infect(color, number_of_cubes)
-      reduce_color_cube_available(color, number_of_cubes)
-      if @game.lose?
-        @game.game_over?
-      end
-    else
-      if !@game.lose?
-        city.outbreak_happens
-        neighbors_names = ""
-        city.neighbors.each do |neighbor|
-          if !neighbor.outbreak
-            neighbors_names + " " + neighbor.name
-            perform_infect(neighbor, color, 1)
-          end
+  def perform_infect(city, color, number_of_cubes, setup = false)
+    #checking whether quarantine_specialist is in that city or neighboring cities.
+    quarantine_specialist = symbol_to_player(:quarantine_specialist)
+
+    neighboring_cities_pawns = []
+    city.neighbors.each {|neighbor| neighboring_cities_pawns += neighbor.pawns}
+
+    if setup || quarantine_specialist == nil ||  (!city.pawns.include?(quarantine_specialist.pawn) && !neighboring_cities_pawns.include?(quarantine_specialist.pawn))
+      existing_cubes = city.color_count
+      if existing_cubes + number_of_cubes <= 3
+        city.infect(color, number_of_cubes)
+        reduce_color_cube_available(color, number_of_cubes)
+        if @game.lose?
+          @game.game_over?
         end
-        puts "Outbreak on this city! Affected cities : "+neighbors_names
-        @game.increase_outbreak_index
       else
-        @game.game_over?
+        if !@game.lose?
+          city.outbreak_happens
+          neighbors_names = ""
+          city.neighbors.each do |neighbor|
+            if !neighbor.outbreak
+              neighbors_names + " " + neighbor.name
+              perform_infect(neighbor, color, 1)
+            end
+          end
+          puts "Outbreak on this city! Affected cities : "+neighbors_names
+          @game.increase_outbreak_index
+        else
+          @game.game_over?
+        end
       end
-    end
-    @game.board.cities.each do |city|
-      city.outbreak_reset
+      @game.board.cities.each do |city|
+        city.outbreak_reset
+      end
     end
   end
 

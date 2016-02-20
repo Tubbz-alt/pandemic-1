@@ -17,7 +17,11 @@ class Round
     @players.each do |player|
       @turns << Turn.new(player, self)
     end
+    end_round
   end
 
+  def end_round
+    @game.round << self
+  end
 
 end

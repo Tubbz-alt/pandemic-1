@@ -177,13 +177,24 @@ class Board
     @research_station_available = MAX_RESEARCH_STATION - @research_station_built
   end
 
-  def player_cards_city_names
-    names = @player_cards.select {|card| card.type == :player}
+  def player_cards_cities
+    cities = @player_cards.select {|card| card.type == :player}
   end
 
-  def player_card_event_names
+  def player_cards_events
     events = @player_cards.select {|card| card.type == :event}
   end
+
+  def player_cards_city_names
+    cities = player_cards_cities
+    cities.collect {|card| card.cityname}
+  end
+
+  def player_cards_event_names
+    events = player_cards_events
+    events.collect {|card| card.event.to_s}
+  end
+
 
   EVENT_CARDS = {
     Resilient_Population: "Play at anytime, Not an action. Remove any 1 card in the infection dicard pile from the Game. You may play this between the infect and intensify steps of an epidemic.",

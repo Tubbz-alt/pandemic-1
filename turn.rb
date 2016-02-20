@@ -27,7 +27,7 @@ class Turn
     while @action_left > 0
       act = Action.new(self)
       puts @player.name + "'s turn. You have " + @action_left.to_s + " actions left."
-      act.allowed_actions
+      act.print_allowed_actions
       action_number = act.execute_player_action
       @acts << action_number if act.action_reduction == 1
       if @game.game_over?
@@ -55,6 +55,7 @@ class Turn
       @mech.perform_infect(infected_city, infected_city_original_color, 1)
       @mech.discard_card(@game.infection_discard_pile, card)
     end
+  end_turn
   end
 
 

@@ -4,11 +4,12 @@ require_relative "player"
 require_relative "epidemiccard"
 require_relative "mechanism"
 require_relative "round"
+require_relative "communication"
 
 class Game
 
   attr_accessor :number_players, :infection_deck, :infection_discard_pile, :player_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :rounds, :mech
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :rounds, :mech, :com
 
   def initialize
     player_creation
@@ -29,9 +30,11 @@ class Game
 
     @moderator = Player.new("game", :moderator)
     @mech = Mechanism.new(self)
+
     @game_run = true
     game_setup
 
+    @com = Communication.new(self)
     welcome_players
     game_start
     @rounds = []
@@ -49,7 +52,7 @@ class Game
 
   def game_start
     while @game_run
-      @rounds << Round.new(self)
+      round = Round.new(self)
     end
   end
 
@@ -331,7 +334,7 @@ class Game
     if card.type == :infection
       infected_city = @mech.string_to_city(card.cityname)
       infected_city_original_color = infected_city.original_color
-      @mech.perform_infect(infected_city, infected_city_original_color, number)
+      @mech.perform_infect(infected_city, infected_city_original_color, number, true)
     else
       puts "Error, this should be handled in different parts of the game. You've found a bug!"
     end

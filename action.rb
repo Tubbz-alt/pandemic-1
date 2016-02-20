@@ -1,6 +1,7 @@
 # Action
 
-require_relative 'mechanism.rb'
+require_relative 'mechanism'
+require_relative 'communication'
 
 class Action
 
@@ -12,27 +13,37 @@ class Action
     @game = @turn.game
     @mech = @game.mech
     @player_location = @mech.string_to_city(@player.location)
+    @com = @game.com
     @action_reduction = 0
   end
 
   def allowed_actions
+    allowed_actions = {
+    1 => "1. Drive/Ferry to neighboring town (1)",
+    2 => "2. Direct Flight to a city by discarding the city card (1)",
+    3 => "3. Charter Flight by discarding the city card you're currently in (1)",
+    4 => "4. Shuttle flight from a research station to another (1)",
+    5 => "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1). For building a research station through Government Grant event card, see number 12 below",
+    6 => "6. Treat disease by removing 1 cube (or all cubes if player is medic) from city you're in. If disease is cured, remove all cubes of that color (1)",
+    7 => "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researcher can give a shared card that doesn't have to match the city both players are in (1)",
+    8 => "8. Ask the researcher for any city card in Share Knowledge, as long as the player and the researched are in the same city (1)",
+    9 => "9. Discover a cure by discarding 5 cards of the same color to cure disease of that color, or 4 cards only if the player is a scientist (1)",
+    10 => "10. Take an event card from the Player Discard Pile if player is contingency player (1)",
+    11 => "11. Use Resilient Population event by discarding the event card (0)",
+    12 => "12. Use Government Grant event by discarding the event card (0)",
+    13 => "13. Use Airlift event by discarding the event card (0)",
+    14 => "14. Use One Quiet Night event by discarding the event card (0)",
+    15 => "15. Use Forecast by discarding the event card (0)",
+    16 => "16. Move from a research center to any city by discarding any city card once per turn if operations expert (1)",
+    17 => "17. Communicate with the board to get game status. (0)"
+    }
+  end
+
+  def print_allowed_actions
     puts "Choose from the following possible actions (action worth):"
-    puts "1. Drive/Ferry to neighboring town (1)"
-    puts "2. Direct Flight to a city by discarding the city card (1)"
-    puts "3. Charter Flight by discarding the city card you're currently in (1)"
-    puts "4. Shuttle flight from a research station to another (1)"
-    puts "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1). For building a research station through Government Grant event card, see number 12 below"
-    puts "6. Treat disease by removing 1 cube (or all cubes if player is medic) from city you're in. If disease is cured, remove all cubes of that color (1)"
-    puts "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researcher can give a shared card that doesn't have to match the city both players are in (1)"
-    puts "8. Ask the researcher for any city card in Share Knowledge, as long as the player and the researched are in the same city (1)"
-    puts "9. Discover a cure by discarding 5 cards of the same color to cure disease of that color, or 4 cards only if the player is a scientist (1)"
-    puts "10. Take an event card from the Player Discard Pile if player is contingency player (1)"
-    puts "11. Use Resilient Population event by discarding the event card (0)"
-    puts "12. Use Government Grant event by discarding the event card (0)"
-    puts "13. Use Airlift event by discarding the event card (0)"
-    puts "14. Use One Quiet Night event by discarding the event card (0)"
-    puts "15. Use Forecast by discarding the event card (0)"
-    puts "16. Move from a research center to any city by discarding any city card once per turn if operations expert (1)"
+    allowed_actions.each do |k,v|
+      puts v
+    end
     puts
   end
 
@@ -74,9 +85,11 @@ class Action
       execution = discover_cure(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
     when 10
-      if @player.role == :contingency_planner && @player.event_card_on_role.size == 0
-        execution = take_an_event_card_from_player_discard_pile(@player)
-        execution ? @action_reduction = 1 : @action_reduction = 0
+      if @player.role == :contingency_planner
+        if @player.event_card_on_role.size == 0
+          execution = take_an_event_card_from_player_discard_pile(@player)
+          execution ? @action_reduction = 1 : @action_reduction = 0
+        end
       else
         puts "Action can't be completed. Either player's role is not Contingency Planner or it has more than 1 event card on his role card."
         puts
@@ -118,12 +131,18 @@ class Action
         execution = operations_expert_move_to_any_city(@player)
         execution ? @action_reduction = 1 : @action_reduction = 0
       end
+    when 17
+      communicate_with_game
+      @action_reduction = 0
+    else
+      puts "Invalid Entry! Try again!"
+      @action_reduction = 0
     end
     return action_number
   end
 
   def medic_automatic_treat_cured(moved, city)
-    if player.role == :medic
+    if moved.role == :medic
       treat_disease(moved, :black)
       treat_disease(moved, :blue)
       treat_disease(moved, :yellow)
@@ -208,6 +227,7 @@ class Action
     else
       moved = player
     end
+    moved
   end
 
   def charter_flight(player) #discard city that matches the city you're in to move to any city.
@@ -291,16 +311,16 @@ class Action
 
   def build_a_research_st(player, use_card = true)
 
+    use_card = false if player.role == :operations_expert
+
     location_obtained = false
     while !location_obtained
-      print "Where to put research center in?"
+      print "Where to put research center in? "
       location_string = gets.chomp
       location = @mech.string_to_city(location_string)
       location_obtained = true if location != nil
       puts "City unrecognized. Try again!" if location == nil
     end
-
-    use_card = false if player.role == :operations_expert
 
     if use_card
       if !player.cards.include?(location)
@@ -364,7 +384,7 @@ class Action
 
     satisfied = false
     while !satisfied
-      print "Whom to share knowledge with? Type 'cancel' to cancel this action."
+      print "Whom to share knowledge with? Type 'cancel' to cancel this action. "
       answer = gets.chomp
       if answer == "cancel"
         executed = false
@@ -384,7 +404,7 @@ class Action
     card_satisfied = false
     while !card_satisfied
       if player.role == :researcher
-        puts "Which player city card to share?"
+        puts "Which player city card to share? "
         card_string = gets.chomp
         city_card = @mech.string_to_player_card(card_string)
         if city_card != nil && player.cards.include?(city_card)
@@ -399,11 +419,12 @@ class Action
       elsif player.cards.include?(city_card)
         puts city_card.cityname + " is given to " + shared.name + " by " + player.name
         puts
-        satisfied = true
+        card_satisfied = true
         @mech.give_card_to_another_player(player, shared, city_card)
         executed = true
       else
         puts "Player is not a researcher and doesn't have the city player card both the player and the receiver are in. Action cancelled."
+        card_satisfied = true
         executed = false
       end
     end
@@ -706,7 +727,7 @@ class Action
   def operations_expert_move_to_any_city(player)
     destination_confirmation = false
     while !destination_confirmation
-      print "Which city you wish to go? Type 'cancel' to cancel this action."
+      print "Which city you wish to go? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
       if destination_string == 'cancel'
@@ -750,6 +771,23 @@ class Action
       end
     end
     return executed
+  end
+
+  def communicate_with_game
+    end_communicate_with_game = false
+    while !end_communicate_with_game
+      print "Type 'ac' for available commands, to see commands that can be used to communicated with the game! "
+      answer = gets.chomp
+      if answer == 'ac'
+        @com.ac_triggered
+      elsif answer == 'quit'
+        end_communicate_with_game = true
+      elsif !@com.availablecommands.include?(answer)
+        puts "Invalid command."
+      else
+        @com.execute_inquiry_command(answer)
+      end
+    end
   end
 
 end
