@@ -62,18 +62,9 @@ By Color (then alphabetical)
 
 #### Related to the game state
 
-- `g.players_order` to show the players order (who goes first, etc).
-- `g.player(1)` to show details of player 1.
-- `g.players` to show details of all players.
-- `g.infection_rate` to show the current infection rate.
-- `g.outbreak_index` to show the current outbreak index.
-- `g.black_disease` to show the status of black disease. Other available commands are `g.blue_disease`, `g.red_disease`, and `g.yellow_disease`.
-- `g.research_station_availability` to show available research stations.
-- `g.show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
-- `g.research_st_cities` to show cities with research stations.
+These commands are inputted during the action "Communicate with the board to get game status."
 
-#### Related to Cities
-
-- `g.board.algiers.show_info` to show the info of Algier.
-- `g.board.algiers.show_neighbors` to show the info of Algier's neighbors.
-- `g.show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
+- `players_order` to show the players order (who goes first, etc).
+- `player(1)` to show details of player 1.
+- `infection_rate` to show the current infection rate.
+- `outbreak_index` to show the current outbreak index.

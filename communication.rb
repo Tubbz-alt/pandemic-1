@@ -18,7 +18,7 @@ class Communication
   end
 
   def execute_inquiry_command(string)
-    puts @commands[string][1].call
+    puts @commands[string][1]
     puts
   end
 
@@ -30,6 +30,8 @@ class Communication
     "players_order" => ["to show the order of all players(who goes first, etc)", @game.players_order],
     "player(1)" => ["to show details of player 1.", @game.player(1)],
     "player(2)" => ["to show details of player 2.", @game.player(2)],
+    "infection_rate" => ["to show the current infection rate.", @game.infection_rate],
+    "outbreak_index" => ["to show the current outbreak index.", @game.outbreak_index]
     # "player(3)" => ["to show details of player 3.", @game.player(3)],
     # "player(4)" => ["to show details of player 4.", @game.player(4)],
     }
