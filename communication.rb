@@ -4,35 +4,35 @@ require_relative 'game'
 
 class Communication
 
+  attr_reader :commands
+
   def initialize(game)
     @game = game
-    @players_order = @game.players_order
+    @commands = commands
   end
 
   def ac_triggered
-    #Available Commands are inquired by player.
-    availablecommands.each do |key|
-      puts key + " : "+ COMMANDS[key][0]
+    @commands.keys.each do |key|
+      puts key + " : "+ @commands[key][0]
     end
   end
 
-  def availablecommands
-    COMMANDS.keys
-  end
-
   def execute_inquiry_command(string)
-    COMMANDS[string][1]
+    puts @commands[string][1].call
+    puts
   end
 
-  COMMANDS = {
+
+  def commands
+    {
     "ac" => ["to show available commands"],
     "quit" => ["to end communication with the board"],
-    "players_order" => ["to show the players order (who goes first, etc)", @players_order],
-    # "player(1)" => ["to show details of player 1", @game.player(1)],
-    # "player(2)" => ["to show details of player 2", @game.player(2)],
-    # "player(3)" => ["to show details of player 2", @game.player(3)],
-    # "player(4)" => ["to show details of player 2", @game.player(4)],
-    # "players" => ["to show details of all players.", @game.players]
-  }
+    "players_order" => ["to show the order of all players(who goes first, etc)", @game.players_order],
+    "player(1)" => ["to show details of player 1.", @game.player(1)],
+    "player(2)" => ["to show details of player 2.", @game.player(2)],
+    # "player(3)" => ["to show details of player 3.", @game.player(3)],
+    # "player(4)" => ["to show details of player 4.", @game.player(4)],
+    }
+  end
 
 end

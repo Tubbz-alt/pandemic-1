@@ -34,8 +34,8 @@ class Game
     @game_run = true
     game_setup
 
-    @com = Communication.new(self)
     welcome_players
+
     game_start
     @rounds = []
   end
@@ -157,7 +157,6 @@ class Game
     determine_deal_player_card_number
     create_players
     prompt_player_info
-
   end
 
   def game_setup
@@ -384,7 +383,11 @@ class Game
   end
 
   def player(number) #CommandLine
-    return @players[number-1]
+    player = @players[number-1]
+    puts player.name + " is a " + player.role.to_s + ". "+ player.ability
+    puts "Cards : " + ((player.names_of_player_cards_in_hand) + (player.desc_of_event_cards_in_hand)).to_s
+    puts "Location : " + player.location
+    puts
   end
 
   def show_cities(number_of_infection = 0)#CommandLine

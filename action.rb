@@ -13,7 +13,6 @@ class Action
     @game = @turn.game
     @mech = @game.mech
     @player_location = @mech.string_to_city(@player.location)
-    @com = @game.com
     @action_reduction = 0
   end
 
@@ -404,17 +403,24 @@ class Action
     card_satisfied = false
     while !card_satisfied
       if player.role == :researcher
-        puts "Which player city card to share? "
+        puts "Which player city card to share? Type 'cancel' to cancel this action. "
         card_string = gets.chomp
-        city_card = @mech.string_to_player_card(card_string)
-        if city_card != nil && player.cards.include?(city_card)
-          card_satisfied = true
-          puts city_card.cityname + " is given to " + shared.name + " by " + player.name
-          @mech.give_card_to_another_player(player, shared, city_card)
+        if card_string == "cancel"
+          executed = false
+          puts "Action cancelled. No action was used."
           puts
-          executed = true
+          return executed
         else
-          puts "Player doesn't have that card or Card name typed wrong. Try again!"
+          city_card = @mech.string_to_player_card(card_string)
+          if city_card != nil && player.cards.include?(city_card)
+            card_satisfied = true
+            puts city_card.cityname + " is given to " + shared.name + " by " + player.name
+            @mech.give_card_to_another_player(player, shared, city_card)
+            puts
+            executed = true
+          else
+            puts "Player doesn't have that card or Card name typed wrong. Try again!"
+          end
         end
       elsif player.cards.include?(city_card)
         puts city_card.cityname + " is given to " + shared.name + " by " + player.name
@@ -774,18 +780,19 @@ class Action
   end
 
   def communicate_with_game
+    com = Communication.new(@game)
     end_communicate_with_game = false
     while !end_communicate_with_game
       print "Type 'ac' for available commands, to see commands that can be used to communicated with the game! "
       answer = gets.chomp
       if answer == 'ac'
-        @com.ac_triggered
+        com.ac_triggered
       elsif answer == 'quit'
         end_communicate_with_game = true
-      elsif !@com.availablecommands.include?(answer)
+      elsif !com.commands.keys.include?(answer)
         puts "Invalid command."
       else
-        @com.execute_inquiry_command(answer)
+        com.execute_inquiry_command(answer)
       end
     end
   end
