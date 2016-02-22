@@ -38,10 +38,14 @@ class Action
     }
   end
 
+  def filtered_actions
+    actions = (1..17).to_a
+  end
+
   def print_allowed_actions
     puts "Choose from the following possible actions (action worth):"
     allowed_actions.each do |k,v|
-      puts v
+      puts v if filtered_actions.include?(k)
     end
     puts
   end
@@ -220,8 +224,8 @@ class Action
         puts "Whom to move? (own name or other player's name)"
         moved_string = gets.chomp
         moved = @mech.string_to_player(moved_string)
-        moved_satisfied = true if moved != nil
-        puts "Incorrect player name. Try again." if moved == nil
+        moved_satisfied = true if !moved.nil?
+        puts "Incorrect player name. Try again." if moved.nil?
       end
     else
       moved = player
@@ -253,7 +257,7 @@ class Action
         else
           destination_city = @mech.string_to_city(destination_string)
 
-          if destination_city != nil
+          if !destination_city.nil?
             @mech.move_player(player, destination_string, moved)
             puts moved.name + " has been moved to " + destination_string
             @mech.discard_card_from_player_hand(player, charter_flight_card)
@@ -317,8 +321,8 @@ class Action
       print "Where to put research center in? "
       location_string = gets.chomp
       location = @mech.string_to_city(location_string)
-      location_obtained = true if location != nil
-      puts "City unrecognized. Try again!" if location == nil
+      location_obtained = true if !location.nil?
+      puts "City unrecognized. Try again!" if location.nil?
     end
 
     if use_card
@@ -392,7 +396,7 @@ class Action
         return executed
       else
         shared = @mech.string_to_player(answer)
-        if shared != nil && city.pawns.include?(shared.pawn)
+        if !shared.nil? && city.pawns.include?(shared.pawn)
           satisfied = true
         else
           puts "Unrecognized player name or player not in the same city. Try again!"
@@ -412,7 +416,7 @@ class Action
           return executed
         else
           city_card = @mech.string_to_player_card(card_string)
-          if city_card != nil && player.cards.include?(city_card)
+          if !city_card.nil? && player.cards.include?(city_card)
             card_satisfied = true
             puts city_card.cityname + " is given to " + shared.name + " by " + player.name
             @mech.give_card_to_another_player(player, shared, city_card)
@@ -459,7 +463,7 @@ class Action
         return executed
       else
         city_card = @mech.string_to_player_card(card_string)
-        if city_card != nil && sharer.cards.include?(city_card)
+        if !city_card.nil? && sharer.cards.include?(city_card)
           card_satisfied = true
           puts city_card.cityname + " is given to " + player.name + " by " + sharer.name
           @mech.give_card_to_another_player(sharer, player, city_card)
@@ -530,7 +534,7 @@ class Action
           print "Type city name to discard one by one :"
           discard_city_string = gets.chomp
           discard_city_card = @mech.string_to_player_card(discard_city_string)
-          if discard_city_card != nil && discard_city_card.color == color
+          if !discard_city_card.nil? && discard_city_card.color == color
             player_card_confirmation = true
             @mech.discard_card_from_player_hand(player, discard_city_card)
             puts discard_city_card.cityname + "is discarded to Player Discard Pile."
@@ -573,7 +577,7 @@ class Action
         return executed
       else
         chosen_card = @mech.string_to_player_card(chosen_string)
-        if chosen_card != nil
+        if !chosen_card.nil?
           @mech.deal_known_card(@game.player_discard_pile, chosen_card)
           @mech.put_player_cards_into_hand([chosen_card], player)
           satisfied = true
@@ -604,7 +608,7 @@ class Action
           satisfied = true
         else
           city_card = @mech.string_to_infection_card(answer)
-          if city_card != nil
+          if !city_card.nil?
             satisfied = true
             @mech.deal_known_card(@game.infection_discard_pile, city_card)
             city_card.discard_from_game
@@ -641,7 +645,7 @@ class Action
         return executed
       else
         moved = @mech.string_to_player(moved_string)
-        if moved != nil
+        if !moved.nil?
           moved_confirmation = true
           puts moved.name + " is chosen."
         else
@@ -662,7 +666,7 @@ class Action
         return executed
       else
         destination = @mech.string_to_city(destination_string)
-        if destination != nil
+        if !destination.nil?
           destination_confirmation = true
           @mech.move_player(player, destination.name, moved)
           moved.name + " is airlifted from " + moved.location + " to " + destination.name
@@ -743,7 +747,7 @@ class Action
         return executed
       else
         destination = @mech.string_to_city(destination_string)
-        if destination != nil
+        if !destination.nil?
           destination_confirmation = true
         else
           puts "City unrecognized. Try again!"
@@ -763,7 +767,7 @@ class Action
         return executed
       else
         card = @mech.string_to_card(card_string)
-        if card != nil && player.cards.include?(card)
+        if !card.nil? && player.cards.include?(card)
           discarded_card_confirmation = true
           executed = true
           moved = player
@@ -785,11 +789,12 @@ class Action
     while !end_communicate_with_game
       print "Type 'ac' for available commands, to see commands that can be used to communicated with the game! "
       answer = gets.chomp
+      puts
       if answer == 'ac'
         com.ac_triggered
       elsif answer == 'quit'
         end_communicate_with_game = true
-      elsif !com.commands.keys.include?(answer)
+      elsif !com.avail_commands_keys.include?(answer)
         puts "Invalid command."
       else
         com.execute_inquiry_command(answer)

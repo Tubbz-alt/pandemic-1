@@ -375,45 +375,9 @@ class Game
     scientist: ["⚗", "The scientist needs only 4 (not 5) city cards of the same disease color to discover a cure for that disease."]
   }
 
-# The following are made as communication means from the command line during game.
-
-  def players_order #CommandLine
+  def players_order
     names = @players.collect {|player| player.name}
     puts "The player order based on highest population on each hand (first means first turn or player 1): " + names.to_s
-  end
-
-  def player(number) #CommandLine
-    player = @players[number-1]
-    puts player.name + " is a " + player.role.to_s + ". "+ player.ability
-    puts "Cards : " + ((player.names_of_player_cards_in_hand) + (player.desc_of_event_cards_in_hand)).to_s
-    puts "Location : " + player.location
-    puts
-  end
-
-  def show_cities(number_of_infection = 0)#CommandLine
-    if number_of_infection == 0
-      number_array = (1..3).to_a
-      cities = []
-      result = []
-      number_array.each do |number|
-        cities += @board.cities.select {|city| city.color_count == number}
-      end
-      cities.each do |city|
-        result << [city.name.to_s + " : " + city.color_count.to_s]
-      end
-      return result
-    else
-      if number_of_infection < 0 || number_of_infection > 3
-        puts "Only input 1, 2 or 3, or no numbers at all"
-      else
-        cities = @board.cities.select {|city| city.color_count == number_of_infection}
-        cities.collect {|city| city.name}
-      end
-    end
-  end
-
-  def research_st_cities #CommandLine
-    @board.research_st_cities
   end
 
 end

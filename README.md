@@ -65,6 +65,13 @@ By Color (then alphabetical)
 These commands are inputted during the action "Communicate with the board to get game status."
 
 - `players_order` to show the players order (who goes first, etc).
-- `player(1)` to show details of player 1.
+- `players` to show details of all players.
 - `infection_rate` to show the current infection rate.
 - `outbreak_index` to show the current outbreak index.
+- `black_disease` to show the status of black disease. Other available commands are `blue_disease`, `red_disease`, and `yellow_disease`.
+- `show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
+- `research_st_cities` to show cities with research stations.
+
+#### Related to Cities
+
+- `city_info` to show the status of a city.
