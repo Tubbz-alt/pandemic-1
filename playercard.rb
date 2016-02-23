@@ -2,7 +2,7 @@
 
 class PlayerCard
 
-  attr_accessor :type, :cityname, :deck, :population, :value
+  attr_accessor :type, :cityname, :deck, :population, :value, :color
 
   def initialize(cityname, color, population)
     @type = :player
@@ -10,6 +10,7 @@ class PlayerCard
     @deck = :player_deck
     @value = 1
     @population = population
+    @color = color
   end
 
   def taken_by_a_player(player)

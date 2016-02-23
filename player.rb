@@ -47,13 +47,24 @@ class Player
     event_cards = @cards.select {|card| card.type == :event}
   end
 
-  def names_of_player_cards_in_hand
+  def names_of_player_cards_in_hand_based_color
     player_cards_ih = player_cards_in_hand
-    card_names = []
+    red_cards = []
+    black_cards = []
+    blue_cards = []
+    yellow_cards = []
+
     player_cards_ih.each do |card|
-      card_names << card.cityname
+      red_cards << card.cityname if card.color == :red
+      black_cards << card.cityname if card.color == :black
+      blue_cards << card.cityname if card.color == :blue
+      yellow_cards << card.cityname if card.color == :yellow
     end
-    card_names
+    cards = [["Red:", red_cards], ["Black:", black_cards], ["Blue:", blue_cards], ["Yellow:", yellow_cards]]
+
+    nested_cards = cards.select {|color| !color[1].empty?}
+    flattened_cards = nested_cards.collect {|color| color.flatten}
+    flattened_cards
   end
 
   def desc_of_event_cards_in_hand

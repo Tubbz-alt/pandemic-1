@@ -64,7 +64,13 @@ class Communication
     @game.players.each_with_index do |player, idx|
       puts "Player " + (idx+1).to_s
       puts player.name + " is a " + player.role.to_s + ". "+ player.ability
-      puts "Cards : " + ((player.names_of_player_cards_in_hand) + (player.desc_of_event_cards_in_hand)).to_s
+
+      puts "City Cards : " + player.names_of_player_cards_in_hand_based_color.to_s
+
+      unless player.desc_of_event_cards_in_hand.empty?
+        puts "Event Cards : " + player.desc_of_event_cards_in_hand.to_s
+      end
+
       puts "Location : " + player.location
       puts
     end
