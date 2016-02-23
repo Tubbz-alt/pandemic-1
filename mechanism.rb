@@ -208,7 +208,8 @@ class Mechanism
     @game.increase_infection_rate
 
     #Infect the bottom city in the Infection Deck with 3 cubes.
-    infection_card = @game.infection_deck.shift(1)
+    dealt_cards = @game.infection_deck.shift(1)
+    infection_card = dealt_cards[0]
     discard_card(@game.infection_discard_pile, infection_card)
     infection_card.reveal
 
@@ -216,7 +217,7 @@ class Mechanism
     infected_city_original_color = infected_city.original_color
     puts "The revealed infection card is " + infection_card.cityname + " and its original color is " + infected_city_original_color.to_s
 
-    perform_infect(@game.board.infected_city, infected_city_original_color, 3)
+    perform_infect(infected_city, infected_city_original_color, 3)
 
     # Shuffle cards in the infection discard pile and put them on top of the Infection Deck.
     @game.infection_discard_pile.shuffle!

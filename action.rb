@@ -70,8 +70,8 @@ class Action
       execution = build_a_research_st(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
     when 6
-      treat_disease(@player)
-      @action_reduction = 1
+      execution = treat_disease(@player)
+      execution ? @action_reduction = 1 : @action_reduction = 0
     when 7
       execution = share_knowledge(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
@@ -102,7 +102,7 @@ class Action
       resilient_city(@player)
       @action_reduction = 0
     when 12
-      build_a_research_st(@player, false)
+      government_grant(@player)
       @action_reduction = 0
     when 13
       airlift(@player)
@@ -206,6 +206,9 @@ class Action
   def direct_flight(player) #discard a city card to move to city named on the card
     satisfied = false
     while !satisfied
+
+      puts "Available cards for direct flight : " + player.names_of_player_cards_in_hand_based_color.to_s
+
       print "Where to direct flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
@@ -330,17 +333,24 @@ class Action
     return executed
   end
 
-  def build_a_research_st(player, use_card = true)
+  def government_grant(player)
+    government_grant_card = @mech.string_to_players_player_card("Government_Grant", player)
+    build_a_research_st(player, false, false)
+    @mech.discard_card_from_player_hand(player, government_grant_card)
+  end
+
+  def build_a_research_st(player, use_card = true, gov_grant = false)
+
+    location_obtained = false
 
     if player.role == :operations_expert
       use_card = false
-      government_grant_card = @mech.string_to_players_player_card("Government_Grant", player)
-      @mech.discard_card_from_player_hand(player, government_grant_card)
+      location_obtained = true unless gov_grant
+      location = @mech.string_to_city(player.location) unless gov_grant
     end
 
-    location_obtained = false
     while !location_obtained
-      print "Where to put research center in? Type 'cancel' to cancel"
+      print "Where to put research center in? Type 'cancel' to cancel. "
       location_string = gets.chomp
       if location_string == 'cancel'
         executed = false
@@ -354,9 +364,8 @@ class Action
       end
     end
 
-    location_card = @mech.string_to_players_player_card(location_string, player)
-
     if use_card
+      location_card = @mech.string_to_players_player_card(location_string, player)
       if location_card.nil?
         puts "Player doesn't have that city player card! Builing research station cancelled."
         executed = false
@@ -417,6 +426,8 @@ class Action
     else
       @mech.treat(player, city, color, var_in_game_class, false, number)
     end
+    execution = true
+    return execution
   end
 
   def share_knowledge(player)

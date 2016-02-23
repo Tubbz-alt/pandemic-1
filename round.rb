@@ -12,13 +12,13 @@ class Round
     @players = @game.players
     @turns = []
     new_turn
+    end_round
   end
 
   def new_turn
     @players.each do |player|
       @turns << Turn.new(player, self)
     end
-    end_round
   end
 
   def end_round
