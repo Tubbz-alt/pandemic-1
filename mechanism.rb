@@ -189,18 +189,16 @@ class Mechanism
     while !satisfied
       puts "Pick a card event or city name to discard!"
       card_id_string = gets.chomp
-      if player.names_of_player_cards_in_hand.include?(card_id_string)
-        chosen_card = player.player_cards_in_hand.select {|card| card.cityname == card_id_string}
-      elsif player.desc_of_event_cards_in_hand.include?(card_id_string)
-        chosen_card = player.event_cards_in_hand.select {|card| card.event.to_s == card_id_string}
-      end
-      if chosen_card.size == 0
+
+      card = string_to_players_player_card(card_id_string, player)
+
+      if card.nil?
         puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
-      else chosen_card.size == 1
+      else
         satisfied = true
       end
     end
-    return chosen_card[0]
+    return card
   end
 
   def epidemic_action

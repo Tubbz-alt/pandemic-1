@@ -19,6 +19,7 @@ class Action
 
   def allowed_actions
     allowed_actions = {
+    'h' => "h. Help, Communicate with the board to get game status. (0)",
     1 => "1. Drive/Ferry to neighboring town (1)",
     2 => "2. Direct Flight to a city by discarding the city card (1)",
     3 => "3. Charter Flight by discarding the city card you're currently in (1)",
@@ -35,16 +36,17 @@ class Action
     14 => "14. Use One Quiet Night event by discarding the event card (0)",
     15 => "15. Use Forecast by discarding the event card (0)",
     16 => "16. Move from a research center to any city by discarding any city card once per turn if operations expert (1)",
-    17 => "17. Communicate with the board to get game status. (0)"
     }
   end
 
   def filtered_actions
     actions = (1..17).to_a
+    actions.unshift("h")
   end
 
   def print_allowed_actions
     puts "Choose from the following possible actions (action worth):"
+    puts
     allowed_actions.each do |k,v|
       puts v if filtered_actions.include?(k)
     end
@@ -53,96 +55,99 @@ class Action
 
   def execute_player_action
     print "Enter action number : "
-    action_number = gets.chomp.to_i
-    case action_number
-    when 1
-      execution = drive(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 2
-      execution = direct_flight(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 3
-      execution = charter_flight(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 4
-      execution = shuttle_flight(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 5
-      execution = build_a_research_st(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 6
-      execution = treat_disease(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 7
-      execution = share_knowledge(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 8
-      if @player.role == :researcher
-        puts "Researcher can't ask herself to give herself a card."
-        puts
-        return @action_reduction = 0
-      else
-        execution = ask_card_to_researcher(@player)
-        execution ? @action_reduction = 1 : @action_reduction = 0
-      end
-    when 9
-      execution = discover_cure(@player)
-      execution ? @action_reduction = 1 : @action_reduction = 0
-    when 10
-      if @player.role == :contingency_planner
-        if @player.event_card_on_role.size == 0
-          execution = take_an_event_card_from_player_discard_pile(@player)
-          execution ? @action_reduction = 1 : @action_reduction = 0
-        end
-      else
-        puts "Action can't be completed. Either player's role is not Contingency Planner or it has more than 1 event card on his role card."
-        puts
-        @action_reduction = 0
-      end
-    when 11
-      resilient_city(@player)
-      @action_reduction = 0
-    when 12
-      government_grant(@player)
-      @action_reduction = 0
-    when 13
-      airlift(@player)
-      @action_reduction = 0
-    when 14
-
-      @action_reduction = 0
-    when 15
-      forecast(@player)
-      @action_reduction = 0
-    when 16
-      if !@player.role == :operations_expert
-        puts "Player's role is not operations expert. Action cancelled."
-        puts
-        @action_reduction = 0
-      elsif @turn.acts.include?(action_number)
-        puts "This special action by operations expert can only be done once per turn. Action cancelled."
-        puts
-        @action_reduction = 0
-      elsif !@player_location.research_st
-        puts "Player is not in a city with research station. Action cancelled."
-        puts
-        @action_reduction = 0
-      elsif @player.cards.size < 1
-        puts "Player doesn't have a card to discard. Action cancelled."
-        puts
-        @action_reduction = 0
-      else
-        execution = operations_expert_move_to_any_city(@player)
-        execution ? @action_reduction = 1 : @action_reduction = 0
-      end
-    when 17
+    response = gets.chomp
+    if response == 'h'
       communicate_with_game
       @action_reduction = 0
     else
-      puts "Invalid Entry! Try again!"
-      @action_reduction = 0
+      action_number = response.to_i
+      case action_number
+      when 1
+        execution = drive(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 2
+        execution = direct_flight(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 3
+        execution = charter_flight(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 4
+        execution = shuttle_flight(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 5
+        execution = build_a_research_st(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 6
+        execution = treat_disease(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 7
+        execution = share_knowledge(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 8
+        if @player.role == :researcher
+          puts "Researcher can't ask herself to give herself a card."
+          puts
+          return @action_reduction = 0
+        else
+          execution = ask_card_to_researcher(@player)
+          execution ? @action_reduction = 1 : @action_reduction = 0
+        end
+      when 9
+        execution = discover_cure(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 10
+        if @player.role == :contingency_planner
+          if @player.event_card_on_role.size == 0
+            execution = take_an_event_card_from_player_discard_pile(@player)
+            execution ? @action_reduction = 1 : @action_reduction = 0
+          end
+        else
+          puts "Action can't be completed. Either player's role is not Contingency Planner or it has more than 1 event card on his role card."
+          puts
+          @action_reduction = 0
+        end
+      when 11
+        resilient_city(@player)
+        @action_reduction = 0
+      when 12
+        government_grant(@player)
+        @action_reduction = 0
+      when 13
+        airlift(@player)
+        @action_reduction = 0
+      when 14
+
+        @action_reduction = 0
+      when 15
+        forecast(@player)
+        @action_reduction = 0
+      when 16
+        if !@player.role == :operations_expert
+          puts "Player's role is not operations expert. Action cancelled."
+          puts
+          @action_reduction = 0
+        elsif @turn.acts.include?(action_number)
+          puts "This special action by operations expert can only be done once per turn. Action cancelled."
+          puts
+          @action_reduction = 0
+        elsif !@player_location.research_st
+          puts "Player is not in a city with research station. Action cancelled."
+          puts
+          @action_reduction = 0
+        elsif @player.cards.size < 1
+          puts "Player doesn't have a card to discard. Action cancelled."
+          puts
+          @action_reduction = 0
+        else
+          execution = operations_expert_move_to_any_city(@player)
+          execution ? @action_reduction = 1 : @action_reduction = 0
+        end
+      else
+        puts "Invalid Entry! Try again!"
+        @action_reduction = 0
+      end
     end
-    return action_number
+    response == 'h' ? response : action_number
   end
 
   def medic_automatic_treat_cured(moved, city)
@@ -176,7 +181,7 @@ class Action
         else
           research_st_indication = neighbor.research_st.to_s
         end
-        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black + ", "+ neighbor.blue.to_s.blue + ". Research St : "+research_st_indication
+        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black.on_white + ", "+ neighbor.blue.to_s.blue + ". Research St : "+research_st_indication
       end
 
       print "Where to drive / ferry? Type 'cancel' to cancel this action. "
