@@ -144,7 +144,14 @@ class Action
           execution ? @action_reduction = 1 : @action_reduction = 0
         end
       when 17
-        
+        print "Are you sure you'd like to forfeit all your remaining actions? Type 'y' to confirm! "
+        answer = gets.chomp
+
+        if answer == "y"
+          @action_reduction = @turn.action_left
+        else
+          @action_reduction = 0
+        end
       else
         puts "Invalid Entry! Try again!"
         @action_reduction = 0
