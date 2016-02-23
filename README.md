@@ -13,9 +13,10 @@ This document provides documentation to be used to play the Ruby Pandemics. For 
 1. Open bash (on Macbooks) or others similar you'd like available on your own machine. This game is run in `pry`, a gem for Ruby REPL.
 2. Make sure Ruby is installed by running `$ ruby -v`.
 3. Install `pry` (if not installed yet) by running `$ gem install pry`.
-4. Once `pry` is installed, open it = `$ pry`.
-5. Start the game by initiating an object of class Game. See "Starting the game" below.
-6. Exit pry = `$ exit`
+4. Install `colorize`, a ruby gem, by running `$ gem install colorize`.
+5. Once `pry` and `colorize` are installed, open `pry` by running `$ pry`.
+6. Start the game by initiating an object of class Game. See "Starting the game" below.
+7. Exit pry = `$ exit`
 
 ### Starting the game
 

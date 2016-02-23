@@ -2,6 +2,7 @@
 
 require_relative 'mechanism'
 require_relative 'communication'
+require 'colorize'
 
 class Action
 
@@ -175,7 +176,7 @@ class Action
         else
           research_st_indication = neighbor.research_st.to_s
         end
-        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s + ", "+ neighbor.yellow.to_s + ", "+ neighbor.black.to_s + ", "+ neighbor.blue.to_s + ". Research St : "+research_st_indication
+        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black + ", "+ neighbor.blue.to_s.blue + ". Research St : "+research_st_indication
       end
 
       print "Where to drive / ferry? Type 'cancel' to cancel this action. "
@@ -390,7 +391,7 @@ class Action
     if color == :no_color
       color_satisified = false
       while !color_satisified
-        puts city.name + " has the the following cubes (red, black, blue, yellow) : " + city.red.to_s + ", " + city.black.to_s + ", " + city.blue.to_s + ", " + city.yellow.to_s
+        puts city.name + " has the the following cubes (red, black, blue, yellow) : " + city.red.to_s.red + ", " + city.black.to_s.black.on_white + ", " + city.blue.to_s.blue + ", " + city.yellow.to_s.yellow
         print "Which color do you want to treat? Type 'cancel' to cancel this action. "
         answer = gets.chomp
 
