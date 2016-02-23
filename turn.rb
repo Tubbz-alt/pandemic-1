@@ -58,5 +58,8 @@ class Turn
   end_turn
   end
 
+  def end_turn
+    @round.turns << self
+  end
 
 end

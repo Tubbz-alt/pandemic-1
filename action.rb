@@ -146,18 +146,38 @@ class Action
 
   def medic_automatic_treat_cured(moved, city)
     if moved.role == :medic
-      treat_disease(moved, :black)
-      treat_disease(moved, :blue)
-      treat_disease(moved, :yellow)
-      treat_disease(moved, :red)
+      treat_disease(moved, :black) if @game.black_disease.cured
+      treat_disease(moved, :blue) if @game.blue_disease.cured
+      treat_disease(moved, :yellow) if @game.yellow_disease.cured
+      treat_disease(moved, :red) if @game.red_disease.cured
     end
-    puts "All cubes of cured diseases have been treated in this city by the medic without additional action."
+    if @game.black_disease.cured || @game.blue_disease.cured || @game.yellow_disease.cured || @red_disease.cured
+      puts "All cubes of cured diseases have been treated in this city by the medic without additional action."
+    end
     puts
   end
 
   def drive(player) #neighboring city movement
     satisfied = false
     while !satisfied
+
+      moved = dispatcher_posibility(player)
+
+      moved_current_city = @mech.string_to_city(moved.location)
+      puts "Moved Player's current location is : " + moved.location
+
+      neighbors = moved_current_city.neighbors
+
+      puts "Neighbors of the moved player's current city : "
+      neighbors.each do |neighbor|
+        if neighbor.research_st
+          research_st_indication = neighbor.research_st.to_s.upcase
+        else
+          research_st_indication = neighbor.research_st.to_s
+        end
+        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s + ", "+ neighbor.yellow.to_s + ", "+ neighbor.black.to_s + ", "+ neighbor.blue.to_s + ". Research St : "+research_st_indication
+      end
+
       print "Where to drive / ferry? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
       if destination_string == "cancel"
@@ -167,9 +187,7 @@ class Action
         return executed
       else
         destination = @mech.string_to_city(destination_string)
-        moved = dispatcher_posibility(player)
 
-        neighbors = @player_location.neighbors
         if neighbors.include?(destination)
           satisfied = true
           @mech.move_player(player, destination_string, moved)
@@ -787,7 +805,7 @@ class Action
     com = Communication.new(@game)
     end_communicate_with_game = false
     while !end_communicate_with_game
-      print "Type 'ac' for available commands, to see commands that can be used to communicated with the game! "
+      print "Type 'ac' for available commands, to see commands that can be used to communicate with the game! "
       answer = gets.chomp
       puts
       if answer == 'ac'

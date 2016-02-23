@@ -69,7 +69,7 @@ These commands are inputted during the action "Communicate with the board to get
 - `infection_rate` to show the current infection rate.
 - `outbreak_index` to show the current outbreak index.
 - `black_disease` to show the status of black disease. Other available commands are `blue_disease`, `red_disease`, and `yellow_disease`.
-- `show_cities` to show cities with any cubes. Other commands allowed  are `g.show_cities(1)`, `g.show_cities(2)` and `g.show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
+- `show_cities` to show cities with any cubes. Other commands allowed  are `show_cities(1)`, `show_cities(2)` and `show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
 - `research_st_cities` to show cities with research stations.
 
 #### Related to Cities

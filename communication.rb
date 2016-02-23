@@ -18,7 +18,7 @@ class Communication
   end
 
   def execute_inquiry_command(string)
-    if string == "players_order" || string == "infection_rate" || string == "outbreak_index" || string == "show_cities" || string == "players" || string == :research_st_cities || string == "city_info"
+    if string == "players_order" || string == "infection_rate" || string == "outbreak_index" || string == "show_cities" || string == "players" || string == "research_st_cities" || string == "city_info" || string == "disease"
       send string.to_sym
     elsif string == "black_disease"
       print_disease_status(@game.black_disease)
@@ -46,10 +46,7 @@ class Communication
     "players" => "to show details of all players",
     "infection_rate" => "to show the current infection rate.",
     "outbreak_index" => "to show the current outbreak index.",
-    "black_disease" => "to show the status of black disease.",
-    "blue_disease" => "to show the status of blue disease.",
-    "red_disease" => "to show the status of red disease.",
-    "yellow_disease" => "to show the status of yellow disease.",
+    "disease" => "to show the status of all diseases.",
     "show_cities" => "to show cities with any cubes.",
     "show_cities(1)" => "to show cities with 1 cube. Other available commands are 'show_cities(2)' and 'show_cities(3)'",
     "research_st_cities" => "to show cities with research stations.",
@@ -73,8 +70,11 @@ class Communication
     end
   end
 
-  def print_disease_status(disease)
-    puts "Cubes available : " + disease.cubes_available.to_s + ". Cured : " + disease.cured.to_s + ". Eradicated : " + disease.eradicated.to_s
+  def disease
+    diseases = [["Red",@game.red_disease], ["Blue",@game.blue_disease], ["Yellow",@game.yellow_disease], ["Black",@game.black_disease]]
+    diseases.each do |disease|
+      puts disease[0] + ". Cubes available : " + disease[1].cubes_available.to_s + ". Cured : " + disease[1].cured.to_s + ". Eradicated : " + disease[1].eradicated.to_s
+    end
   end
 
   def infection_rate

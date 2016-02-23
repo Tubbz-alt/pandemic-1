@@ -139,7 +139,7 @@ class Board
 
   def research_st_cities #CommandLine
     city_names = []
-    self.research_station_cities.each {|city| city_names << city.name}
+    research_station_cities.each {|city| city_names << city.name}
     city_names
   end
 
