@@ -2,6 +2,7 @@
 
 require_relative 'game'
 require_relative 'player'
+require 'colorize'
 
 class Mechanism
 
@@ -155,10 +156,12 @@ class Mechanism
     player.put_cards_into_hand(dealt_cards)
     if player.has_epidemic_card?
       puts "You got an epidemic card! The epidemic card is discarded out of the game."
+      puts
       puts "The following happens in an epidemic : "
       puts "1. Infection Rate is elevated."
       puts "2. Infect the City in the Infection Card at the bottom of the Infection Deck with 3 cubes of its original color. Then discard the card to the Infection Discard Pile."
       puts "3. Shuffle all the cards in the Infection Discard Pile and put all of them back on top of the Infection Deck."
+      puts
       epidemic_card = player.discard_epidemic_card_to_discard_pile
       discard_card(@game.player_discard_pile, epidemic_card)
       epidemic_action
@@ -172,7 +175,7 @@ class Mechanism
   end
 
   def player_to_discard_in_hand_more_than_7(player)
-    puts player.name.to_s + ", you have more than 7 cards currently. Let's discard one by one."
+    print player.name.to_s + ", you have more than 7 cards currently. Let's discard one by one. "
     player_to_discard_in_hand(player)
   end
 
@@ -214,6 +217,7 @@ class Mechanism
     infected_city = string_to_city(infection_card.cityname)
     infected_city_original_color = infected_city.original_color
     puts "The revealed infection card is " + infection_card.cityname + " and its original color is " + infected_city_original_color.to_s
+    puts
 
     perform_infect(infected_city, infected_city_original_color, 3)
 
@@ -248,7 +252,8 @@ class Mechanism
               perform_infect(neighbor, color, 1)
             end
           end
-          puts "Outbreak on this city! Affected cities : " + neighbors_names
+          puts "Outbreak on this city!".on_red + " Affected cities : "+ neighbors_names
+          puts
           @game.increase_outbreak_index
         else
           @game.game_over?

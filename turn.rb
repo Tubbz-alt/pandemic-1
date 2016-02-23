@@ -44,6 +44,7 @@ class Turn
     dealt_cards = @mech.deal_cards(@game.player_deck, 2)
     puts "The following cards are taken from the Player Deck to " + @player.name + "'s hands : " + card_description(dealt_cards).to_s
     @mech.put_player_cards_into_hand(dealt_cards, @player)
+    puts
   end
 
   def infect

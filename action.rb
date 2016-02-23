@@ -36,6 +36,7 @@ class Action
     14 => "14. Use One Quiet Night event by discarding the event card (0)",
     15 => "15. Use Forecast by discarding the event card (0)",
     16 => "16. Move from a research center to any city by discarding any city card once per turn if operations expert (1)",
+    17 => "17. Forfeit action (lose all actions left)"
     }
   end
 
@@ -142,6 +143,8 @@ class Action
           execution = operations_expert_move_to_any_city(@player)
           execution ? @action_reduction = 1 : @action_reduction = 0
         end
+      when 17
+        
       else
         puts "Invalid Entry! Try again!"
         @action_reduction = 0
@@ -678,7 +681,7 @@ class Action
           if !city_card.nil?
             satisfied = true
             @mech.deal_known_card(@game.infection_discard_pile, city_card)
-            city_card.discard_from_game
+            city_card.remove_from_game
             @mech.discard_card_from_player_hand(player, resilient_card)
             puts city_card.cityname + " infection card has been removed from the Infection Discard Pile. Event card Resilient City has been discarded."
             puts
