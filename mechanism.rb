@@ -231,7 +231,7 @@ class Mechanism
     neighboring_cities_pawns = []
     city.neighbors.each {|neighbor| neighboring_cities_pawns += neighbor.pawns}
 
-    if setup || quarantine_specialist == nil ||  (!city.pawns.include?(quarantine_specialist.pawn) && !neighboring_cities_pawns.include?(quarantine_specialist.pawn))
+    if setup || !quarantine_specialist.nil? ||  (!city.pawns.include?(quarantine_specialist.pawn) && !neighboring_cities_pawns.include?(quarantine_specialist.pawn))
       existing_cubes = city.color_count
       if existing_cubes + number_of_cubes <= 3
         city.infect(color, number_of_cubes)
@@ -245,11 +245,11 @@ class Mechanism
           neighbors_names = ""
           city.neighbors.each do |neighbor|
             if !neighbor.outbreak
-              neighbors_names + " " + neighbor.name
+              neighbors_names += neighbor.name + " "
               perform_infect(neighbor, color, 1)
             end
           end
-          puts "Outbreak on this city! Affected cities : "+neighbors_names
+          puts "Outbreak on this city! Affected cities : " + neighbors_names
           @game.increase_outbreak_index
         else
           @game.game_over?

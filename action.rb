@@ -340,11 +340,18 @@ class Action
 
     location_obtained = false
     while !location_obtained
-      print "Where to put research center in? "
+      print "Where to put research center in? Type 'cancel' to cancel"
       location_string = gets.chomp
-      location = @mech.string_to_city(location_string)
-      location_obtained = true if !location.nil?
-      puts "City unrecognized. Try again!" if location.nil?
+      if location_string == 'cancel'
+        executed = false
+        puts "Research Station is not built."
+        puts
+        return executed
+      else
+        location = @mech.string_to_city(location_string)
+        location_obtained = true if !location.nil?
+        puts "City unrecognized. Try again!" if location.nil?
+      end
     end
 
     location_card = @mech.string_to_players_player_card(location_string, player)
@@ -526,7 +533,7 @@ class Action
 
     color_satisfied = false
     while !color_satisfied
-      print "Which color to cure? Options are yellow, blue, black, red. Type 'cancel' to cancel action."
+      print "Which color to cure? Options are yellow, blue, black, red. Type 'cancel' to cancel action. "
       color_string = gets.chomp
 
       if color_string == "cancel"
@@ -579,17 +586,19 @@ class Action
       executed = true
       puts color.to_s + " is cured."
 
-      case color
-      when :blue
-        @game.blue_disease.cure
-      when :red
-        @game.red_disease.cure
-      when :yellow
-        @game.yellow_disease.cure
-      when :black
-        @game.black_disease.cure
-      end
     end
+
+    case color
+    when :blue
+      @game.blue_disease.cure
+    when :red
+      @game.red_disease.cure
+    when :yellow
+      @game.yellow_disease.cure
+    when :black
+      @game.black_disease.cure
+    end
+
     return executed
   end
 

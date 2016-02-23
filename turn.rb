@@ -55,7 +55,7 @@ class Turn
       @mech.perform_infect(infected_city, infected_city_original_color, 1)
       @mech.discard_card(@game.infection_discard_pile, card)
     end
-  end_turn
+    end_turn
   end
 
   def end_turn
