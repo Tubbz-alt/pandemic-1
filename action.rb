@@ -438,7 +438,6 @@ class Action
 
   def share_knowledge(player)
     city = @mech.string_to_city(player.location)
-    city_card = @mech.string_to_players_player_card(player.location, player)
 
     satisfied = false
     while !satisfied
@@ -458,6 +457,11 @@ class Action
         end
       end
     end
+
+    city_card_player = @mech.string_to_players_player_card(player.location, player)
+
+    city_card_shared =
+    @mech.string_to_players_player_card(player.location, shared)
 
     card_satisfied = false
     while !card_satisfied
@@ -481,11 +485,17 @@ class Action
             puts "Player doesn't have that card or Card name typed wrong. Try again!"
           end
         end
-      elsif !city_card.nil?
-        puts city_card.cityname + " is given to " + shared.name + " by " + player.name
+      elsif !city_card_player.nil?
+        puts city_card_player.cityname + " is given to " + shared.name + " by " + player.name
         puts
         card_satisfied = true
-        @mech.give_card_to_another_player(player, shared, city_card)
+        @mech.give_card_to_another_player(player, shared, city_card_player)
+        executed = true
+      elsif !city_card_shared.nil?
+        puts city_card_shared.cityname + " is given to " + player.name + " by " + shared.name
+        puts
+        card_satisfied = true
+        @mech.give_card_to_another_player(shared, player, city_card_shared)
         executed = true
       else
         puts "Player is not a researcher and doesn't have the city player card both the player and the receiver are in. Action cancelled."
