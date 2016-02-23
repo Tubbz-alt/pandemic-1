@@ -58,13 +58,13 @@ class Action
       execution = drive(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
     when 2
-      direct_flight(@player)
+      execution = direct_flight(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
     when 3
-      charter_flight(@player)
+      execution = charter_flight(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
     when 4
-      shuttle_flight(@player)
+      execution = shuttle_flight(@player)
       execution ? @action_reduction = 1 : @action_reduction = 0
     when 5
       execution = build_a_research_st(@player)
@@ -151,9 +151,9 @@ class Action
       treat_disease(moved, :yellow) if @game.yellow_disease.cured
       treat_disease(moved, :red) if @game.red_disease.cured
     end
-    if @game.black_disease.cured || @game.blue_disease.cured || @game.yellow_disease.cured || @red_disease.cured
-      puts "All cubes of cured diseases have been treated in this city by the medic without additional action."
-    end
+    # if @game.black_disease.cured || @game.blue_disease.cured || @game.yellow_disease.cured || @red_disease.cured
+    #   puts "All cubes of cured diseases have been treated in this city by the medic without additional action."
+    # end
     puts
   end
 
@@ -206,7 +206,7 @@ class Action
   def direct_flight(player) #discard a city card to move to city named on the card
     satisfied = false
     while !satisfied
-      puts "Where to direct flight? Type 'cancel' to cancel this action."
+      print "Where to direct flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
       if destination_string == 'cancel'
@@ -216,11 +216,11 @@ class Action
         return executed
       else
         destination_city = @mech.string_to_city(destination_string)
-        destination_card = @mech.string_to_player_card(destination_string)
+        destination_card = @mech.string_to_players_player_card(destination_string, player)
 
         moved = dispatcher_posibility(player)
 
-        if player.cards.include?(destination_card)
+        if !destination_card.nil?
           @mech.move_player(player, destination_string, moved)
           puts moved.name + " has been moved to " + destination_string
           @mech.discard_card_from_player_hand(player, destination_card)
@@ -254,9 +254,9 @@ class Action
   def charter_flight(player) #discard city that matches the city you're in to move to any city.
     moved = dispatcher_posibility(player)
 
-    charter_flight_card = @mech.string_to_player_card(moved.location)
+    charter_flight_card = @mech.string_to_players_player_card(moved.location, player)
 
-    if !player.cards.include?(charter_flight_card)
+    if charter_flight_card.nil?
       executed = false
       puts "You can't do charter flight as you don't have the card with the moved player's current city name. Charter flight is cancelled. No action were used."
       puts
@@ -332,7 +332,11 @@ class Action
 
   def build_a_research_st(player, use_card = true)
 
-    use_card = false if player.role == :operations_expert
+    if player.role == :operations_expert
+      use_card = false
+      government_grant_card = @mech.string_to_players_player_card("Government_Grant", player)
+      @mech.discard_card_from_player_hand(player, government_grant_card)
+    end
 
     location_obtained = false
     while !location_obtained
@@ -343,15 +347,16 @@ class Action
       puts "City unrecognized. Try again!" if location.nil?
     end
 
+    location_card = @mech.string_to_players_player_card(location_string, player)
+
     if use_card
-      if !player.cards.include?(location)
+      if location_card.nil?
         puts "Player doesn't have that city player card! Builing research station cancelled."
         executed = false
       else
         puts "The city player card is used to build a research station and discarded to the Player Discard Pile"
         @mech.build_research_st(player, location)
-        player_card_to_discard = @mech.string_to_player_card(location.string)
-        @mech.discard_card_from_player_hand(player, player_card_to_discard)
+        @mech.discard_card_from_player_hand(player, location_card)
         executed = true
       end
     else
@@ -370,13 +375,21 @@ class Action
       color_satisified = false
       while !color_satisified
         puts city.name + " has the the following cubes (red, black, blue, yellow) : " + city.red.to_s + ", " + city.black.to_s + ", " + city.blue.to_s + ", " + city.yellow.to_s
-        puts "Which color do you want to treat?"
-        answer = gets.chomp.to_sym
-        if answer == :blue || answer == :red || answer == :yellow || answer == :black
-          color = answer
-          color_satisified = true
+        print "Which color do you want to treat? Type 'cancel' to cancel this action. "
+        answer = gets.chomp
+
+        if answer == 'cancel'
+          executed = false
+          puts "Treat disease has been cancelled."
+          puts
+          return executed
         else
-          puts "Color unrecognized. All lowercase."
+          if answer.to_sym == :blue || answer.to_sym == :red || answer.to_sym == :yellow || answer.to_sym == :black
+            color = answer.to_sym
+            color_satisified = true
+          else
+            puts "Color unrecognized. All lowercase."
+          end
         end
       end
     end
@@ -401,7 +414,7 @@ class Action
 
   def share_knowledge(player)
     city = @mech.string_to_city(player.location)
-    city_card = @mech.string_to_player_card(player.location)
+    city_card = @mech.string_to_players_player_card(player.location, player)
 
     satisfied = false
     while !satisfied
@@ -425,7 +438,7 @@ class Action
     card_satisfied = false
     while !card_satisfied
       if player.role == :researcher
-        puts "Which player city card to share? Type 'cancel' to cancel this action. "
+        print "Which player city card to share? Type 'cancel' to cancel this action. "
         card_string = gets.chomp
         if card_string == "cancel"
           executed = false
@@ -433,8 +446,8 @@ class Action
           puts
           return executed
         else
-          city_card = @mech.string_to_player_card(card_string)
-          if !city_card.nil? && player.cards.include?(city_card)
+          city_card = @mech.string_to_players_player_card(card_string, player)
+          if !city_card.nil?
             card_satisfied = true
             puts city_card.cityname + " is given to " + shared.name + " by " + player.name
             @mech.give_card_to_another_player(player, shared, city_card)
@@ -444,7 +457,7 @@ class Action
             puts "Player doesn't have that card or Card name typed wrong. Try again!"
           end
         end
-      elsif player.cards.include?(city_card)
+      elsif !city_card.nil?
         puts city_card.cityname + " is given to " + shared.name + " by " + player.name
         puts
         card_satisfied = true
@@ -611,7 +624,7 @@ class Action
   end
 
   def resilient_city(player)
-    resilient_card = @mech.symbol_to_player_card(:Resilient_Population)
+    resilient_card = @mech.string_to_players_player_card("Resilient_Population",player)
     if !player.cards.include?(resilient_card)
       executed = false
       puts "Player doesn't have Resilient City Event Card. Event cancelled."
@@ -642,9 +655,9 @@ class Action
   end
 
   def airlift(player)
-    airlift_card = @mech.symbol_to_player_card(:Airlift)
+    airlift_card = @mech.string_to_players_player_card("Airlift",player)
 
-    if !player.cards.include?(airlift_card)
+    if airlift_card.nil?
       executed = false
       puts "Player doesn't have the Airlift Event Card. Event cancelled."
       puts
@@ -701,7 +714,7 @@ class Action
 
   def forecast(player)
 
-    forecast_card = @mech.symbol_to_player_card(:Forecast)
+    forecast_card = @mech.string_to_players_player_card("Forecast",player)
 
     if !player.cards.include?(forecast_card)
       executed = false
@@ -732,7 +745,7 @@ class Action
       idx_satisfied = false
       while !idx_satisfied
         print "Old index of new index + " + (counter+1).to_s + ", (1 refers to bottom of the 6) = "
-        anwer = gets.chomp.to_i
+        answer = gets.chomp.to_i
         if answer == 0
           puts "Not a valid integer (1-6)."
         elsif inputed.include?(answer)

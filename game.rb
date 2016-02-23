@@ -8,8 +8,8 @@ require_relative "communication"
 
 class Game
 
-  attr_accessor :number_players, :infection_deck, :infection_discard_pile, :player_discard_pile
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :rounds, :mech, :com
+  attr_accessor :number_players, :infection_deck, :infection_discard_pile, :player_discard_pile, :rounds
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :rounds, :mech
 
   def initialize
     player_creation
@@ -36,8 +36,9 @@ class Game
 
     welcome_players
 
-    game_start
     @rounds = []
+    game_start
+
   end
 
 # Game Starter

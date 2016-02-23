@@ -30,12 +30,28 @@ class Mechanism
 
   def string_to_player_card(string)
     if @board.player_cards_event_names.include?(string)
-      card = @board.player_cards_events.select {|card| card.event == string.to_sym}
+      card = @board.player_cards_events.select {|event_card| event_card.event == string.to_sym}
     else
-      card = @board.player_cards_cities.select {|card| card.cityname == string}
+      card = @board.player_cards_cities.select {|player_card| player_card.cityname == string}
     end
     return card[0]
   end
+
+  def string_to_players_player_card(string, player)
+    event_cards_in_hand = player.cards.select {|card| card.type == :event}
+    player_cards_in_hand = player.cards.select {|card| card.type == :player}
+
+    event_cards = event_cards_in_hand.collect {|card| card.event}
+    player_cards = player_cards_in_hand.collect {|card| card.cityname}
+
+    if event_cards.include?(string.to_sym)
+      card = event_cards_in_hand.select {|card| card.event == string.to_sym}
+    else
+      card = player_cards_in_hand.select {|card| card.cityname == string}
+    end
+    return card[0]
+  end
+
 
   def string_to_infection_card(string)
     card = @board.infection_cards.select {|card| card.cityname == string}

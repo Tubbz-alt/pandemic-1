@@ -5,6 +5,7 @@ require_relative "game"
 class Round
 
   attr_reader :players, :game
+  attr_accessor :turns
 
   def initialize(game)
     @game = game
@@ -21,7 +22,7 @@ class Round
   end
 
   def end_round
-    @game.round << self
+    @game.rounds << self
   end
 
 end
