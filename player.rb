@@ -1,5 +1,5 @@
 # Player Class
-require_relative 'game'
+
 require 'colorize'
 
 class Player

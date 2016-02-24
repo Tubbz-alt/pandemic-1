@@ -1,5 +1,4 @@
 # City
-require_relative "board"
 
 class City
 
@@ -104,5 +103,5 @@ class City
   def outbreak_reset
     @outbreak = false
   end
-  
+
 end

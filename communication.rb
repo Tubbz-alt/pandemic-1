@@ -5,8 +5,6 @@ require 'colorize'
 
 class Communication
 
-  attr_reader :commands
-
   def initialize(game)
     @game = game
   end
