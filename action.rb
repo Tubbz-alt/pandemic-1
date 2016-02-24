@@ -52,7 +52,7 @@ class Action
     allowed_actions.each do |k,v|
       if filtered_actions.include?(k)
         if k == "h"
-          puts v.on_red
+          puts v.red
         else
           puts v
         end
@@ -334,7 +334,7 @@ class Action
 
     satisfied = false
     while !satisfied
-      puts "Where to shuttle flight? Type 'cancel' to cancel this action."
+      print "Where to shuttle flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
       if destination_string == "cancel"
@@ -539,7 +539,7 @@ class Action
 
     card_satisfied = false
     while !card_satisfied
-      puts "Which player city card to ask? Type 'cancel' to cancel this action"
+      print "Which player city card to ask? Type 'cancel' to cancel this action. "
       card_string = gets.chomp
       if card_string == "cancel"
         executed = false
@@ -616,7 +616,7 @@ class Action
         player_card_confirmation = false
         while !player_card_confirmation
           puts "Choose from " + cards_with_color.to_s
-          print "Type city name to discard one by one :"
+          print "Type city name to discard one by one : "
           discard_city_string = gets.chomp
           discard_city_card = @mech.string_to_player_card(discard_city_string)
           if !discard_city_card.nil? && discard_city_card.color == color

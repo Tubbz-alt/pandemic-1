@@ -266,7 +266,7 @@ class Mechanism
           neighbors_names = ""
           city.neighbors.each do |neighbor|
             if !neighbor.outbreak
-              neighbors_names += neighbor.name + " "
+              neighbors_names += neighbor.name + ". "
               perform_infect(neighbor, color, 1)
             end
           end
