@@ -1,7 +1,7 @@
 # Game
 require_relative "board"
 require_relative "player"
-require_relative "epidemiccard"
+require_relative "cards/epidemiccard"
 require_relative "mechanism"
 require_relative "round"
 require_relative "communication"

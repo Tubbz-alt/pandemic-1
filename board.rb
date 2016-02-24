@@ -1,8 +1,8 @@
 # Board
 require_relative "city"
-require_relative "infectioncard"
-require_relative "playercard"
-require_relative "eventcard"
+require_relative "cards/infectioncard"
+require_relative "cards/playercard"
+require_relative "cards/eventcard"
 require_relative "disease"
 
 class Board
