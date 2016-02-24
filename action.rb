@@ -124,7 +124,7 @@ class Action
         airlift(@player)
         @action_reduction = 0
       when 14
-
+        one_quiet_night(@player)
         @action_reduction = 0
       when 15
         forecast(@player)
@@ -942,6 +942,20 @@ class Action
       else
         com.execute_inquiry_command(answer)
       end
+    end
+  end
+
+  def one_quiet_night(player)
+    print "Do you confirm using this event in this turn? Type 'y' to confirm. "
+    answer = gets.chomp
+    if answer != 'y'
+      puts "Action cancelled."
+      puts
+      return
+    else
+      @turn.one_quiet_night_mode
+      puts "One Quiet Night is in effect."
+      puts
     end
   end
 

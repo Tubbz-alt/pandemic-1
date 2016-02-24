@@ -4,7 +4,7 @@ require_relative 'action'
 
 class Turn
 
-  attr_reader :action_left, :acts, :player, :game
+  attr_reader :action_left, :acts, :player, :game, :one_quiet_night
 
   def initialize(player, round)
     @player = player
@@ -14,14 +14,19 @@ class Turn
     @location = @mech.string_to_city(player.location)
     @action_left = 4
     @acts = []
+    @one_quiet_night = false
     actions if @game.game_run
     take_card_from_player_deck if @game.game_run
-    infect if @game.game_run
+    infect if @game.game_run && !@one_quiet_night
     end_turn
   end
 
   def reduce_action_left
     @action_left -= 1
+  end
+
+  def one_quiet_night_mode
+    @one_quiet_night = true
   end
 
   def actions
