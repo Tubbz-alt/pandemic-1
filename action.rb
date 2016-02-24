@@ -547,8 +547,8 @@ class Action
         puts
         return executed
       else
-        city_card = @mech.string_to_player_card(card_string)
-        if !city_card.nil? && sharer.cards.include?(city_card)
+        city_card = @mech.string_to_players_player_card(card_string, sharer)
+        if !city_card.nil?
           card_satisfied = true
           puts city_card.cityname + " is given to " + player.name + " by " + sharer.name
           @mech.give_card_to_another_player(sharer, player, city_card)

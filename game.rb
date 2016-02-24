@@ -47,7 +47,7 @@ class Game
   def welcome_players
     puts
     puts
-    puts "Board is set. Let's start the game!!"
+    puts "Let's start the game!! :)".yellow.on_red
     puts
     puts
   end
