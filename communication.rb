@@ -98,8 +98,8 @@ class Communication
       print disease[0].yellow if disease[0] == "Yellow"
       print disease[0].black.on_white if disease[0] == "Black"
       print ". Cubes available : " + disease[1].cubes_available.to_s + ". Cured : "
-      print disease[1].cured.to_s.upcase.green if disease[1].cured + ". Eradicated : "
-      print disease[1].cured.to_s if !disease[1].cured + ". Eradicated : "
+      print disease[1].cured.to_s.upcase.green + ". Eradicated : " if disease[1].cured
+      print disease[1].cured.to_s + ". Eradicated : " if !disease[1].cured
       puts disease[1].eradicated.upcase.green if disease[1].eradicated
       puts disease[1].eradicated.to_s if !disease[1].eradicated
     end

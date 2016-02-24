@@ -211,7 +211,7 @@ class Mechanism
   def prompt_card_to_discard(player)
     satisfied = false
     while !satisfied
-      puts "Pick a card event or city name to discard!"
+      print "Pick a card event or city name to discard! "
       card_id_string = gets.chomp
 
       card = string_to_players_player_card(card_id_string, player)
