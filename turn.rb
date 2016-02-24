@@ -14,9 +14,9 @@ class Turn
     @location = @mech.string_to_city(player.location)
     @action_left = 4
     @acts = []
-    actions
-    take_card_from_player_deck
-    infect
+    actions if @game.game_run
+    take_card_from_player_deck if @game.game_run
+    infect if @game.game_run
     end_turn
   end
 
@@ -27,7 +27,7 @@ class Turn
   def actions
     while @action_left > 0
       act = Action.new(self)
-      puts @player.name + "'s turn. You have " + @action_left.to_s + " actions left."
+      puts @player.name.underline + "'s turn. You have ".underline + @action_left.to_s.underline + " actions left.".underline
       act.print_allowed_actions
       action_number = act.execute_player_action
       @acts << action_number if act.action_reduction == 1
@@ -43,8 +43,8 @@ class Turn
   def take_card_from_player_deck
     dealt_cards = @mech.deal_cards(@game.player_deck, 2)
     puts "The following cards are taken from the Player Deck to " + @player.name + "'s hands : " + card_description(dealt_cards).to_s
-    @mech.put_player_cards_into_hand(dealt_cards, @player)
     puts
+    @mech.put_player_cards_into_hand(dealt_cards, @player)
   end
 
   def infect

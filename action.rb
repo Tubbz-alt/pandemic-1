@@ -36,12 +36,13 @@ class Action
     14 => "14. Use One Quiet Night event by discarding the event card (0)",
     15 => "15. Use Forecast by discarding the event card (0)",
     16 => "16. Move from a research center to any city by discarding any city card once per turn if operations expert (1)",
-    17 => "17. Forfeit action (lose all actions left)"
+    17 => "17. Move a player's pawn to another player's location if current turn belongs to a dispatcher (1)",
+    18 => "18. Forfeit action (lose all actions left)"
     }
   end
 
   def filtered_actions
-    actions = (1..17).to_a
+    actions = (1..18).to_a
     actions.unshift("h")
   end
 
@@ -49,7 +50,13 @@ class Action
     puts "Choose from the following possible actions (action worth):"
     puts
     allowed_actions.each do |k,v|
-      puts v if filtered_actions.include?(k)
+      if filtered_actions.include?(k)
+        if k == "h"
+          puts v.on_red
+        else
+          puts v
+        end
+      end
     end
     puts
   end
@@ -144,6 +151,9 @@ class Action
           execution ? @action_reduction = 1 : @action_reduction = 0
         end
       when 17
+        execution = dispatcher_move_player_to_player(@player)
+        execution ? @action_reduction = 1 : @action_reduction = 0
+      when 18
         print "Are you sure you'd like to forfeit all your remaining actions? Type 'y' to confirm! "
         answer = gets.chomp
 
@@ -258,7 +268,7 @@ class Action
     if player.role == :dispatcher
       moved_satisfied = false
       while !moved_satisfied
-        puts "Whom to move? (own name or other player's name)"
+        print "Whom to move? (own name or other player's name) : "
         moved_string = gets.chomp
         moved = @mech.string_to_player(moved_string)
         moved_satisfied = true if !moved.nil?
@@ -713,7 +723,7 @@ class Action
     #Find the person who's moved.
     moved_confirmation = false
     while !moved_confirmation
-      puts "You chose airlift event, which player's name do you wish to be airlifted? Type 'cancel' to cancel this event."
+      print "You chose airlift event, which player's name do you wish to be airlifted? Type 'cancel' to cancel this event. "
       moved_string = gets.chomp
       if moved_string == "cancel"
         executed = false
@@ -856,6 +866,62 @@ class Action
           puts "City Player Card unrecognized or player doesn't have that City Player Card. Try again!"
         end
       end
+    end
+    return executed
+  end
+
+  def dispatcher_move_player_to_player(player)
+    if player.role == :dispatcher
+      moved_satisfied = false
+      while !moved_satisfied
+        print "Which player's pawn would you like to move? Type 'cancel' to cancel this action. "
+        moved_string = gets.chomp
+        if moved_string == 'cancel'
+          executed = false
+          puts "Action cancelled."
+          puts
+          return executed
+        else
+          moved = @mech.string_to_player(moved_string)
+          if !moved.nil?
+            moved_satisfied = true
+          else
+            puts "That player is unrecognized. Try again!"
+          end
+        end
+      end
+
+      destination_player_satisfied = false
+      while !destination_player_satisfied
+        print "Which other player's location would you like to move that pawn to? Type 'cancel' to cancel this action. "
+        destination_string = gets.chomp
+        if destination_string  == 'cancel'
+          executed = false
+          puts "Action cancelled."
+          puts
+          return executed
+        else
+          destination_player = @mech.string_to_player(destination_string)
+          if !destination_player.nil?
+            destination_player_satisfied = true
+          else
+            puts "That player is unrecognized. Try again!"
+          end
+        end
+      end
+
+      destination_city = @mech.string_to_city(destination_player.location)
+
+      @mech.move_player(player, destination_player.location, moved)
+      puts moved.name + " has been moved to " + destination_string
+
+      executed = true
+
+      medic_automatic_treat_cured(moved, destination_city) if moved.role == :medic
+    else
+      executed = false
+      puts "You are not a dispatcher. Action cancelled."
+      puts
     end
     return executed
   end

@@ -7,10 +7,12 @@ require 'colorize'
 class Mechanism
 
   attr_reader :board
+  attr_accessor :players
 
   def initialize(game)
     @game = game
     @board = @game.board
+    @players = []
   end
 
   def string_to_player(string)
@@ -19,7 +21,7 @@ class Mechanism
   end
 
   def symbol_to_player(symbol)
-    player = @game.players.select {|player| player.role == symbol}
+    player = @players.select {|player| player.role == symbol}
     return player[0]
   end
 
@@ -180,7 +182,26 @@ class Mechanism
   end
 
   def player_to_discard_in_hand(player)
-    puts "These are your cards in hand : " + player.cards_in_hand_description.to_s
+    puts "These are your cards in hand : "
+
+    player.names_of_player_cards_in_hand_based_color.each do |color|
+      case color[0]
+      when "Red"
+        print color[1..-1].to_s.red + ". "
+      when "Yellow"
+        print color[1..-1].to_s.yellow + ". "
+      when "Blue"
+        print color[1..-1].to_s.blue + ". "
+      when "Black"
+        print color[1..-1].to_s.black.on_white + ". "
+      end
+    end
+
+    unless player.desc_of_event_cards_in_hand.empty?
+      print player.desc_of_event_cards_in_hand.to_s
+    end
+    puts
+
     card_discarded = prompt_card_to_discard(player)
     discard_card_from_player_hand(player, card_discarded)
     puts card_discarded.cityname + " has been discarded to Player Discard Pile." if card_discarded.type == :player
@@ -222,8 +243,7 @@ class Mechanism
     perform_infect(infected_city, infected_city_original_color, 3)
 
     # Shuffle cards in the infection discard pile and put them on top of the Infection Deck.
-    @game.infection_discard_pile.shuffle!
-    @game.infection_deck += @game.infection_discard_pile
+    @game.infection_deck += @game.infection_discard_pile.shuffle!
     @game.infection_discard_pile = []
   end
 
@@ -239,11 +259,9 @@ class Mechanism
       if existing_cubes + number_of_cubes <= 3
         city.infect(color, number_of_cubes)
         reduce_color_cube_available(color, number_of_cubes)
-        if @game.lose?
-          @game.game_over?
-        end
+        @game.end_game if @game.game_over?
       else
-        if !@game.lose?
+        if !@game.game_over?
           city.outbreak_happens
           neighbors_names = ""
           city.neighbors.each do |neighbor|
@@ -256,7 +274,7 @@ class Mechanism
           puts
           @game.increase_outbreak_index
         else
-          @game.game_over?
+          @game.end_game
         end
       end
       @game.board.cities.each do |city|

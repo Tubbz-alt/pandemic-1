@@ -1,5 +1,6 @@
 # Player Class
 require_relative 'game'
+require 'colorize'
 
 class Player
 
@@ -89,18 +90,6 @@ class Player
     card[0].discard_to_player_discard_pile
     discard_to_player_discard_pile(card[0])
     return card[0]
-  end
-
-  def cards_in_hand_description
-    show_array = []
-    @cards.each do |card|
-      if card.type == :player
-        show_array << [card.cityname, card.value]
-      elsif card.type == :event
-        show_array << [card.event, card.value]
-      end
-    end
-    return show_array
   end
 
   def highest_population

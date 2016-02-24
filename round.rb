@@ -11,7 +11,7 @@ class Round
     @game = game
     @players = @game.players
     @turns = []
-    new_turn
+    new_turn if @game.game_run
     end_round
   end
 

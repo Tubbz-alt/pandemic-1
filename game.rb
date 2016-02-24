@@ -33,6 +33,7 @@ class Game
 
     @game_run = true
     game_setup
+    @mech.players = @players
 
     welcome_players
 
