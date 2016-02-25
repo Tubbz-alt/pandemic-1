@@ -17,7 +17,7 @@ class Communication
   end
 
   def execute_inquiry_command(string)
-    if string == "players_order" || string == "infection_rate" || string == "outbreak_index" || string == "show_cities" || string == "players" || string == "research_st_cities" || string == "city_info" || string == "disease"
+    if string == "players_order" || string == "infection_rate" || string == "outbreak_index" || string == "show_cities" || string == "players" || string == "research_st_cities" || string == "ci" || string == "disease" || string == "idp"
       send string.to_sym
     elsif string == "black_disease"
       print_disease_status(@game.black_disease)
@@ -49,7 +49,8 @@ class Communication
     "show_cities" => "to show cities with any cubes.",
     "show_cities(1)" => "to show cities with 1 cube. Other available commands are 'show_cities(2)' and 'show_cities(3)'",
     "research_st_cities" => "to show cities with research stations.",
-    "city_info" => "to show information of a city"
+    "ci" => "city info, to show information of a city",
+    "idp" => "to show cards in the Infection Discard Pile"
     }
 
   # The following are made as communication means from the command line during game.
@@ -138,7 +139,7 @@ class Communication
     puts "Cities with research station are : " + @game.board.research_st_cities.to_s
   end
 
-  def city_info
+  def ci #city_info
     satisfied = false
     while !satisfied
       print "Which city would you like to get information of? Type 'cancel' to cancel this action. "
@@ -174,7 +175,13 @@ class Communication
       end
     end
     puts
+  end
 
+  def idp #infection discard Pile
+    print "Cards in the Infection Discard Pile : "
+    city_names = @game.infection_discard_pile.collect {|card| card.cityname}
+    puts city_names.to_s
+    puts
   end
 
 end
