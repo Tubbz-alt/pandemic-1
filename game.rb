@@ -9,14 +9,14 @@ require_relative "communication"
 class Game
 
   attr_accessor :number_players, :infection_deck, :infection_discard_pile, :player_discard_pile, :rounds
-  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :rounds, :mech
+  attr_reader :infection_rate_index, :players, :available_roles_to_pick, :deal_player_card_number, :epidemic_cards_number, :board, :outbreak_index, :blue_disease, :red_disease, :yellow_disease, :black_disease, :player_deck, :infection_rate, :game_run, :round, :mech, :filename
 
-  def initialize
+  def initialize(filename = "")
+    @filename = filename
     player_creation
-
     @infection_rate_index = 0
     @infection_rate = INFECTION_RATE_BOARD[@infection_rate_index]
-    @board = Board.new()
+    @board = Board.new
     @blue_disease = @board.blue_disease
     @red_disease = @board.red_disease
     @yellow_disease = @board.yellow_disease
@@ -37,12 +37,14 @@ class Game
 
     welcome_players
 
-    @rounds = []
+    @round
     game_start
 
   end
 
 # Game Starter
+
+
 
   def welcome_players
     puts
@@ -52,9 +54,16 @@ class Game
     puts
   end
 
+  def play
+    index_of_current_turn = @round.turns.compact.size - 1
+    this_turn = @round.turns[index_of_current_turn]
+    this_turn.play_turn
+  end
+
   def game_start
     while @game_run
-      round = Round.new(self)
+      @round = Round.new(self)
+      @round.new_round if @game_run
     end
   end
 
@@ -147,6 +156,7 @@ class Game
   end
 
 # The following section includes setting up board.
+
 
   def player_creation
     @players = []

@@ -13,12 +13,14 @@ class Turn
     @mech = @game.mech
     @location = @mech.string_to_city(player.location)
     @action_left = 4
-    @acts = []
+    @acts = Array.new(4)
     @one_quiet_night = false
+  end
+
+  def play_turn
     actions if @game.game_run
     take_card_from_player_deck if @game.game_run
-    infect if @game.game_run && !@one_quiet_night
-    end_turn
+    infect if @game.game_run && !@one_quiet_night_mode
   end
 
   def reduce_action_left
@@ -35,13 +37,14 @@ class Turn
       puts @player.name.underline + "'s turn. You have ".underline + @action_left.to_s.underline + " actions left.".underline
       act.print_allowed_actions
       action_number = act.execute_player_action
-      @acts << action_number if act.action_reduction == 1
+      @acts[@action_left-4] = action_number if act.action_reduction == 1
       if @game.game_over?
         @game.end_game
         break
       end
       @action_left -= act.action_reduction
       puts
+      save_game_file(@game.filename)
     end
   end
 
@@ -67,10 +70,6 @@ class Turn
     end
   end
 
-  def end_turn
-    @round.turns << self
-  end
-
   def card_description(cards_array)
     event_cards = cards_array.select {|card| card.type == :event}
     epidemic_cards = cards_array.select {|card| card.type == :epidemic}
@@ -85,6 +84,10 @@ class Turn
     array = []
     array += event_desc + epidemic_desc + city_desc + infection_desc
     return array.compact
+  end
+
+  def save_game_file(filename)
+    File.open("saved_games/#{filename}.yml","w"){|file| file.write(@game.to_yaml)}
   end
 
 end

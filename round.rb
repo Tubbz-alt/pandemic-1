@@ -10,19 +10,14 @@ class Round
   def initialize(game)
     @game = game
     @players = @game.players
-    @turns = []
-    new_turn if @game.game_run
-    end_round
+    @turns = Array.new(@players.size)
   end
 
-  def new_turn
-    @players.each do |player|
-      @turns << Turn.new(player, self)
+  def new_round
+    @players.each_with_index do |player, idx|
+      @turns[idx] = Turn.new(player, self)
+      @turns[idx].play_turn
     end
-  end
-
-  def end_round
-    @game.rounds << self
   end
 
 end
