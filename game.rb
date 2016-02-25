@@ -63,11 +63,11 @@ class Game
   def complete_a_turn
     index_of_current_turn = @round.turns.compact.size - 1
     this_turn = @round.turns[index_of_current_turn]
-    this_turn.play_turn
+    this_turn.play_turn if this_turn.mid_turn?
   end
 
   def complete_a_round
-    if !@round.round_complete?
+    if @round.mid_round?
       @round.complete_current_round
     end
   end

@@ -20,23 +20,23 @@ class Round
     end
   end
 
-  def round_complete?
-    !@turns[@players.size-1].nil?
+  def mid_round?
+    @turns.compact.size != @players.size
   end
 
   def complete_current_round
-    index_of_last_completed_player = @turns.compact.size-1
+    index_of_last_completed_player = @turns.compact.size - 1
     index_of_next_player = index_of_last_completed_player+1
     players_yet_to_play = @players[index_of_next_player..-1]
 
-    play_remaning_round(players_yet_to_play, index_of_last_completed_player)
+    play_remaning_of_round(players_yet_to_play, index_of_last_completed_player+1)
 
   end
 
-  def play_remaning_round(players, index_of_last_completed_player)
+  def play_remaning_of_round(players, index_of_prev_player)
     players.each_with_index do |player, idx|
-      @turns[idx + index_of_last_completed_player] = Turn.new(player, self)
-      @turns[idx + index_of_last_completed_player].play_turn
+      @turns[idx + index_of_prev_player] = Turn.new(player, self)
+      @turns[idx + index_of_prev_player].play_turn
     end
   end
 

@@ -90,4 +90,8 @@ class Turn
     File.open("saved_games/#{filename}.yml","w"){|file| file.write(@game.to_yaml)}
   end
 
+  def mid_turn?
+    @action_left != 0
+  end
+
 end
