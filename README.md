@@ -10,22 +10,20 @@ This document provides documentation to be used to play the Ruby Pandemics. For 
 
 ### Environment
 
-1. Open bash (on Macbooks) or others similar you'd like available on your own machine. This game is run in `pry`, a gem for Ruby REPL.
+1. Open bash (on Macbooks) or others similar you'd like available on your own machine.
 2. Make sure Ruby is installed by running `$ ruby -v`.
-3. Install `pry` (if not installed yet) by running `$ gem install pry`.
-4. Install `colorize`, a ruby gem, by running `$ gem install colorize`.
-5. Once `pry` and `colorize` are installed, open `pry` by running `$ pry`.
-6. Start the game by initiating an object of class Game. See "Starting the game" below.
-7. Exit pry = `$ exit`
+3. Install `colorize`, a ruby gem, by running `$ gem install colorize`.
+4. This game is run right on the command line by running `$ ruby pandemic.rb`.
 
-### Starting the game
+### Saving and Loading a Game
 
-Type the following in sequence when already in `pry`:
+##### Saving
 
-```ruby
-load 'game.rb'
-g = Game.new
-```
+The game is autosaved after completing each action in a turn. Yaml serialization is used, and the file is saved in saved_games folder. When prompted to specify a filename to save the game, `.yml` extension is not required. E.g : if you want the game to be saved as `mygame.yml`, you can just input `mygame`.
+
+##### Loading
+
+Analogously, when prompted which filename of a game to load, type in only the filename without the extension.
 
 ### List of roles
 
@@ -59,11 +57,11 @@ By Color (then alphabetical)
 | Washington | Tokyo | Sao Paolo | Tehran |
 
 
-### Commands **in pry**
+### Help Commands
 
-#### Related to the game state
+##### Related to the game state
 
-These commands are inputted during the action "Communicate with the board to get game status."
+These commands are inputted during the action `Help, Communicate with the board to get game status.`
 
 - `players_order` to show the players order (who goes first, etc).
 - `players` to show details of all players.
@@ -73,6 +71,6 @@ These commands are inputted during the action "Communicate with the board to get
 - `show_cities` to show cities with any cubes. Other commands allowed  are `show_cities(1)`, `show_cities(2)` and `show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
 - `research_st_cities` to show cities with research stations.
 
-#### Related to Cities
+##### Related to Cities
 
 - `city_info` to show the status of a city.
