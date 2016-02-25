@@ -20,7 +20,7 @@ class Turn
   def play_turn
     actions if @game.game_run
     take_card_from_player_deck if @game.game_run
-    infect if @game.game_run && !@one_quiet_night_mode
+    infect if @game.game_run && !@one_quiet_night
   end
 
   def reduce_action_left

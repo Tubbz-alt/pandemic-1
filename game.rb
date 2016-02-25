@@ -55,9 +55,21 @@ class Game
   end
 
   def play
+    complete_a_turn
+    complete_a_round
+    game_start
+  end
+
+  def complete_a_turn
     index_of_current_turn = @round.turns.compact.size - 1
     this_turn = @round.turns[index_of_current_turn]
     this_turn.play_turn
+  end
+
+  def complete_a_round
+    if !@round.round_complete?
+      @round.complete_current_round
+    end
   end
 
   def game_start

@@ -14,11 +14,13 @@ class Pandemic
       filename = gets.chomp
       @g = load_game_file(filename)
       puts "Game file #{filename}.yml has been loaded."
+      puts
       @g.play
     else
       print "New file is created. The game will be autosaved. Please assign a new file name (without .yml extension)! "
       filename = gets.chomp
       puts "A pandemic game with filename #{filename}.yml has been created."
+      puts
       @g = Game.new(filename)
     end
   end
