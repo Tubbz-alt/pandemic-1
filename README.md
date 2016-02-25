@@ -13,7 +13,11 @@ This document provides documentation to be used to play the Ruby Pandemics. For 
 1. Open bash (on Macbooks) or others similar you'd like available on your own machine.
 2. Make sure Ruby is installed by running `$ ruby -v`.
 3. Install `colorize`, a ruby gem, by running `$ gem install colorize`.
-4. This game is run right on the command line by running `$ ruby pandemic.rb`.
+4. This game is run right on the command line. Go to your local `pandemic` folder in bash. Then see 'Starting the Game' section below.
+
+### Starting the Game
+
+Run `$ ruby pandemic.rb` on command line.
 
 ### Saving and Loading a Game
 
