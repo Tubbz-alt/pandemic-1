@@ -1,6 +1,7 @@
 # Turn
 require_relative 'round'
 require_relative 'action'
+require 'fileutils'
 
 class Turn
 
@@ -87,6 +88,7 @@ class Turn
   end
 
   def save_game_file(filename)
+    FileUtils.mkdir 'saved_games' if !File.exist?('saved_games')
     File.open("saved_games/#{filename}.yml","w"){|file| file.write(@game.to_yaml)}
   end
 
