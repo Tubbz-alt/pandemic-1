@@ -946,16 +946,25 @@ class Action
   end
 
   def one_quiet_night(player)
-    print "Do you confirm using this event in this turn? Type 'y' to confirm. "
-    answer = gets.chomp
-    if answer != 'y'
-      puts "Action cancelled."
+    one_quiet_night_card = @mech.string_to_players_player_card("One_Quiet_Night",player)
+
+    if one_quiet_night_card.nil?
+      puts "You don't have this card. Event cancelled."
       puts
       return
     else
-      @turn.one_quiet_night_mode
-      puts "One Quiet Night is in effect."
-      puts
+      print "Do you confirm using this event in this turn? Type 'y' to confirm. "
+      answer = gets.chomp
+      if answer != 'y'
+        puts "Action cancelled."
+        puts
+        return
+      else
+        @turn.one_quiet_night_mode
+        @mech.discard_card_from_player_hand(player, one_quiet_night_card)
+        puts "One Quiet Night is in effect. Event card is discarded from player's hand."
+        puts
+      end
     end
   end
 
