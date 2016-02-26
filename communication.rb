@@ -17,7 +17,7 @@ class Communication
   end
 
   def execute_inquiry_command(string)
-    if string == "players_order" || string == "infection_rate" || string == "outbreak_index" || string == "show_cities" || string == "players" || string == "research_st_cities" || string == "ci" || string == "disease" || string == "idp"
+    if string == "players_order" || string == "infection_rate" || string == "outbreak_index" || string == "show_cities" || string == "players" || string == "rs" || string == "ci" || string == "disease" || string == "idp" || string == "pdp"
       send string.to_sym
     elsif string == "black_disease"
       print_disease_status(@game.black_disease)
@@ -48,9 +48,10 @@ class Communication
     "disease" => "to show the status of all diseases.",
     "show_cities" => "to show cities with any cubes.",
     "show_cities(1)" => "to show cities with 1 cube. Other available commands are 'show_cities(2)' and 'show_cities(3)'",
-    "research_st_cities" => "to show cities with research stations.",
-    "ci" => "city info, to show information of a city",
-    "idp" => "to show cards in the Infection Discard Pile"
+    "rs" => "Research Station, to show cities with research stations.",
+    "ci" => "City Info, to show information of a city",
+    "idp" => "Infection Discard Pile, to show cards in the Infection Discard Pile",
+    "pdp" => "Player Discard Pile, to show cards in the Player Discard Pile"
     }
 
   # The following are made as communication means from the command line during game.
@@ -135,7 +136,7 @@ class Communication
     end
   end
 
-  def research_st_cities
+  def rs #Research Station
     puts "Cities with research station are : " + @game.board.research_st_cities.to_s
   end
 
@@ -181,6 +182,17 @@ class Communication
     print "Cards in the Infection Discard Pile : "
     city_names = @game.infection_discard_pile.collect {|card| card.cityname}
     puts city_names.to_s
+    puts
+  end
+
+  def pdp #player discard pile
+    print "Cards in the Player Discard Pile : "
+    city_cards = @game.player_discard_pile.select {|card| card.type == :player}
+    event_cards = @game.player_discard_pile.select {|card| card.type == :event}
+    display = []
+    city_cards.each {|card| display << card.cityname}
+    event_cards.each {|card| display << card.event.to_s}
+    puts display.to_s
     puts
   end
 
