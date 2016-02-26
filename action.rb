@@ -190,20 +190,29 @@ class Action
       moved = dispatcher_posibility(player)
 
       moved_current_city = @mech.string_to_city(moved.location)
-      puts "Moved Player's current location is : " + moved.location
+      print "Moved Player's current location is : "
+      @mech.print_city_name_in_color(moved_current_city)
+      print ". Cubes in current city : "
+      if moved_current_city.color_count > 0
+        @mech.print_city_cube_in_color(moved_current_city)
+      else
+        print "None."
+      end
+      puts
 
       neighbors = moved_current_city.neighbors
 
       puts "Neighbors of the moved player's current city : "
       neighbors.each do |neighbor|
-        if neighbor.research_st
-          research_st_indication = neighbor.research_st.to_s.upcase
-        else
-          research_st_indication = neighbor.research_st.to_s
-        end
-        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". red, yellow, black, blue : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black.on_white + ", "+ neighbor.blue.to_s.blue + ". Research St : "+research_st_indication
+
+        print neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black.on_white + ", "+ neighbor.blue.to_s.blue + ". Research St : "
+
+        print neighbor.research_st.to_s.upcase.green if neighbor.research_st
+        print neighbor.research_st.to_s if !neighbor.research_st
+        puts
       end
 
+      puts
       print "Where to drive / ferry? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
       if destination_string.downcase == "cancel"
@@ -217,7 +226,9 @@ class Action
         if neighbors.include?(destination)
           satisfied = true
           @mech.move_player(player, destination_string, moved)
-          puts "Drove / Ferried to " + destination_string
+          print "Drove / Ferried to "
+          @mech.print_city_name_in_color(destination)
+          puts
           executed = true
         else
           puts "Neighbor city unrecognized."

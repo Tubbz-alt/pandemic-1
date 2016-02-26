@@ -207,6 +207,7 @@ class Mechanism
   def player_to_discard_in_hand_more_than_7(player)
     print player.name.to_s + ", you have more than 7 cards currently. Let's discard one by one. "
 
+    display_player_cards_in_color(player)
     event_cards_to_discard = player.event_cards_in_hand
 
     while event_cards_to_discard.size > 0
@@ -384,10 +385,8 @@ class Mechanism
     player_to_discard_in_hand(player) if player.toss_cards?
   end
 
-
-  def player_to_discard_in_hand(player)
+  def display_player_cards_in_color(player)
     puts "These are your cards in hand : "
-
     player.names_of_player_cards_in_hand_based_color.each do |color|
       case color[0]
       when "red"
@@ -400,6 +399,11 @@ class Mechanism
         print color[1..-1].to_s.black.on_white + ". "
       end
     end
+  end
+
+  def player_to_discard_in_hand(player)
+
+    display_player_cards_in_color(player)
 
     unless player.desc_of_event_cards_in_hand.empty?
       print player.desc_of_event_cards_in_hand.to_s
