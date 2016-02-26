@@ -137,12 +137,6 @@ class Board
     @black_disease = Disease.new(:black)
   end
 
-  def research_st_cities #CommandLine
-    city_names = []
-    research_station_cities.each {|city| city_names << city.name}
-    city_names
-  end
-
   def research_station_cities
     r_s_c = []
     @cities.each do |city|

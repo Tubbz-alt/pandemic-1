@@ -87,7 +87,8 @@ class Communication
       end
 
       print "Location : "
-      @mech.print_city_in_color(@mech.string_to_city(player.location))
+      @mech.print_city_name_in_color(@mech.string_to_city(player.location))
+      puts
       puts
     end
   end
@@ -124,22 +125,36 @@ class Communication
         cities += @game.board.cities.select {|city| city.color_count == number}
       end
       cities.each do |city|
-        result << [city.name.to_s + " : " + city.color_count.to_s]
+        @mech.print_city_name_in_color(city)
+        print " : "
+        @mech.print_city_cube_in_color(city)
+        puts
       end
-      puts result
+      puts
     else
       if number_of_infection < 0 || number_of_infection > 3
         puts "Only input 1, 2 or 3, or no numbers at all."
       else
         cities = @game.board.cities.select {|city| city.color_count == number_of_infection}
-        city_names = cities.collect {|city| city.name}
-        puts "Cities with " + number_of_infection.to_s + " cubes are : " + city_names.to_s
+        puts "Cities with " + number_of_infection.to_s + " cubes are : "
+        cities.each do |city|
+          @mech.print_city_name_in_color(city)
+          print " : "
+          @mech.print_city_cube_in_color(city)
+          puts
+        end
       end
     end
   end
 
   def rs #Research Station
-    puts "Cities with research station are : " + @game.board.research_st_cities.to_s
+    print "Cities with research station are : "
+    cities = @game.board.research_station_cities
+    cities.each do |city|
+      @mech.print_city_name_in_color(city)
+      print ". "
+    end
+    puts
   end
 
   def ci #city_info
@@ -187,6 +202,7 @@ class Communication
     else
       @game.infection_discard_pile.each do |card|
         @mech.print_card_in_color(card)
+        print ". "
       end
     end
     puts
@@ -202,6 +218,7 @@ class Communication
     else
       city_cards.each do |card|
         @mech.print_card_in_color(card)
+        print ". "
       end
       event_cards.each {|card| print card.event.to_s + ". "}
     end

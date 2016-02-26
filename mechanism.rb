@@ -133,12 +133,25 @@ class Mechanism
     @board.count_research_station
     if @board.research_station_available > 0
       location.build_research_st
-      puts "A research station has been built in "+location.name
-      puts "Updated cities with research station : " + @board.research_st_cities.to_s
+      print "A research station has been built in "
+      print_city_name_in_color(location)
+      puts
+      print "Updated cities with research station : "
+      cities = @game.board.research_station_cities
+      cities.each do |city|
+        print_city_name_in_color(city)
+        puts ". "
+      end
       puts
     else
-      puts "You have built 6 research stations (max). There are currently a research station in each of the following cities : " + @board.research_st_cities.to_s
-      print "You need to remove one research station. Proceed? 'y' or 'n'"
+      print "You have built 6 research stations (max). There are currently a research station in each of the following cities : "
+      cities = @game.board.research_station_cities
+      cities.each do |city|
+        print_city_name_in_color(city)
+        print ". "
+      end
+      puts
+      print "You need to remove one research station. Proceed? ('y' or 'n') "
       answer = gets.chomp
       if answer.downcase == 'n'
         return "Build Research Station has been cancelled"
@@ -520,27 +533,34 @@ class Mechanism
   def print_card_in_color(card)
     case card.color
     when :red
-      print card.cityname.red + ". "
+      print card.cityname.red
     when :black
-      print card.cityname.black.on_white + ". "
+      print card.cityname.black.on_white
     when :yellow
-      print card.cityname.yellow + ". "
+      print card.cityname.yellow
     when :blue
-      print card.cityname.blue + ". "
+      print card.cityname.blue
     end
   end
 
-  def print_city_in_color(city)
+  def print_city_name_in_color(city)
     case city.original_color
     when :red
-      print city.name.red + ". "
+      print city.name.red
     when :black
-      print city.name.black.on_white + ". "
+      print city.name.black.on_white
     when :yellow
-      print city.name.yellow + ". "
+      print city.name.yellow
     when :blue
-      print city.name.blue + ". "
+      print city.name.blue
     end
+  end
+
+  def print_city_cube_in_color(city)
+    print city.red.to_s.red + ". " if city.red > 0
+    print city.yellow.to_s.yellow + ". " if city.yellow > 0
+    print city.blue.to_s.blue + ". " if city.blue > 0
+    print city.black.to_s.black.on_white + ". " if city.black > 0
   end
 
 end
