@@ -61,7 +61,7 @@ class Player
       blue_cards << card.cityname if card.color == :blue
       yellow_cards << card.cityname if card.color == :yellow
     end
-    cards = [["Red", red_cards], ["Black", black_cards], ["Blue", blue_cards], ["Yellow", yellow_cards]]
+    cards = [["red", red_cards], ["black", black_cards], ["blue", blue_cards], ["yellow", yellow_cards]]
 
     nested_cards = cards.select {|color| !color[1].empty?}
     flattened_cards = nested_cards.collect {|color| color.flatten}

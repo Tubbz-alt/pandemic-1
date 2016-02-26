@@ -10,7 +10,7 @@ class Pandemic
 
   def setup
     print "Do you want to load a saved game? Type 'y' for confirmation! "
-    if gets.chomp == "y"
+    if gets.chomp.downcase == "y"
       if saved_games_folder?
         list_files = all_yml_files_in_saved_games
         if list_files.size > 0

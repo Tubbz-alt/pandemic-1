@@ -157,7 +157,7 @@ class Action
         print "Are you sure you'd like to forfeit all your remaining actions? Type 'y' to confirm! "
         answer = gets.chomp
 
-        if answer == "y"
+        if answer.downcase == "y"
           @action_reduction = @turn.action_left
         else
           @action_reduction = 0
@@ -201,12 +201,12 @@ class Action
         else
           research_st_indication = neighbor.research_st.to_s
         end
-        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". Red, Yellow, Black, Blue : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black.on_white + ", "+ neighbor.blue.to_s.blue + ". Research St : "+research_st_indication
+        puts neighbor.name.to_s + ". Players : "+ neighbor.pawns.to_s + ". Cubes : " + neighbor.color_count.to_s + ". red, yellow, black, blue : " + neighbor.red.to_s.red + ", "+ neighbor.yellow.to_s.yellow + ", "+ neighbor.black.to_s.black.on_white + ", "+ neighbor.blue.to_s.blue + ". Research St : "+research_st_indication
       end
 
       print "Where to drive / ferry? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
-      if destination_string == "cancel"
+      if destination_string.downcase == "cancel"
         executed = false
         puts "Action cancelled, no actions were used."
         puts
@@ -238,7 +238,7 @@ class Action
       print "Where to direct flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
-      if destination_string == 'cancel'
+      if destination_string.downcase == 'cancel'
         executed = false
           puts "Direct flight has been cancelled. No actions were used."
           puts
@@ -296,7 +296,7 @@ class Action
         puts "Where to charter flight? Type 'cancel' to cancel this action."
         destination_string = gets.chomp
 
-        if destination_string == 'cancel'
+        if destination_string.downcase == 'cancel'
           executed = false
           puts "Charter flight is cancelled. No action were used."
           puts
@@ -337,7 +337,7 @@ class Action
       print "Where to shuttle flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
-      if destination_string == "cancel"
+      if destination_string.downcase == "cancel"
         executed = false
         puts "Action is cancelled. No action was used".
         puts
@@ -378,7 +378,7 @@ class Action
     while !location_obtained
       print "Where to put research center in? Type 'cancel' to cancel. "
       location_string = gets.chomp
-      if location_string == 'cancel'
+      if location_string.downcase == 'cancel'
         executed = false
         puts "Research Station is not built."
         puts
@@ -420,17 +420,17 @@ class Action
         print "Which color do you want to treat? Type 'cancel' to cancel this action. "
         answer = gets.chomp
 
-        if answer == 'cancel'
+        if answer.downcase == 'cancel'
           executed = false
           puts "Treat disease has been cancelled."
           puts
           return executed
         else
-          if answer.to_sym == :blue || answer.to_sym == :red || answer.to_sym == :yellow || answer.to_sym == :black
-            color = answer.to_sym
+          if answer.downcase.to_sym == :blue || answer.downcase.to_sym == :red || answer.downcase.to_sym == :yellow || answer.downcase.to_sym == :black
+            color = answer.downcase.to_sym
             color_satisified = true
           else
-            puts "Color unrecognized. All lowercase."
+            puts "Color unrecognized."
           end
         end
       end
@@ -463,7 +463,7 @@ class Action
     while !satisfied
       print "Whom to share knowledge with? Type 'cancel' to cancel this action. "
       answer = gets.chomp
-      if answer == "cancel"
+      if answer.downcase == "cancel"
         executed = false
         puts "Action cancelled. No action was used."
         puts
@@ -488,7 +488,7 @@ class Action
       if player.role == :researcher
         print "Which player city card to share? Type 'cancel' to cancel this action. "
         card_string = gets.chomp
-        if card_string == "cancel"
+        if card_string.downcase == "cancel"
           executed = false
           puts "Action cancelled. No action was used."
           puts
@@ -541,7 +541,7 @@ class Action
     while !card_satisfied
       print "Which player city card to ask? Type 'cancel' to cancel this action. "
       card_string = gets.chomp
-      if card_string == "cancel"
+      if card_string.downcase == "cancel"
         executed = false
         puts "Action cancelled. No action was used."
         puts
@@ -583,13 +583,13 @@ class Action
       print "Which color to cure? Options are yellow, blue, black, red. Type 'cancel' to cancel action. "
       color_string = gets.chomp
 
-      if color_string == "cancel"
+      if color_string.downcase == "cancel"
         executed = false
         puts "Action cancelled. No action was used."
         puts
         return executed
       else
-        color = color_string.to_sym
+        color = color_string.downcase.to_sym
         if color == :blue || color == :red || color == :black || color == :yellow
           color_satisfied = true
         else
@@ -657,7 +657,7 @@ class Action
       puts available_events.to_s
       print "Choose an event to take from the Player Discard Pile. Type 'cancel' to cancel this action."
       chosen_string = gets.chomp
-      if chosen_string == "cancel"
+      if chosen_string.downcase == "cancel"
         executed = false
         puts "Action is cancelled. No action was used."
         puts
@@ -691,7 +691,7 @@ class Action
       while !satisfied
         print "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile. Type 'cancel' to cancel. "
         answer = gets.chomp
-        if answer == "cancel"
+        if answer.downcase == "cancel"
           puts "Use of Resilient City cancelled."
           puts
           satisfied = true
@@ -727,7 +727,7 @@ class Action
     while !moved_confirmation
       print "You chose airlift event, which player's name do you wish to be airlifted? Type 'cancel' to cancel this event. "
       moved_string = gets.chomp
-      if moved_string == "cancel"
+      if moved_string.downcase == "cancel"
         executed = false
         puts "Airlift event cancelled."
         puts
@@ -748,7 +748,7 @@ class Action
     while !destination_confirmation
       puts "Where do you want to airlift " + moved.name + " to? Input city name! Type 'cancel' to cancel this event."
       destination_string = gets.chomp
-      if destination_string == "cancel"
+      if destination_string.downcase == "cancel"
         executed = false
         puts "Airlift event cancelled."
         puts
@@ -802,7 +802,7 @@ class Action
     while counter <= 5
       idx_satisfied = false
       while !idx_satisfied
-        print "Old index of new index + " + (counter+1).to_s + ", (1 refers to bottom of the 6) = "
+        print "Old index of new index " + (counter+1).to_s + ", (1 refers to bottom of the 6) = "
         answer = gets.chomp.to_i
         if answer == 0
           puts "Not a valid integer (1-6)."
@@ -829,7 +829,7 @@ class Action
       print "Which city you wish to go? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
-      if destination_string == 'cancel'
+      if destination_string.downcase == 'cancel'
         executed = false
         puts "Action cancelled. No action was used."
         puts
@@ -849,7 +849,7 @@ class Action
       print "Which city player card do you wish to discard? Type 'cancel' to cancel this action."
       card_string = gets.chomp
 
-      if card_string == 'cancel'
+      if card_string.downcase == 'cancel'
         executed = false
         puts "Action cancelled. No action was used."
         puts
@@ -878,7 +878,7 @@ class Action
       while !moved_satisfied
         print "Which player's pawn would you like to move? Type 'cancel' to cancel this action. "
         moved_string = gets.chomp
-        if moved_string == 'cancel'
+        if moved_string.downcase == 'cancel'
           executed = false
           puts "Action cancelled."
           puts
@@ -897,7 +897,7 @@ class Action
       while !destination_player_satisfied
         print "Which other player's location would you like to move that pawn to? Type 'cancel' to cancel this action. "
         destination_string = gets.chomp
-        if destination_string  == 'cancel'
+        if destination_string.downcase == 'cancel'
           executed = false
           puts "Action cancelled."
           puts
@@ -933,7 +933,7 @@ class Action
     end_communicate_with_game = false
     while !end_communicate_with_game
       print "Type 'ac' for available commands, to see commands that can be used to communicate with the game! "
-      answer = gets.chomp
+      answer = gets.chomp.downcase
       puts
       if answer == 'ac'
         com.ac_triggered
@@ -957,7 +957,7 @@ class Action
     else
       print "Do you confirm using this event in this turn? Type 'y' to confirm. "
       answer = gets.chomp
-      if answer != 'y'
+      if answer.downcase != 'y'
         puts "Action cancelled."
         puts
         return

@@ -125,9 +125,9 @@ class Mechanism
       puts "You have built 6 research stations (max). There are currently a research station in each of the following cities : " + @board.research_st_cities.to_s
       print "You need to remove one research station. Proceed? 'y' or 'n'"
       answer = gets.chomp
-      if answer == 'n'
+      if answer.downcase == 'n'
         return "Build Research Station has been cancelled"
-      elsif answer == 'y'
+      elsif answer.downcase == 'y'
         satisfied = false
         while !satisfied
           print "Choose a city to remove its research station!"
@@ -194,7 +194,7 @@ class Mechanism
           while !satisfied
             print "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile. Type 'cancel' to cancel. "
             answer = gets.chomp
-            if answer == "cancel"
+            if answer.downcase == "cancel"
               puts "Use of Resilient City cancelled."
               puts
               satisfied = true
@@ -219,7 +219,7 @@ class Mechanism
           while !location_obtained
             print "Where to put research center in? Type 'cancel' to cancel this. "
             location_string = gets.chomp
-            if location_string == 'cancel'
+            if location_string.downcase == 'cancel'
               location_obtained = true
               puts "Event usage cancelled."
               puts
@@ -246,7 +246,7 @@ class Mechanism
           while !moved_confirmation
             print "You chose airlift event, which player's name do you wish to be airlifted? Type 'cancel' to cancel this event. "
             moved_string = gets.chomp
-            if moved_string == "cancel"
+            if moved_string.downcase == "cancel"
               puts "Airlift event cancelled."
               puts
               moved_confirmation = true
@@ -267,7 +267,7 @@ class Mechanism
           while !destination_confirmation
             puts "Where do you want to airlift " + moved.name + " to? Input city name! Type 'cancel' to cancel this event."
             destination_string = gets.chomp
-            if destination_string == "cancel"
+            if destination_string.downcase == "cancel"
               puts "Airlift event cancelled."
               puts
               destination_confirmation = true
@@ -294,7 +294,7 @@ class Mechanism
 
           print "Do you confirm using this event in this turn? Type 'y' to confirm. "
           answer = gets.chomp
-          if answer != 'y'
+          if answer.downcase != 'y'
             puts "Action cancelled."
             puts
           else
@@ -362,13 +362,13 @@ class Mechanism
 
     player.names_of_player_cards_in_hand_based_color.each do |color|
       case color[0]
-      when "Red"
+      when "red"
         print color[1..-1].to_s.red + ". "
-      when "Yellow"
+      when "yellow"
         print color[1..-1].to_s.yellow + ". "
-      when "Blue"
+      when "blue"
         print color[1..-1].to_s.blue + ". "
-      when "Black"
+      when "black"
         print color[1..-1].to_s.black.on_white + ". "
       end
     end
@@ -389,7 +389,7 @@ class Mechanism
     while !event_satisfied
       print "Which event card to use? Type 'cancel' to cancel using event card. "
       event_string = gets.chomp
-      if event_string == 'cancel'
+      if event_string.downcase == 'cancel'
         puts "Event use cancelled."
         puts
         return nil
