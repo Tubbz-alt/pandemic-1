@@ -73,7 +73,8 @@ class Turn
 
   def take_card_from_player_deck
     dealt_cards = @mech.deal_cards(@game.player_deck, 2)
-    puts "The following cards are taken from the Player Deck to " + @player.name + "'s hands : " + card_description(dealt_cards).to_s
+    print "The following cards are taken from the Player Deck to " + @player.name + "'s hands : "
+    card_description_in_color(dealt_cards)
     puts
     @mech.put_player_cards_into_hand(dealt_cards, @player)
   end
@@ -81,7 +82,8 @@ class Turn
   def infect
     number_of_infection_cards_taken = @game.infection_rate
     dealt_cards = @mech.deal_cards(@game.infection_deck, number_of_infection_cards_taken)
-    puts "The following cards are taken from the Infection Deck : " + card_description(dealt_cards).to_s
+    print "The following cards are taken from the Infection Deck : "
+    card_description_in_color(dealt_cards)
     puts
 
     dealt_cards.each do |card|
@@ -93,20 +95,12 @@ class Turn
     end
   end
 
-  def card_description(cards_array)
-    event_cards = cards_array.select {|card| card.type == :event}
-    epidemic_cards = cards_array.select {|card| card.type == :epidemic}
-    city_cards = cards_array.select {|card| card.type == :player}
-    infection_cards = cards_array.select {|card| card.type == :infection}
-
-    event_desc = event_cards.collect {|card| card.event}
-    epidemic_desc = epidemic_cards.collect {|card| card.type}
-    city_desc = city_cards.collect {|card| card.cityname}
-    infection_desc = infection_cards.collect {|card| card.cityname}
-
-    array = []
-    array += event_desc + epidemic_desc + city_desc + infection_desc
-    return array.compact
+  def card_description_in_color(cards_array)
+    cards_array.each do |card|
+      @mech.print_card_in_color(card)
+      print ". "
+    end
+    puts
   end
 
   def save_game_file(filename)

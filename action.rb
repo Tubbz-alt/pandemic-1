@@ -362,6 +362,13 @@ class Action
 
     satisfied = false
     while !satisfied
+      rs_cities = @game.board.research_station_cities
+      print "Research station cities : "
+      rs_cities.each do |city|
+        @mech.print_city_name_in_color(city)
+        print ". "
+      end
+      puts
       print "Where to shuttle flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
 
@@ -375,7 +382,9 @@ class Action
 
         if destination_city.research_st
           @mech.move_player(player, destination_string, moved)
-          puts moved.name + " has been moved to " + destination_string
+          print moved.name + " has been moved to "
+          @mech.print_city_name_in_color(destination_city)
+          puts
           satisfied = true
           executed = true
         else

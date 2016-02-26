@@ -118,11 +118,38 @@ class Mechanism
 
     if reset
       reduced = city.disease_reset(color)
-      puts "All cubes of color " +color.to_s+ " have been removed in "+city.name
+      print "All cubes of color "
+
+      case color
+      when :red
+        print color.to_s.red
+      when :black
+        print color.to_s.black.on_white
+      when :yellow
+        print color.to_s.yellow
+      when :blue
+        print color.to_s.blue
+      end
+
+      puts " have been removed in " + city.name
+      puts
     else
       city.treat(color, number)
       reduced = number
-      puts number.to_s + " cubes of color " + color.to_s + " have been removed in "+city.name
+
+      case color
+      when :red
+        print number.to_s.red + " " + color.to_s.red
+      when :black
+        print number.to_s.black.on_white + " " + color.to_s.black.on_white
+      when :yellow
+        print number.to_s.yellow + " " + color.to_s.yellow
+      when :blue
+        print number.to_s.blue + " " + color.to_s.blue
+      end
+
+      puts " cubes have been removed in " + city.name
+      puts
     end
 
     var_in_game_class.increase_cubes_available(reduced)
@@ -548,6 +575,8 @@ class Mechanism
       when :blue
         print card.cityname.blue
       end
+    else
+      print card.type.to_s
     end
   end
 

@@ -45,7 +45,7 @@ class Board
     @jakarta = City.new("Jakarta", 26063000, :red),
     @johannesburg = City.new("Johannesburg", 3888000, :yellow),
     @hongkong = City.new("Hong Kong", 7106000, :red),
-    @karachi = City.new("Johannesburg", 20711000, :black),
+    @karachi = City.new("Karachi", 20711000, :black),
     @khartoum = City.new("Khartoum", 4887000, :yellow),
     @kinshasa = City.new("Kinshasa", 9046000, :yellow),
     @kolkata = City.new("Kolkata", 14374000, :black),
