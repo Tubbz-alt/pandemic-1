@@ -73,7 +73,7 @@ These commands are inputted during the action `Help, Communicate with the board 
 - `outbreak_index` to show the current outbreak index.
 - `black_disease` to show the status of black disease. Other available commands are `blue_disease`, `red_disease`, and `yellow_disease`.
 - `show_cities` to show cities with any cubes. Other commands allowed  are `show_cities(1)`, `show_cities(2)` and `show_cities(3)` to show cities which number of cubes is 1, 2, and 3, respectively.
-- `research_st_cities` to show cities with research stations.
+- `rs`, short for "Research Station" to show cities with research stations.
 - `idp`, short for "Infection Discard Pile", to take a peek of cards in that pile.
 - `pdp`, short for "Player Discard Pile", to take a peek of cards in that pile.
 

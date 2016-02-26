@@ -158,7 +158,7 @@ class Board
     if type == :infection || type == :player
       @cities.each do |city|
         if type == :infection
-          @infection_cards << InfectionCard.new(city.name)
+          @infection_cards << InfectionCard.new(city.name, city.original_color)
         else
           @player_cards << PlayerCard.new(city.name, city.original_color, city.population)
         end

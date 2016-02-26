@@ -2,12 +2,13 @@
 
 class InfectionCard
 
-  attr_reader :type, :cityname, :deck
+  attr_reader :type, :cityname, :deck, :color
 
-  def initialize(cityname)
+  def initialize(cityname, color)
     @type = :infection
     @cityname = cityname
     @deck = :infection_deck
+    @color = color
   end
 
   def reveal

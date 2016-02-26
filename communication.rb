@@ -7,6 +7,7 @@ class Communication
 
   def initialize(game)
     @game = game
+    @mech = @game.mech
   end
 
   def ac_triggered
@@ -180,8 +181,13 @@ class Communication
 
   def idp #infection discard Pile
     print "Cards in the Infection Discard Pile : "
-    city_names = @game.infection_discard_pile.collect {|card| card.cityname}
-    puts city_names.to_s
+    if @game.infection_discard_pile.empty?
+      puts "None. "
+    else
+      @game.infection_discard_pile.each do |card|
+        @mech.print_card_in_color(card)
+      end
+    end
     puts
   end
 
@@ -189,10 +195,15 @@ class Communication
     print "Cards in the Player Discard Pile : "
     city_cards = @game.player_discard_pile.select {|card| card.type == :player}
     event_cards = @game.player_discard_pile.select {|card| card.type == :event}
-    display = []
-    city_cards.each {|card| display << card.cityname}
-    event_cards.each {|card| display << card.event.to_s}
-    puts display.to_s
+
+    if city_cards.empty? && event_cards.empty?
+      puts "None."
+    else
+      city_cards.each do |card|
+        @mech.print_card_in_color(card)
+      end
+      event_cards.each {|card| print card.event.to_s + ". "}
+    end
     puts
   end
 
