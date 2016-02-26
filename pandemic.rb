@@ -5,6 +5,7 @@ require 'fileutils'
 class Pandemic
 
   def initialize
+    load_banner
     setup
   end
 
@@ -51,6 +52,19 @@ class Pandemic
     files = Dir.glob("saved_games/*.yml")
     file_names = files.collect {|file| file[12..-5]}
   end
+
+  def load_banner
+    puts "
+ #####     ##    #    #  #####   ######  #    #  #   ####
+ #    #   #  #   ##   #  #    #  #       ##  ##  #  #    #
+ #    #  #    #  # #  #  #    #  #####   # ## #  #  #
+ #####   ######  #  # #  #    #  #       #    #  #  #
+ #       #    #  #   ##  #    #  #       #    #  #  #    #
+ #       #    #  #    #  #####   ######  #    #  #   ####
+                                                           ".red
+    puts
+  end
+
 
 end
 
