@@ -17,13 +17,18 @@ class Pandemic
           puts "Available filenames = " + list_files.to_s
           print "Please enter a game filename! "
           filename = gets.chomp
-          @g = load_game_file(filename)
-          puts "Game file #{filename} has been loaded."
-          puts
-          return @g.play
+          if list_files.include?(filename)
+            @g = load_game_file(filename)
+            puts "Game file #{filename} has been loaded."
+            puts
+            return @g.play
+          else
+            puts "Game file not found."
+          end
         end
+      else
+        puts "No saved games so far!"
       end
-      puts "No saved games so far!"
     end
 
     print "New file will be created. The game will be autosaved. Please assign a new file name! "

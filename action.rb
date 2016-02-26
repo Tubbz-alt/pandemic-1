@@ -105,7 +105,7 @@ class Action
         execution ? @action_reduction = 1 : @action_reduction = 0
       when 10
         if @player.role == :contingency_planner
-          if @player.event_card_on_role.size == 0
+          if @player.event_card_on_role_card.size == 0
             execution = take_an_event_card_from_player_discard_pile(@player)
             execution ? @action_reduction = 1 : @action_reduction = 0
           end
@@ -653,9 +653,10 @@ class Action
     satisfied = false
     while !satisfied
       puts "Event card available in the Player Discard Pile : "
-      available_events = @game.player_discard_pile.select {|card| card.type == :event && card.deck == :player_discard_pile}
+      available_event_cards = @game.player_discard_pile.select {|card| card.type == :event && card.deck == :player_discard_pile}
+      available_events = available_event_cards.collect {|card| card.event}
       puts available_events.to_s
-      print "Choose an event to take from the Player Discard Pile. Type 'cancel' to cancel this action."
+      print "Choose an event to take from the Player Discard Pile. Type 'cancel' to cancel this action. "
       chosen_string = gets.chomp
       if chosen_string.downcase == "cancel"
         executed = false
@@ -663,7 +664,7 @@ class Action
         puts
         return executed
       else
-        chosen_card = @mech.string_to_player_card(chosen_string)
+        chosen_card = @mech.string_to_player_discard_pile_card(chosen_string, player)
         if !chosen_card.nil?
           @mech.deal_known_card(@game.player_discard_pile, chosen_card)
           @mech.put_player_cards_into_hand([chosen_card], player)

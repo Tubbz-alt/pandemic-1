@@ -40,6 +40,21 @@ class Mechanism
     return card[0]
   end
 
+  def string_to_player_discard_pile_card(string, player)
+    event_cards_in_pdp = @game.player_discard_pile.select {|card| card.type == :event}
+    player_cards_in_pdp = @game.player_discard_pile.select {|card| card.type == :player}
+
+    event_cards = event_cards_in_pdp.collect {|card| card.event}
+    player_cards = player_cards_in_pdp.collect {|card| card.cityname}
+
+    if event_cards.include?(string.to_sym)
+      card = event_cards_in_pdp.select {|card| card.event == string.to_sym}
+    else
+      card = player_cards_in_pdp.select {|card| card.cityname == string}
+    end
+    return card[0]
+  end
+
   def string_to_players_player_card(string, player)
     event_cards_in_hand = player.cards.select {|card| card.type == :event}
     player_cards_in_hand = player.cards.select {|card| card.type == :player}
