@@ -178,8 +178,184 @@ class Mechanism
 
   def player_to_discard_in_hand_more_than_7(player)
     print player.name.to_s + ", you have more than 7 cards currently. Let's discard one by one. "
-    player_to_discard_in_hand(player)
+
+    event_cards_to_discard = player.event_cards_in_hand
+
+    while event_cards_to_discard.size > 0
+      print "You can use your event cards. Your event cards are : "
+      event_cards_to_discard_names = event_cards_to_discard.collect {|card| card.event}
+      puts event_cards_to_discard_names.to_s
+      event_card = which_event_card_to_use(player)
+      if !event_card.nil?
+        case event_card.event
+        when :Resilient_Population
+
+          satisfied = false
+          while !satisfied
+            print "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile. Type 'cancel' to cancel. "
+            answer = gets.chomp
+            if answer == "cancel"
+              puts "Use of Resilient City cancelled."
+              puts
+              satisfied = true
+            else
+              city_card = string_to_infection_card_in_discard_pile(answer)
+              if !city_card.nil?
+                satisfied = true
+                deal_known_card(@game.infection_discard_pile, city_card)
+                city_card.remove_from_game
+                discard_card_from_player_hand(player, event_card)
+                puts city_card.cityname + " infection card has been removed from the Infection Discard Pile. Event card Resilient City has been discarded."
+                puts
+              else
+                puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St, try again!"
+              end
+            end
+          end
+
+        when :Government_Grant
+
+          location_obtained = false
+          while !location_obtained
+            print "Where to put research center in? Type 'cancel' to cancel this. "
+            location_string = gets.chomp
+            if location_string == 'cancel'
+              location_obtained = true
+              puts "Event usage cancelled."
+              puts
+            else
+              location = string_to_city(location_string)
+              if location.nil?
+                puts "City unrecognized. Try again!"
+              else
+                location_obtained = true
+                build_research_st(player, location)
+                puts "A research station has been added to that city."
+                discard_card_from_player_hand(player, event_card)
+              end
+            end
+          end
+
+        when :Airlift
+
+          #Find the person who's moved.
+          moved_confirmation = false
+          destination_confirmation = false
+          executed = false
+
+          while !moved_confirmation
+            print "You chose airlift event, which player's name do you wish to be airlifted? Type 'cancel' to cancel this event. "
+            moved_string = gets.chomp
+            if moved_string == "cancel"
+              puts "Airlift event cancelled."
+              puts
+              moved_confirmation = true
+              destination_confirmation = true
+              executed = false
+            else
+              moved = string_to_player(moved_string)
+              if !moved.nil?
+                moved_confirmation = true
+                puts moved.name + " is chosen."
+              else
+                puts "Please input the correct player's name. Try again!"
+              end
+            end
+          end
+
+          #Find where to move the moved person.
+          while !destination_confirmation
+            puts "Where do you want to airlift " + moved.name + " to? Input city name! Type 'cancel' to cancel this event."
+            destination_string = gets.chomp
+            if destination_string == "cancel"
+              puts "Airlift event cancelled."
+              puts
+              destination_confirmation = true
+              executed = false
+            else
+              destination = string_to_city(destination_string)
+              if !destination.nil?
+                destination_confirmation = true
+                move_player(player, destination.name, moved)
+                moved.name + " is airlifted from " + moved.location + " to " + destination.name
+                executed = true
+              else
+                puts "That city name can't be found. Make sure capitalization is correct. For 'St Petersburg', no period is required after St"
+              end
+            end
+          end
+
+          if executed
+            medic_automatic_treat_cured(moved, destination) if moved.role == :medic
+            discard_card_from_player_hand(player, event_card)
+          end
+
+        when :One_Quiet_Night
+
+          print "Do you confirm using this event in this turn? Type 'y' to confirm. "
+          answer = gets.chomp
+          if answer != 'y'
+            puts "Action cancelled."
+            puts
+          else
+            current_turn_index = @game.round.turns.compact.size - 1
+            @game.round.turns[current_turn_index].one_quiet_night_mode
+            discard_card_from_player_hand(player, event_card)
+            puts "One Quiet Night is in effect. Event card is discarded from player's hand."
+            puts
+          end
+
+        when :Forecast
+
+          top_6_infection_cards = deal_cards(@game.infection_deck, 6)
+          puts "The 6 cards at the top of the infection deck is : "
+          top_6_infection_cards.each_with_index do |card, idx|
+            puts card.cityname + ", index = " + (idx+1).to_s
+          end
+          puts "The state of these cities are : "
+          top_6_infection_cards.each do |card|
+            city = string_to_city(card.cityname)
+            print city.name + " : " + city.color_count.to_s + ". Neighbors : "
+            neighbors_states = ""
+            city.neighbors.each {|neighbor| neighbors_states += (neighbor.name + " : " + neighbor.color_count.to_s + ". ")}
+            puts neighbors_states
+            puts
+          end
+          new_6 = []
+          inputed = []
+          counter = 0
+          puts "Rearrange these 6 cards by answering the following : "
+          while counter <= 5
+            idx_satisfied = false
+            while !idx_satisfied
+              print "Old index of new index + " + (counter+1).to_s + ", (1 refers to bottom of the 6) = "
+              answer = gets.chomp.to_i
+              if answer == 0
+                puts "Not a valid integer (1-6)."
+              elsif inputed.include?(answer)
+                put "You have used that old index before. Choose another number!"
+              else
+                new_6 << top_6_infection_cards[answer-1]
+                inputed << answer
+                idx_satisfied = true
+              end
+            end
+            counter += 1
+          end
+          @game.infection_deck += new_6
+          discard_card_from_player_hand(player, event_card)
+          puts "These 6 cards have been returned to the top of the infection deck. Their order, from the bottom of the deck, is :"
+          new_6.each {|card| puts card.cityname}
+          puts
+        end
+        event_cards_to_discard = player.event_cards_in_hand
+      else
+        event_cards_to_discard = []
+      end
+    end
+    player_to_discard_in_hand(player) if player.toss_cards?
   end
+
 
   def player_to_discard_in_hand(player)
     puts "These are your cards in hand : "
@@ -208,10 +384,31 @@ class Mechanism
     puts card_discarded.event.to_s + " has been discarded to Player Discard Pile." if card_discarded.type == :event
   end
 
+  def which_event_card_to_use(player)
+    event_satisfied = false
+    while !event_satisfied
+      print "Which event card to use? Type 'cancel' to cancel using event card. "
+      event_string = gets.chomp
+      if event_string == 'cancel'
+        puts "Event use cancelled."
+        puts
+        return nil
+      else
+        event_card = string_to_players_player_card(event_string, player)
+        if event_card.nil?
+          puts "You don't have that event card. Try again!"
+        else
+          event_satisfied = true
+        end
+      end
+    end
+    return event_card
+  end
+
   def prompt_card_to_discard(player)
     satisfied = false
     while !satisfied
-      print "Pick a card event or city name to discard! "
+      print "Pick a city or event name to discard card! "
       card_id_string = gets.chomp
 
       card = string_to_players_player_card(card_id_string, player)

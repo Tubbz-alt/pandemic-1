@@ -681,17 +681,19 @@ class Action
 
   def resilient_city(player)
     resilient_card = @mech.string_to_players_player_card("Resilient_Population",player)
-    if !player.cards.include?(resilient_card)
+    if resilint_card.nil?
       executed = false
       puts "Player doesn't have Resilient City Event Card. Event cancelled."
+      puts
       return executed
     else
       satisfied = false
       while !satisfied
-        puts "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile. Type 'cancel' to cancel."
+        print "Which city name has Resilient Population? This city will have its infection card removed from the infection disard pile. Type 'cancel' to cancel. "
         answer = gets.chomp
         if answer == "cancel"
           puts "Use of Resilient City cancelled."
+          puts
           satisfied = true
         else
           city_card = @mech.string_to_infection_card_in_discard_pile(answer)
@@ -772,7 +774,7 @@ class Action
 
     forecast_card = @mech.string_to_players_player_card("Forecast",player)
 
-    if !player.cards.include?(forecast_card)
+    if forecast_card.nil?
       executed = false
       puts "Player doesn't have the Forecast Event Card. Event cancelled."
       puts

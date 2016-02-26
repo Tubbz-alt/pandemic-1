@@ -102,7 +102,7 @@ class Player
 
   def event_card_on_role_card
     if @role == :contingency_planner
-      event_cards_in = event_cards_in_hand
+      event_cards_ih = event_cards_in_hand
       event_card_on_role = event_cards_ih.select {|card| card.value == 0}
       return event_card_on_role
     end
