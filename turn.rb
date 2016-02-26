@@ -54,8 +54,8 @@ class Turn
       print player.desc_of_event_cards_in_hand.to_s unless player.desc_of_event_cards_in_hand.empty?
       puts
       print "Location : "
-      @mech.print_city_name_in_color(@location)
-      print ", a Research Station city." if @location.research_st
+      @mech.print_city_name_in_color(@mech.string_to_city(@player.location))
+      print ", a Research Station city." if @mech.string_to_city(@player.location).research_st
       puts
       puts
       act.print_allowed_actions

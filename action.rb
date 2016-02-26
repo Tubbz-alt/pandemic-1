@@ -576,6 +576,14 @@ class Action
 
     card_satisfied = false
     while !card_satisfied
+
+      city_cards = sharer.cards.select {|card| card.type == :player}
+      print "Researcher's city cards are : "
+      city_cards.each do |card|
+        @mech.print_card_in_color(card)
+        print ". "
+      end
+      puts
       print "Which player city card to ask? Type 'cancel' to cancel this action. "
       card_string = gets.chomp
       if card_string.downcase == "cancel"
@@ -617,6 +625,22 @@ class Action
 
     color_satisfied = false
     while !color_satisfied
+
+      print "Available city cards : "
+      player.names_of_player_cards_in_hand_based_color.each do |color|
+        case color[0]
+        when "red"
+          print color[1..-1].to_s.red + ". "
+        when "yellow"
+          print color[1..-1].to_s.yellow + ". "
+        when "blue"
+          print color[1..-1].to_s.blue + ". "
+        when "black"
+          print color[1..-1].to_s.black.on_white + ". "
+        end
+      end
+      puts
+
       print "Which color to cure? Options are yellow, blue, black, red. Type 'cancel' to cancel action. "
       color_string = gets.chomp
 

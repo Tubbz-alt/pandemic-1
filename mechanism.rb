@@ -167,7 +167,7 @@ class Mechanism
       cities = @game.board.research_station_cities
       cities.each do |city|
         print_city_name_in_color(city)
-        puts ". "
+        print ". "
       end
       puts
     else
