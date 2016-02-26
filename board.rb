@@ -7,13 +7,13 @@ require_relative "disease"
 
 class Board
 
-  attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaolo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington, :red_disease, :black_disease, :yellow_disease, :blue_disease, :research_station_available, :research_station_built
+  attr_reader :cities, :infection_cards, :player_cards, :algiers, :atlanta, :baghdad, :bangkok, :beijing, :bogota, :buenosaires, :cairo, :chennai, :chicago, :delhi, :essen, :hochiminh, :istanbul, :jakarta, :johannesburg, :hongkong, :karachi, :khartoum, :kinshasa, :kolkata, :lagos, :lima, :london, :losangeles, :manila, :madrid, :mexicocity, :miami, :milan, :montreal, :moscow, :mumbai, :newyork, :osaka, :paris, :riyadh, :sanfrancisco, :santiago, :saopaulo, :seoul, :shanghai, :stpetersburg, :sydney, :taipei, :tehran, :tokyo, :washington, :red_disease, :black_disease, :yellow_disease, :blue_disease, :research_station_available, :research_station_built
 
   def initialize
 
     build_cities
 
-    @cities = [@algiers, @atlanta, @baghdad, @bangkok, @beijing, @bogota, @buenosaires, @cairo, @chennai, @chicago, @delhi, @essen, @hochiminh, @istanbul, @jakarta, @johannesburg, @hongkong, @karachi, @khartoum, @kinshasa, @kolkata, @lagos, @lima, @london, @losangeles, @manila, @madrid, @mexicocity, @miami, @milan, @montreal, @moscow, @mumbai, @newyork, @osaka, @paris, @riyadh, @sanfrancisco, @santiago, @saopaolo, @seoul, @shanghai, @stpetersburg, @sydney, @taipei, @tehran, @tokyo, @washington]
+    @cities = [@algiers, @atlanta, @baghdad, @bangkok, @beijing, @bogota, @buenosaires, @cairo, @chennai, @chicago, @delhi, @essen, @hochiminh, @istanbul, @jakarta, @johannesburg, @hongkong, @karachi, @khartoum, @kinshasa, @kolkata, @lagos, @lima, @london, @losangeles, @manila, @madrid, @mexicocity, @miami, @milan, @montreal, @moscow, @mumbai, @newyork, @osaka, @paris, @riyadh, @sanfrancisco, @santiago, @saopaulo, @seoul, @shanghai, @stpetersburg, @sydney, @taipei, @tehran, @tokyo, @washington]
 
     @infection_cards = []
     @player_cards = []
@@ -67,7 +67,7 @@ class Board
     @riyadh = City.new("Riyadh", 5037000, :black),
     @sanfrancisco = City.new("San Francisco", 5864000, :blue),
     @santiago = City.new("Santiago", 6015000, :yellow),
-    @saopaolo = City.new("Sao Paolo", 20186000, :yellow),
+    @saopaulo = City.new("Sao Paulo", 20186000, :yellow),
     @seoul = City.new("Seoul", 22547000, :red),
     @shanghai = City.new("Shanghai", 13482000, :red),
     @stpetersburg = City.new("St Petersburg", 4879000, :blue),
@@ -85,8 +85,8 @@ class Board
     @baghdad.add_neighbors([@istanbul, @tehran, @karachi, @riyadh, @cairo])
     @bangkok.add_neighbors([@kolkata, @hongkong, @hochiminh, @jakarta, @chennai])
     @beijing.add_neighbors([@seoul, @shanghai])
-    @bogota.add_neighbors([@mexicocity, @miami, @saopaolo, @buenosaires, @lima])
-    @buenosaires.add_neighbors([@saopaolo, @bogota])
+    @bogota.add_neighbors([@mexicocity, @miami, @saopaulo, @buenosaires, @lima])
+    @buenosaires.add_neighbors([@saopaulo, @bogota])
     @cairo.add_neighbors([@algiers, @istanbul, @baghdad, @riyadh, @khartoum])
     @chennai.add_neighbors([@mumbai, @delhi, @kolkata, @bangkok, @jakarta])
     @chicago.add_neighbors([@sanfrancisco, @losangeles, @mexicocity, @atlanta, @montreal])
@@ -101,12 +101,12 @@ class Board
     @khartoum.add_neighbors([@cairo, @lagos, @kinshasa, @johannesburg])
     @kinshasa.add_neighbors([@lagos, @khartoum, @johannesburg])
     @kolkata.add_neighbors([@delhi, @chennai, @bangkok, @hongkong])
-    @lagos.add_neighbors([@khartoum, @saopaolo])
+    @lagos.add_neighbors([@khartoum, @saopaulo])
     @lima.add_neighbors([@mexicocity, @bogota, @santiago])
     @london.add_neighbors([@newyork, @madrid, @paris, @essen])
     @losangeles.add_neighbors([@sydney, @sanfrancisco, @chicago, @mexicocity])
     @manila.add_neighbors([@sydney, @hochiminh, @hongkong, @taipei, @sanfrancisco])
-    @madrid.add_neighbors([@newyork, @london, @paris, @algiers, @saopaolo])
+    @madrid.add_neighbors([@newyork, @london, @paris, @algiers, @saopaulo])
     @mexicocity.add_neighbors([@losangeles, @chicago, @miami, @bogota, @lima])
     @miami.add_neighbors([@washington, @atlanta, @mexicocity, @bogota])
     @milan.add_neighbors([@essen, @paris, @istanbul])
@@ -119,7 +119,7 @@ class Board
     @riyadh.add_neighbors([@cairo, @baghdad, @karachi])
     @sanfrancisco.add_neighbors([@tokyo, @manila, @losangeles, @chicago])
     @santiago.add_neighbors([@lima])
-    @saopaolo.add_neighbors([@buenosaires, @bogota, @madrid, @lagos])
+    @saopaulo.add_neighbors([@buenosaires, @bogota, @madrid, @lagos])
     @seoul.add_neighbors([@beijing, @shanghai, @tokyo])
     @shanghai.add_neighbors([@beijing, @seoul, @tokyo, @taipei, @hongkong])
     @stpetersburg.add_neighbors([@essen, @istanbul, @moscow])

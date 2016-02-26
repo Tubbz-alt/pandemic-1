@@ -58,7 +58,7 @@ By Color (then alphabetical)
 | Paris | Shanghai | Mexico City | Moscow |
 | San Francisco | Sydney | Miami | Mumbai |
 | St Petersburg | Taipei | Santiago | Riyadh |
-| Washington | Tokyo | Sao Paolo | Tehran |
+| Washington | Tokyo | Sao Paulo | Tehran |
 
 
 ### Help Commands
