@@ -17,6 +17,11 @@ class Disease
 
   def increase_cubes_available(number = 1)
     @cubes_available += number
+    if @cubes_available == 24
+      eradicate
+      puts "Disease " + @color.to_s + " has been eradicated!"
+      puts
+    end
   end
 
   def eradicate
