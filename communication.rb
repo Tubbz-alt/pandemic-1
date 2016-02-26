@@ -86,7 +86,8 @@ class Communication
         puts "Event Cards : " + player.desc_of_event_cards_in_hand.to_s
       end
 
-      puts "Location : " + player.location
+      print "Location : "
+      @mech.print_city_in_color(@mech.string_to_city(player.location))
       puts
     end
   end

@@ -530,4 +530,17 @@ class Mechanism
     end
   end
 
+  def print_city_in_color(city)
+    case city.original_color
+    when :red
+      print city.name.red + ". "
+    when :black
+      print city.name.black.on_white + ". "
+    when :yellow
+      print city.name.yellow + ". "
+    when :blue
+      print city.name.blue + ". "
+    end
+  end
+
 end
