@@ -446,6 +446,9 @@ class Mechanism
 
   def perform_infect(city, color, number_of_cubes, setup = false)
     #checking whether quarantine_specialist is in that city or neighboring cities.
+
+    number_of_cubes = 0 if color.eradicated
+
     quarantine_specialist = symbol_to_player(:quarantine_specialist)
 
     neighboring_cities_pawns = []
