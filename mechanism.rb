@@ -445,10 +445,16 @@ class Mechanism
   end
 
   def perform_infect(city, color, number_of_cubes, setup = false)
+
+    #No infection if disease is eradicated
+    diseases = [@game.red_disease, @game.blue_disease, @game.black_disease, @game.yellow_disease]
+    color_disease = diseases.select {|disease| disease.color == color}
+    disease = color_disease[0]
+
+    number_of_cubes = 0 if disease.eradicated
+
+
     #checking whether quarantine_specialist is in that city or neighboring cities.
-
-    number_of_cubes = 0 if color.eradicated
-
     quarantine_specialist = symbol_to_player(:quarantine_specialist)
 
     neighboring_cities_pawns = []
