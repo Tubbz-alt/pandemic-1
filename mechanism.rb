@@ -56,8 +56,8 @@ class Mechanism
   end
 
 
-  def string_to_infection_card(string)
-    card = @board.infection_cards.select {|card| card.cityname == string}
+  def string_to_infection_card_in_discard_pile(string)
+    card = @game.infection_discard_pile.select {|card| card.cityname == string}
     return card[0]
   end
 

@@ -694,7 +694,7 @@ class Action
           puts "Use of Resilient City cancelled."
           satisfied = true
         else
-          city_card = @mech.string_to_infection_card(answer)
+          city_card = @mech.string_to_infection_card_in_discard_pile(answer)
           if !city_card.nil?
             satisfied = true
             @mech.deal_known_card(@game.infection_discard_pile, city_card)
