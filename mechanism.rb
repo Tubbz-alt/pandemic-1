@@ -535,15 +535,19 @@ class Mechanism
   end
 
   def print_card_in_color(card)
-    case card.color
-    when :red
-      print card.cityname.red
-    when :black
-      print card.cityname.black.on_white
-    when :yellow
-      print card.cityname.yellow
-    when :blue
-      print card.cityname.blue
+    if card.type == :event
+      print card.event.to_s
+    elsif card.type == :player || card.type == :infection
+      case card.color
+      when :red
+        print card.cityname.red
+      when :black
+        print card.cityname.black.on_white
+      when :yellow
+        print card.cityname.yellow
+      when :blue
+        print card.cityname.blue
+      end
     end
   end
 

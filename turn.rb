@@ -36,6 +36,28 @@ class Turn
     while @action_left > 0
       act = Action.new(self)
       puts @player.name.underline + "'s turn. You have ".underline + @action_left.to_s.underline + " actions left.".underline
+      puts "Role : " + @player.role.to_s
+      print "Cards : "
+      @player.names_of_player_cards_in_hand_based_color.each do |color|
+        case color[0]
+        when "red"
+          print color[1..-1].to_s.red + ". "
+        when "yellow"
+          print color[1..-1].to_s.yellow + ". "
+        when "blue"
+          print color[1..-1].to_s.blue + ". "
+        when "black"
+          print color[1..-1].to_s.black.on_white + ". "
+        end
+      end
+
+      print player.desc_of_event_cards_in_hand.to_s unless player.desc_of_event_cards_in_hand.empty?
+      puts
+      print "Location : "
+      @mech.print_city_name_in_color(@location)
+      print ", a Research Station city." if @location.research_st
+      puts
+      puts
       act.print_allowed_actions
       action_number = act.execute_player_action
       @acts[@action_left-4] = action_number if act.action_reduction == 1

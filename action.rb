@@ -244,7 +244,20 @@ class Action
     satisfied = false
     while !satisfied
 
-      puts "Available cards for direct flight : " + player.names_of_player_cards_in_hand_based_color.to_s
+      print "Available cards for direct flight : "
+      player.names_of_player_cards_in_hand_based_color.each do |color|
+        case color[0]
+        when "red"
+          print color[1..-1].to_s.red + ". "
+        when "yellow"
+          print color[1..-1].to_s.yellow + ". "
+        when "blue"
+          print color[1..-1].to_s.blue + ". "
+        when "black"
+          print color[1..-1].to_s.black.on_white + ". "
+        end
+      end
+      puts
 
       print "Where to direct flight? Type 'cancel' to cancel this action. "
       destination_string = gets.chomp
@@ -262,7 +275,9 @@ class Action
 
         if !destination_card.nil?
           @mech.move_player(player, destination_string, moved)
-          puts moved.name + " has been moved to " + destination_string
+          print moved.name + " has been moved to "
+          @mech.print_city_name_in_color(destination_city)
+          puts
           @mech.discard_card_from_player_hand(player, destination_card)
           satisfied = true
           executed = true
@@ -304,7 +319,7 @@ class Action
     else
       satisfied = false
       while !satisfied
-        puts "Where to charter flight? Type 'cancel' to cancel this action."
+        print "Where to charter flight? Type 'cancel' to cancel this action. "
         destination_string = gets.chomp
 
         if destination_string.downcase == 'cancel'
@@ -317,7 +332,9 @@ class Action
 
           if !destination_city.nil?
             @mech.move_player(player, destination_string, moved)
-            puts moved.name + " has been moved to " + destination_string
+            print moved.name + " has been moved to "
+            @mech.print_city_name_in_color(destination_city)
+            puts
             @mech.discard_card_from_player_hand(player, charter_flight_card)
             satisfied = true
             executed = true

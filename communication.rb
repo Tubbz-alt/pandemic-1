@@ -71,13 +71,13 @@ class Communication
       player.names_of_player_cards_in_hand_based_color.each do |color|
         case color[0]
         when "red"
-          print "red : ".red + color[1..-1].to_s.red + ". "
+          print color[1..-1].to_s.red + ". "
         when "yellow"
-          print "yellow : ".yellow + color[1..-1].to_s.yellow + ". "
+          print color[1..-1].to_s.yellow + ". "
         when "blue"
-          print "blue : ".blue + color[1..-1].to_s.blue + ". "
+          print color[1..-1].to_s.blue + ". "
         when "black"
-          print "black : ".black.on_white + color[1..-1].to_s.black.on_white + ". "
+          print color[1..-1].to_s.black.on_white + ". "
         end
       end
       puts
@@ -88,6 +88,7 @@ class Communication
 
       print "Location : "
       @mech.print_city_name_in_color(@mech.string_to_city(player.location))
+      print ", a Research Station city." if @mech.string_to_city(player.location).research_st
       puts
       puts
     end
