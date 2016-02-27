@@ -743,14 +743,19 @@ class Action
       while counter <= req_no
         player_card_confirmation = false
         while !player_card_confirmation
-          puts "Choose from " + cards_with_color.to_s
+          print "Choose from "
+          cards_with_color.each do |card|
+            @mech.print_card_in_color(card)
+            print ". "
+          end
+          puts
           print "Type city name to discard one by one : "
           discard_city_string = gets.chomp
-          discard_city_card = @mech.string_to_player_card(discard_city_string)
+          discard_city_card = @mech.string_to_players_player_card(discard_city_string, player)
           if !discard_city_card.nil? && discard_city_card.color == color
             player_card_confirmation = true
             @mech.discard_card_from_player_hand(player, discard_city_card)
-            puts discard_city_card.cityname + "is discarded to Player Discard Pile."
+            puts discard_city_card.cityname + " is discarded to Player Discard Pile."
             cards_with_color.delete(discard_city_card)
           else
             puts "City unrecognized or its color is not the chosen to be cured. Try again!"
