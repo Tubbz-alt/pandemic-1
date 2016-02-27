@@ -2,6 +2,15 @@
 
 Based on the board game Pandemic.
 
+## Snippets
+
+[Starting Video on youtube](https://youtu.be/RnRb3jc-8pA)
+
+[Using Help Menu on youtube](https://youtu.be/7O67EvqxPjM)
+
+[Loading a Pandemic game on youtube](https://youtu.be/uggav4lQ0-Q)
+
+
 ## README
 
 ### tl;dr
@@ -80,3 +89,7 @@ These commands are inputted during the action `Help, Communicate with the board 
 ##### Related to Cities
 
 - `ci`, short for "City Info" to show the status of a city.
+
+### Pending Issues
+
+- [ ] Autosaving happens after an action is completed, therefore infection cards and player cards dealt at the end of a turn is unrecorded in the saved file.
