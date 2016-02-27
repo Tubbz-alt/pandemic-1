@@ -2,20 +2,21 @@
 
 Based on the board game Pandemic.
 
-## Snippets
-
-[Starting Video on youtube](https://youtu.be/RnRb3jc-8pA)
-
-[Using Help Menu on youtube](https://youtu.be/7O67EvqxPjM)
-
-[Loading a Pandemic game on youtube](https://youtu.be/uggav4lQ0-Q)
-
 
 ## README
 
 ### tl;dr
 
 This document provides documentation to be used to play the Ruby Pandemics. For Pandemic rules, [click here on  wikipedia](http://tinyurl.com/hvr9nfr). Number of players = 2 to 4.
+
+Current version : v 0.1.0 (beta).
+
+### Snippets
+
+[1. Starting Video on youtube](https://youtu.be/ojfJBsZ6x-o)
+
+[2. Loading a Pandemic game on youtube](https://youtu.be/1KGA3xtKsUI)
+
 
 ### Environment
 
@@ -24,9 +25,11 @@ This document provides documentation to be used to play the Ruby Pandemics. For 
 3. Install `colorize`, a ruby gem, by running `$ gem install colorize`.
 4. This game is run right on the command line. Go to your local `pandemic` folder in bash. Then see 'Starting the Game' section below.
 
+
 ### Starting the Game
 
 Run `$ ruby pandemic.rb` on command line.
+
 
 ### Saving and Loading a Game
 
@@ -37,6 +40,7 @@ The game is autosaved after completing each action in a turn. Yaml serialization
 ##### Loading
 
 Analogously, when prompted which filename of a game to load, type in only the filename without the extension.
+
 
 ### List of roles
 
@@ -49,6 +53,7 @@ Analogously, when prompted which filename of a game to load, type in only the fi
 | Quarantine Specialist | ☢ | The quarantine specialist prevents both outbreaks and the placement of disease cubes in the city she is in and all cities connected to that city. She does not affect cubes placed during setup. |
 | Researcher | ⚭ | When doing the share knowledge action, the researcher may give any city from her hand to another player in the same city as her, without this card having to match her city. The transfer must be from her hand to the other player's hand, but it can occur on either player's turn. |
 | Scientist | ⚗ | The scientist needs only 4 (not 5) city cards of the same disease color to discover a cure for that disease. |
+
 
 ### List of Cities
 
@@ -89,7 +94,3 @@ These commands are inputted during the action `Help, Communicate with the board 
 ##### Related to Cities
 
 - `ci`, short for "City Info" to show the status of a city.
-
-### Pending Issues
-
-- [ ] Autosaving happens after an action is completed, therefore infection cards and player cards dealt at the end of a turn is unrecorded in the saved file.
