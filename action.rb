@@ -27,7 +27,7 @@ class Action
     5 => "5. Build a research station by discarding the city card you're in, or discarding city card is not necessary if player is operations expert (1). For building a research station through Government Grant event card, see number 12 below",
     6 => "6. Treat disease by removing 1 cube (or all cubes if player is medic) from city you're in. If disease is cured, remove all cubes of that color (1)",
     7 => "7. Share knowledge by giving the city card you're in with another player in your city, or if the player is researcher, the researcher can give a shared card that doesn't have to match the city both players are in (1)",
-    8 => "8. Ask the researcher for any city card in Share Knowledge, as long as the player and the researched are in the same city (1)",
+    8 => "8. Ask the researcher for any city card in Share Knowledge, as long as the player and the researcher are in the same city (1)",
     9 => "9. Discover a cure by discarding 5 cards of the same color to cure disease of that color, or 4 cards only if the player is a scientist (1)",
     10 => "10. Take an event card from the Player Discard Pile if player is contingency player (1)",
     11 => "11. Use Resilient Population event by discarding the event card (0)",
@@ -44,6 +44,33 @@ class Action
   def filtered_actions
     actions = (1..18).to_a
     actions.unshift("h")
+
+    actions.delete(3) if !able_to_charter_flight?
+
+    actions.delete(6) if @player_location.color_count == 0
+
+    actions.delete(7) if @player_location.pawns.size == 1
+
+    if @player.role == :researcher || @player_location.pawns.size == 1
+      actions.delete(8)
+    end
+
+    actions.delete(10) if @player.role != :contingency_planner
+
+    actions.delete(11) if @mech.string_to_players_player_card("Resilient_Population", @player).nil?
+
+    actions.delete(12) if @mech.string_to_players_player_card("Government_Grant", @player).nil?
+
+    actions.delete(13) if @mech.string_to_players_player_card("Airlift", @player).nil?
+
+    actions.delete(14) if @mech.string_to_players_player_card("One_Quiet_Night", @player).nil?
+
+    actions.delete(15) if @mech.string_to_players_player_card("Forecast", @player).nil?
+
+    actions.delete(16) if @player.role != :operations_expert
+    actions.delete(17) if @player.role != :dispatcher
+
+    return actions
   end
 
   def print_allowed_actions
@@ -1030,6 +1057,12 @@ class Action
         puts
       end
     end
+  end
+
+  def able_to_charter_flight?
+    player_city_cards = @player.player_cards_in_hand
+    cities_charter_from = player_city_cards.collect {|card| @mech.string_to_city(card.cityname)}
+    return cities_charter_from.include?(@player_location)
   end
 
 end
