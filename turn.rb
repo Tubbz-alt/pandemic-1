@@ -77,6 +77,7 @@ class Turn
     card_description_in_color(dealt_cards)
     puts
     @mech.put_player_cards_into_hand(dealt_cards, @player)
+    save_game_file(@game.filename)
   end
 
   def infect
@@ -93,6 +94,7 @@ class Turn
       @mech.perform_infect(infected_city, infected_city_original_color, 1)
       @mech.discard_card(@game.infection_discard_pile, card)
     end
+    save_game_file(@game.filename)
   end
 
   def card_description_in_color(cards_array)

@@ -247,9 +247,6 @@ class Action
       treat_disease(moved, :yellow) if @game.yellow_disease.cured
       treat_disease(moved, :red) if @game.red_disease.cured
     end
-    # if @game.black_disease.cured || @game.blue_disease.cured || @game.yellow_disease.cured || @red_disease.cured
-    #   puts "All cubes of cured diseases have been treated in this city by the medic without additional action."
-    # end
     puts
   end
 
