@@ -58,7 +58,7 @@ class Turn
       print ", a Research Station city." if @mech.string_to_city(@player.location).research_st
       puts
       puts
-      act.print_allowed_actions
+      act.print_actions
       action_number = act.execute_player_action
       @acts[@action_left-4] = action_number if act.action_reduction == 1
       if @game.game_over?

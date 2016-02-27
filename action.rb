@@ -20,6 +20,7 @@ class Action
   def allowed_actions
     allowed_actions = {
     'h' => "h. Help, Communicate with the board to get game status. (0)",
+    'a' => "a. Actions. Show all unfiltered actions. (0)",
     1 => "1. Drive/Ferry to neighboring town (1)",
     2 => "2. Direct Flight to a city by discarding the city card (1)",
     3 => "3. Charter Flight by discarding the city card you're currently in (1)",
@@ -41,11 +42,31 @@ class Action
     }
   end
 
-  def filtered_actions
+  def unfiltered_actions
     actions = (1..18).to_a
     actions.unshift("h")
+    actions.push("a")
+    return actions
+  end
+
+  def filtered_actions
+    actions = unfiltered_actions
+
+    if @player.player_cards_in_hand.empty?
+      actions.delete(2)
+    elsif @player.player_cards_in_hand.size == 1 && able_to_charter_flight
+      actions.delete(2)
+    end
 
     actions.delete(3) if !able_to_charter_flight?
+
+    actions.delete(4) if (!@player_location.research_st || @game.board.research_station_cities.size == 1)
+
+    if @player_location.research_st
+      actions.delete(5)
+    elsif !able_to_build_research_st?
+      actions.delete(5)
+    end
 
     actions.delete(6) if @player_location.color_count == 0
 
@@ -54,6 +75,8 @@ class Action
     if @player.role == :researcher || @player_location.pawns.size == 1
       actions.delete(8)
     end
+
+    actions.delete(9) unless (can_cure? && @player_location.research_st)
 
     actions.delete(10) if @player.role != :contingency_planner
 
@@ -67,25 +90,43 @@ class Action
 
     actions.delete(15) if @mech.string_to_players_player_card("Forecast", @player).nil?
 
-    actions.delete(16) if @player.role != :operations_expert
+    if @player.role != :operations_expert
+      actions.delete(16)
+    elsif !@player_location.research_st
+      actions.delete(16)
+    end
+
     actions.delete(17) if @player.role != :dispatcher
 
     return actions
   end
 
-  def print_allowed_actions
+  def print_actions(type = "filtered")
+    if type == "unfiltered"
+      type_of_action = unfiltered_actions
+    else
+      type_of_action = filtered_actions
+    end
+
     puts "Choose from the following possible actions (action worth):"
     puts
     allowed_actions.each do |k,v|
-      if filtered_actions.include?(k)
+      if type_of_action.include?(k)
         if k == "h"
           puts v.red
+        elsif k == "a"
+          puts v.yellow
         else
           puts v
         end
       end
     end
     puts
+    if type == "unfiltered"
+      print "Type anything to go back to the game. "
+      gets.chomp
+      puts
+    end
   end
 
   def execute_player_action
@@ -94,6 +135,8 @@ class Action
     if response == 'h'
       communicate_with_game
       @action_reduction = 0
+    elsif response == 'a'
+      print_actions("unfiltered")
     else
       action_number = response.to_i
       case action_number
@@ -1063,6 +1106,25 @@ class Action
     player_city_cards = @player.player_cards_in_hand
     cities_charter_from = player_city_cards.collect {|card| @mech.string_to_city(card.cityname)}
     return cities_charter_from.include?(@player_location)
+  end
+
+  def able_to_build_research_st?
+    return true if @player.role == :operations_expert
+    able_to_charter_flight?
+  end
+
+  def can_cure?
+    req_no = 5
+    req_no = 4 if @player.role == :scientist
+
+    colors = [:black, :red, :yellow, :blue]
+    colored_cards = []
+    colors.each do |color|
+      colored_cards << @player.player_cards_in_hand.select {|card| card.color == color}
+    end
+    curable_colors = colored_cards.select {|color| color.size >= req_no}
+
+    return !curable_colors.empty?
   end
 
 end
