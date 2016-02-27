@@ -815,7 +815,7 @@ class Action
 
   def resilient_city(player)
     resilient_card = @mech.string_to_players_player_card("Resilient_Population",player)
-    if resilint_card.nil?
+    if resilient_card.nil?
       executed = false
       puts "Player doesn't have Resilient City Event Card. Event cancelled."
       puts
