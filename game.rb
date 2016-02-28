@@ -100,7 +100,14 @@ class Game
 
   def win?
     if @blue_disease.cured == true && @red_disease.cured == true && @yellow_disease.cured == true && @black_disease.cured == true
-      puts "You won!!"
+      puts " #     #                      #     #                  ###  ###
+  #   #    ####   #    #      #  #  #   ####   #    #  ###  ###
+   # #    #    #  #    #      #  #  #  #    #  ##   #  ###  ###
+    #     #    #  #    #      #  #  #  #    #  # #  #   #    #
+    #     #    #  #    #      #  #  #  #    #  #  # #
+    #     #    #  #    #      #  #  #  #    #  #   ##  ###  ###
+    #      ####    ####        ## ##    ####   #    #  ###  ###
+                                                                ".red
       return true
     end
     false
