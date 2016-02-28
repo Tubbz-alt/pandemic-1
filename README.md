@@ -1,5 +1,5 @@
 # Pandemic, a Ruby Project
-
+###### v 0.1.1 (beta).
 Based on the board game Pandemic.
 
 
@@ -9,7 +9,6 @@ Based on the board game Pandemic.
 
 This document provides documentation to be used to play the Ruby Pandemics. For Pandemic rules, [click here on  wikipedia](http://tinyurl.com/hvr9nfr). Number of players = 2 to 4.
 
-Current version : v 0.1.0 (beta).
 
 ### Snippets
 
@@ -94,3 +93,8 @@ These commands are inputted during the action `Help, Communicate with the board 
 ##### Related to Cities
 
 - `ci`, short for "City Info" to show the status of a city.
+
+
+### Versions
+
+You can see short details on the current and previous versions [here](https://github.com/cmdrtorefresh/pandemic/blob/master/version.md).
