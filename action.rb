@@ -54,7 +54,7 @@ class Action
 
     if @player.player_cards_in_hand.empty?
       actions.delete(2)
-    elsif @player.player_cards_in_hand.size == 1 && able_to_charter_flight
+    elsif @player.player_cards_in_hand.size == 1 && able_to_charter_flight?
       actions.delete(2)
     end
 

@@ -454,10 +454,10 @@ class Mechanism
         return nil
       else
         event_card = string_to_players_player_card(event_string, player)
-        if event_card.nil?
-          puts "You don't have that event card. Try again!"
-        else
+        if !event_card.nil? && player.event_cards_in_hand.include?(event_card)
           event_satisfied = true
+        else
+          puts "You don't have that event card or it's not an event card. Try again!"
         end
       end
     end
