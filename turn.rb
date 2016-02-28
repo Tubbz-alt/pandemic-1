@@ -77,6 +77,7 @@ class Turn
     card_description_in_color(dealt_cards)
     puts
     @mech.put_player_cards_into_hand(dealt_cards, @player)
+    @acts[4] = dealt_cards
     save_game_file(@game.filename)
   end
 
@@ -94,6 +95,7 @@ class Turn
       @mech.perform_infect(infected_city, infected_city_original_color, 1)
       @mech.discard_card(@game.infection_discard_pile, card)
     end
+    @acts[5]=dealt_cards
     save_game_file(@game.filename)
   end
 
@@ -111,7 +113,7 @@ class Turn
   end
 
   def mid_turn?
-    @action_left != 0
+    @acts.compact.size != 6
   end
 
 end
